@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include "ColaLearning.h"
 int main()
 {
-	printf("Hello ColaLearning");
+	NeuralNetwork NN;
+	printf("%d", NN.a);
 }
