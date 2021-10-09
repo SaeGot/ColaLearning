@@ -141,10 +141,12 @@
   <ItemGroup>
     <ClCompile Include="ColaLearning.cpp" />
     <ClCompile Include="NeuralNetwork.cpp" />
+    <ClCompile Include="Weight.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ColaLearning.h" />
     <ClInclude Include="NeuralNetwork.h" />
+    <ClInclude Include="Weight.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
