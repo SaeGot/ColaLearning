@@ -1,4 +1,9 @@
 #pragma once
+#include <vector>
+
+
+using namespace std;
+
 class Weight
 {
 public:
@@ -7,7 +12,7 @@ public:
 	 * 
 	 * \param weight : 가중치
 	 */
-	Weight(double weight);
+	Weight(vector<double> weight_Values);
 	~Weight() {};
 
 	/**
@@ -15,9 +20,9 @@ public:
 	 * 
 	 * \return : 가중치
 	 */
-	double GetWeight();
+	double GetWeight(int n);
 
 private:
-	double MultipleValue;
+	vector<double> weightValues;
 };
 

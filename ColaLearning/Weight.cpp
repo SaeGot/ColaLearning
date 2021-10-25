@@ -1,11 +1,17 @@
 #include "Weight.h"
 
-Weight::Weight(double weight)
+
+Weight::Weight(vector<double> weight_Values)
 {
-	MultipleValue = weight;
+	weightValues = weight_Values;
 }
 
-double Weight::GetWeight()
+double Weight::GetWeight(int n)
 {
-	return MultipleValue;
+	if (n < 0)
+	{
+		printf("Error : %d번째 인자를 선택하였습니다.\n", n);
+		return 0;
+	}
+	return weightValues[n];
 }
