@@ -1,4 +1,4 @@
-#include "Node.h"
+ï»¿#include "Node.h"
 
 
 Node::Node(vector<double> node_Values)
@@ -10,7 +10,7 @@ double Node::GetNodeValue(int n)
 {
 	if (n < 0)
 	{
-		printf("Error : %d¹øÂ° ÀÎÀÚ¸¦ ¼±ÅÃÇÏ¿´½À´Ï´Ù.\n", n);
+		printf("Error : %dë²ˆì§¸ ì¸ìžë¥¼ ì„ íƒí•˜ì˜€ìŠµë‹ˆë‹¤.\n", n);
 		return 0;
 	}
 	return nodeValues[n];

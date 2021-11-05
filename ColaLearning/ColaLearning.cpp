@@ -1,4 +1,4 @@
-#include "ColaLearning.h"
+ï»¿#include "ColaLearning.h"
 
 
 int main()
@@ -11,14 +11,14 @@ int main()
 	Node N(input);
 	Weight W(weight);
 
-	// ½ÅÈ£ ÇÕÄ¡±â
+	// ì‹ í˜¸ í•©ì¹˜ê¸°
 	for (int n = 0; n < input.size(); n++)
 	{
 		output_sum += N.GetNodeValue(n) * W.GetWeight(n);
 	}
-	printf_s("½ÅÈ£ ÇÕÄ£ ÈÄ °ª = %lf\n", output_sum);
+	printf_s("ì‹ í˜¸ í•©ì¹œ í›„ ê°’ = %lf\n", output_sum);
 
-	// ½ÅÈ£ È°¼º
+	// ì‹ í˜¸ í™œì„±
 	if (output_sum >= 1)
 	{
 		output_activated = 1.0;
@@ -27,5 +27,5 @@ int main()
 	{
 		output_activated = 0.0;
 	}
-	printf_s("½ÅÈ£ È°¼º ÈÄ °ª = %lf\n", output_activated);
+	printf_s("ì‹ í˜¸ í™œì„± í›„ ê°’ = %lf\n", output_activated);
 }

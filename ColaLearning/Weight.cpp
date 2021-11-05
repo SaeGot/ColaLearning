@@ -1,4 +1,4 @@
-#include "Weight.h"
+ï»¿#include "Weight.h"
 
 
 Weight::Weight(vector<double> weight_Values)
@@ -10,7 +10,7 @@ double Weight::GetWeight(int n)
 {
 	if (n < 0)
 	{
-		printf("Error : %d¹øÂ° ÀÎÀÚ¸¦ ¼±ÅÃÇÏ¿´½À´Ï´Ù.\n", n);
+		printf("Error : %dë²ˆì§¸ ì¸ìžë¥¼ ì„ íƒí•˜ì˜€ìŠµë‹ˆë‹¤.\n", n);
 		return 0;
 	}
 	return weightValues[n];

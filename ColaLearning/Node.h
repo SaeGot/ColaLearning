@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <vector>
 
 using namespace std;
@@ -8,18 +8,18 @@ class Node
 {
 public:
 	/**
-	 * »ı¼ºÀÚ.
+	 * ìƒì„±ì.
 	 * 
-	 * \param node_Values : ³ëµå°ª
+	 * \param node_Values : ë…¸ë“œê°’
 	 */
 	Node(vector<double> node_Values);
 	~Node() {};
 
 	/**
-	 * ³ëµå °ª °¡Á®¿À±â.
+	 * ë…¸ë“œ ê°’ ê°€ì ¸ì˜¤ê¸°.
 	 * 
-	 * \param n : ÀÎµ¦½º
-	 * \return ³ëµå °ª
+	 * \param n : ì¸ë±ìŠ¤
+	 * \return ë…¸ë“œ ê°’
 	 */
 	double GetNodeValue(int n);
 

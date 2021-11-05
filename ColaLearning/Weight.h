@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <vector>
 
 using namespace std;
@@ -8,18 +8,18 @@ class Weight
 {
 public:
 	/**
-	 * »ı¼ºÀÚ.
+	 * ìƒì„±ì.
 	 * 
-	 * \param weight_Values : °¡ÁßÄ¡
+	 * \param weight_Values : ê°€ì¤‘ì¹˜
 	 */
 	Weight(vector<double> weight_Values);
 	~Weight() {};
 
 	/**
-	 * °¡ÁßÄ¡°ª °¡Á®¿À±â.
+	 * ê°€ì¤‘ì¹˜ê°’ ê°€ì ¸ì˜¤ê¸°.
 	 * 
-	 * \param n : ÀÎµ¦½º
-	 * \return °¡ÁßÄ¡
+	 * \param n : ì¸ë±ìŠ¤
+	 * \return ê°€ì¤‘ì¹˜
 	 */
 	double GetWeight(int n);
 
