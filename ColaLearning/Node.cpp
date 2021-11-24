@@ -15,3 +15,8 @@ double Node::GetNodeValue(int n)
 	}
 	return nodeValues[n];
 }
+
+int Node::GetNodeCount()
+{
+	return nodeValues.size();
+}

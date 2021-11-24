@@ -1,25 +1,25 @@
 ﻿#include "ColaLearning.h"
+#include <map>
 
 
-int main()
+// 신호 합치기
+double Sum(Node node, Weight weight)
 {
-	vector<double> input = { 1, 2, 5 };
-	vector<double> weight = { 0.35, 0.25, 0.08 };
 	double output_sum = 0.0;
-	double output_activated = 0.0;
-
-	Node N(input);
-	Weight W(weight);
-
-	// 신호 합치기
-	for (int n = 0; n < input.size(); n++)
+	for (int n = 0; n < node.GetNodeCount(); n++)
 	{
-		output_sum += N.GetNodeValue(n) * W.GetWeight(n);
+		output_sum += node.GetNodeValue(n) * weight.GetWeight(n);
 	}
-	printf_s("신호 합친 후 값 = %lf\n", output_sum);
+	output_sum += weight.GetWeight(node.GetNodeCount());
 
-	// 신호 활성
-	if (output_sum >= 1)
+	return output_sum;
+}
+
+// 신호 활성
+double Activate(double value)
+{
+	double output_activated;
+	if (value >= 1)
 	{
 		output_activated = 1.0;
 	}
@@ -27,5 +27,68 @@ int main()
 	{
 		output_activated = 0.0;
 	}
-	printf_s("신호 활성 후 값 = %lf\n", output_activated);
+
+	return output_activated;
+}
+
+// 게이트 종류
+enum Gate
+{
+	AND,
+	OR,
+	NOR
+};
+
+int main()
+{
+	// 입력
+	vector<vector<double>> input_list;
+	input_list.push_back({ 0, 0 });
+	input_list.push_back({ 0, 1 });
+	input_list.push_back({ 1, 0 });
+	input_list.push_back({ 1, 1 });
+
+	//출력
+	double output_sum = 0.0;
+	double output_activated = 0.0;
+
+	// 가중치
+	map<Gate, vector<double>> weight_list;
+	vector<double> weight_and = { 0.5, 0.5, 0.0 };
+	vector<double> weight_or = { 1.0, 1.0, 0.0 };
+	vector<double> weight_nor = { -1.0, -1.0, 1.0 };
+	weight_list.insert({ AND, weight_and });
+	weight_list.insert({ OR, weight_or });
+	weight_list.insert({ NOR, weight_nor });
+
+	// 게이트별 테스트
+	map<Gate, vector<double>>::iterator iter_weight;
+	for (iter_weight = weight_list.begin(); iter_weight != weight_list.end(); iter_weight++)
+	{
+		Weight weight(iter_weight->second);
+		switch (iter_weight->first)
+		{
+		case AND:
+			printf_s("[AND 게이트] \n");
+			break;
+		case OR:
+			printf_s("[OR 게이트] \n");
+			break;
+		case NOR:
+			printf_s("[NOR 게이트] \n");
+			break;
+		}
+
+		// 입력별 테스트
+		vector<vector<double>>::iterator iter_input;
+		for (iter_input = input_list.begin(); iter_input != input_list.end(); iter_input++)
+		{
+			vector<double> input = *iter_input;
+			Node node(input);
+			output_sum = Sum(node, weight);
+			output_activated = Activate(output_sum);
+			printf_s("입력 : %1lf, %1lf → 출력 : %lf\n", input[0], input[1], output_activated);
+		}
+		printf_s("\n");
+	}
 }
