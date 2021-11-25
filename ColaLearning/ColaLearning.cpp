@@ -36,6 +36,7 @@ enum Gate
 {
 	AND,
 	OR,
+	NAND,
 	NOR
 };
 
@@ -56,9 +57,11 @@ int main()
 	map<Gate, vector<double>> weight_list;
 	vector<double> weight_and = { 0.5, 0.5, 0.0 };
 	vector<double> weight_or = { 1.0, 1.0, 0.0 };
+	vector<double> weight_nand = { -0.5, -0.5, 1.5 };
 	vector<double> weight_nor = { -1.0, -1.0, 1.0 };
 	weight_list.insert({ AND, weight_and });
 	weight_list.insert({ OR, weight_or });
+	weight_list.insert({ NAND, weight_nand });
 	weight_list.insert({ NOR, weight_nor });
 
 	// 게이트별 테스트
@@ -73,6 +76,9 @@ int main()
 			break;
 		case OR:
 			printf_s("[OR 게이트] \n");
+			break;
+		case NAND:
+			printf_s("[NAND 게이트] \n");
 			break;
 		case NOR:
 			printf_s("[NOR 게이트] \n");
