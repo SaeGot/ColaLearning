@@ -24,7 +24,7 @@
     <ClCompile Include="Weight.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Node.cpp">
+    <ClCompile Include="Layer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,7 +38,7 @@
     <ClInclude Include="Weight.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Node.h">
+    <ClInclude Include="Layer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

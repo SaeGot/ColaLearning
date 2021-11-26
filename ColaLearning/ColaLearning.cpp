@@ -3,14 +3,14 @@
 
 
 // 신호 합치기
-double Sum(Node node, Weight weight)
+double Sum(Layer layer, Weight weight)
 {
 	double output_sum = 0.0;
-	for (int n = 0; n < node.GetNodeCount(); n++)
+	for (int n = 0; n < layer.GetNodeCount(); n++)
 	{
-		output_sum += node.GetNodeValue(n) * weight.GetWeight(n);
+		output_sum += layer.GetNodeValue(n) * weight.GetWeight(n);
 	}
-	output_sum += weight.GetWeight(node.GetNodeCount());
+	output_sum += weight.GetWeight(layer.GetNodeCount());
 
 	return output_sum;
 }
@@ -90,8 +90,8 @@ int main()
 		for (iter_input = input_list.begin(); iter_input != input_list.end(); iter_input++)
 		{
 			vector<double> input = *iter_input;
-			Node node(input);
-			output_sum = Sum(node, weight);
+			Layer layer(input);
+			output_sum = Sum(layer, weight);
 			output_activated = Activate(output_sum);
 			printf_s("입력 : %1lf, %1lf → 출력 : %lf\n", input[0], input[1], output_activated);
 		}

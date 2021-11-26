@@ -4,7 +4,7 @@
 using namespace std;
 
 
-class Node
+class Layer
 {
 public:
 	/**
@@ -12,8 +12,8 @@ public:
 	 *
 	 * \param node_Values : 노드값
 	 */
-	Node(vector<double> node_Values);
-	~Node() {};
+	Layer(vector<double> node_Values);
+	~Layer() {};
 
 	/**
 	 * 노드 값 가져오기.

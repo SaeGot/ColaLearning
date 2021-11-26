@@ -1,12 +1,12 @@
-﻿#include "Node.h"
+﻿#include "Layer.h"
 
 
-Node::Node(vector<double> node_Values)
+Layer::Layer(vector<double> node_Values)
 {
 	nodeValues = node_Values;
 }
 
-double Node::GetNodeValue(int n)
+double Layer::GetNodeValue(int n)
 {
 	if (n < 0)
 	{
@@ -16,7 +16,7 @@ double Node::GetNodeValue(int n)
 	return nodeValues[n];
 }
 
-int Node::GetNodeCount()
+int Layer::GetNodeCount()
 {
 	return nodeValues.size();
 }
