@@ -54,21 +54,21 @@ int main()
 	double output_activated = 0.0;
 
 	// 가중치
-	map<Gate, vector<double>> weight_list;
+	map<Gate, Weight> weight_list;
 	vector<double> weight_and = { 0.5, 0.5, 0.0 };
 	vector<double> weight_or = { 1.0, 1.0, 0.0 };
 	vector<double> weight_nand = { -0.5, -0.5, 1.5 };
 	vector<double> weight_nor = { -1.0, -1.0, 1.0 };
-	weight_list.insert({ AND, weight_and });
-	weight_list.insert({ OR, weight_or });
-	weight_list.insert({ NAND, weight_nand });
-	weight_list.insert({ NOR, weight_nor });
+	weight_list.insert({ AND, Weight(weight_and) });
+	weight_list.insert({ OR, Weight(weight_or) });
+	weight_list.insert({ NAND, Weight(weight_nand) });
+	weight_list.insert({ NOR, Weight(weight_nor) });
 
 	// 게이트별 테스트
-	map<Gate, vector<double>>::iterator iter_weight;
+	map<Gate, Weight>::iterator iter_weight;
 	for (iter_weight = weight_list.begin(); iter_weight != weight_list.end(); iter_weight++)
 	{
-		Weight weight(iter_weight->second);
+		Weight weight = iter_weight->second;
 		switch (iter_weight->first)
 		{
 		case AND:
