@@ -97,4 +97,29 @@ int main()
 		}
 		printf_s("\n");
 	}
+
+	// XOR 게이트
+	printf_s("[XOR 게이트] \n");
+	vector<vector<double>>::iterator iter_input;
+	for (iter_input = input_list.begin(); iter_input != input_list.end(); iter_input++)
+	{
+		// 첫 번째 층 입력
+		vector<double> input = *iter_input;
+		Layer layer1(input);
+		// 각 게이트 출력 계산
+		double gate_or_sum = Sum(layer1, weight_list.at(OR));
+		double gate_nand_sum = Sum(layer1, weight_list.at(NAND));
+		double gate_or_output = Activate(gate_or_sum);
+		double gate_nand_output = Activate(gate_nand_sum);
+		// 두 번째 층 입력
+		vector<double> layer2_input;
+		layer2_input.push_back(gate_or_output);
+		layer2_input.push_back(gate_nand_output);
+		Layer layer2(layer2_input);
+		// 두 번째 층 출력 계산
+		output_sum = Sum(layer2, weight_list.at(AND));
+		output_activated = Activate(output_sum);
+		printf_s("입력 : %1lf, %1lf → 출력 : %lf\n", input[0], input[1], output_activated);
+	}
+	printf_s("\n");
 }
