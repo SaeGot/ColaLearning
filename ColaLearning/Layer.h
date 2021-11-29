@@ -13,6 +13,7 @@ public:
 	 * \param node_Values : 노드값
 	 */
 	Layer(vector<double> node_Values);
+	Layer(const Layer& layer);
 	~Layer() {};
 
 	/**

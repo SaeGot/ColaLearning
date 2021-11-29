@@ -6,6 +6,11 @@ Weight::Weight(vector<double> weight_Values)
 	weightValues = weight_Values;
 }
 
+Weight::Weight(const Weight &weight)
+{
+	weightValues = weight.weightValues;
+}
+
 double Weight::GetWeight(int n)
 {
 	if (n < 0)

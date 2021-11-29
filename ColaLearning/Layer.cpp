@@ -6,6 +6,11 @@ Layer::Layer(vector<double> node_Values)
 	nodeValues = node_Values;
 }
 
+Layer::Layer(const Layer& layer)
+{
+	nodeValues = layer.nodeValues;
+}
+
 double Layer::GetNodeValue(int n)
 {
 	if (n < 0)
