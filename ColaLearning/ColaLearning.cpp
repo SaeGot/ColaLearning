@@ -2,37 +2,8 @@
 #include <map>
 
 
-// 신호 합치기
-double Sum(Layer layer, Weight weight)
-{
-	double output_sum = 0.0;
-	for (int n = 0; n < layer.GetNodeCount(); n++)
-	{
-		output_sum += layer.GetNodeValue(n) * weight.GetWeight(n);
-	}
-	output_sum += weight.GetWeight(layer.GetNodeCount());
-
-	return output_sum;
-}
-
-// 신호 활성
-double Activate(double value)
-{
-	double output_activated;
-	if (value >= 1)
-	{
-		output_activated = 1.0;
-	}
-	else
-	{
-		output_activated = 0.0;
-	}
-
-	return output_activated;
-}
-
 // 게이트 종류
-enum Gate
+enum class Gate
 {
 	AND,
 	OR,
@@ -49,38 +20,34 @@ int main()
 	input_list.push_back({ 1, 0 });
 	input_list.push_back({ 1, 1 });
 
-	//출력
-	double output_sum = 0.0;
-	double output_activated = 0.0;
-
 	// 가중치
 	map<Gate, Weight> weight_list;
-	vector<double> weight_and = { 0.5, 0.5, 0.0 };
-	vector<double> weight_or = { 1.0, 1.0, 0.0 };
-	vector<double> weight_nand = { -0.5, -0.5, 1.5 };
-	vector<double> weight_nor = { -1.0, -1.0, 1.0 };
-	weight_list.insert({ AND, Weight(weight_and) });
-	weight_list.insert({ OR, Weight(weight_or) });
-	weight_list.insert({ NAND, Weight(weight_nand) });
-	weight_list.insert({ NOR, Weight(weight_nor) });
+	vector<vector<double>> weight_and = { {0.5}, {0.5}, {0.0} };
+	vector<vector<double>> weight_or = { {1.0}, {1.0}, {0.0} };
+	vector<vector<double>> weight_nand = { {-0.5}, {-0.5}, {1.5} };
+	vector<vector<double>> weight_nor = { {-1.0}, {-1.0}, {1.0} };
+	weight_list.insert({ Gate::AND, Weight(weight_and) });
+	weight_list.insert({ Gate::OR, Weight(weight_or) });
+	weight_list.insert({ Gate::NAND, Weight(weight_nand) });
+	weight_list.insert({ Gate::NOR, Weight(weight_nor) });
 
 	// 게이트별 테스트
 	map<Gate, Weight>::iterator iter_weight;
 	for (iter_weight = weight_list.begin(); iter_weight != weight_list.end(); iter_weight++)
 	{
-		Weight weight = iter_weight->second;
+		Weight weight(iter_weight->second);
 		switch (iter_weight->first)
 		{
-		case AND:
+		case Gate::AND:
 			printf_s("[AND 게이트] \n");
 			break;
-		case OR:
+		case Gate::OR:
 			printf_s("[OR 게이트] \n");
 			break;
-		case NAND:
+		case Gate::NAND:
 			printf_s("[NAND 게이트] \n");
 			break;
-		case NOR:
+		case Gate::NOR:
 			printf_s("[NOR 게이트] \n");
 			break;
 		}
@@ -88,25 +55,41 @@ int main()
 		// 입력별 테스트
 		vector<vector<double>>::iterator iter_input;
 		for (iter_input = input_list.begin(); iter_input != input_list.end(); iter_input++)
-		{
+		{			
 			vector<double> input = *iter_input;
-			Layer layer(input);
-			output_sum = Sum(layer, weight);
-			output_activated = Activate(output_sum);
-			printf_s("입력 : %1lf, %1lf → 출력 : %lf\n", input[0], input[1], output_activated);
+			// 각 층 생성
+			Layer layer_input(input, true);
+			Layer layer_output(1);
+			vector<Layer> layers( {layer_input, layer_output} );
+			// 가중치 생성
+			vector<Weight> weights({ weight });
+			// 신경망 생성
+			NeuralNetwork net(layers, weights);
+
+			printf_s("입력 : %1lf, %1lf → 출력 : %lf\n", input[0], input[1], net.Predict()[0]);
 		}
 		printf_s("\n");
 	}
-
+	/*
 	// XOR 게이트
 	printf_s("[XOR 게이트] \n");
 	vector<vector<double>>::iterator iter_input;
 	for (iter_input = input_list.begin(); iter_input != input_list.end(); iter_input++)
 	{
-		// 첫 번째 층 입력
 		vector<double> input = *iter_input;
-		Layer layer1(input);
+		// 각 층 생성
+		Layer layer_input(input, true);
+		Layer layer_hidden(2);
+		Layer layer_output(1);
+		vector<Layer> layers({ layer_input, layer_hidden, layer_output });
 		// 각 게이트 출력 계산
+		vector<vector<double>> vec_weight1;
+		for (int i = 0; i < 3; i++)
+		{
+			vec_weight1[0].push_back(weight_or[i][0]);
+			vec_weight1[1].push_back(weight_nand[i][0]);
+		}
+		vector<Weight> weights({ weight });
 		double gate_or_sum = Sum(layer1, weight_list.at(OR));
 		double gate_nand_sum = Sum(layer1, weight_list.at(NAND));
 		double gate_or_output = Activate(gate_or_sum);
@@ -121,5 +104,6 @@ int main()
 		output_activated = Activate(output_sum);
 		printf_s("입력 : %1lf, %1lf → 출력 : %lf\n", input[0], input[1], output_activated);
 	}
-	printf_s("\n");
+	printf_s("\n");	
+	*/
 }
