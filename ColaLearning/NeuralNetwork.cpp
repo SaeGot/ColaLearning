@@ -22,9 +22,10 @@ vector<double> NeuralNetwork::Predict()
 		for (int j = 0; j < layers[index].GetNodeCount(); j++)
 		{
 			double value = Sum(layers[index - 1], weights[index - 1], j);
-			value = Activate(value);
+			//value = Activate(value);
 			layers[index].SetNodeValue(j, value);
 		}
+		layers[index].Activate();
 	}
 
 	return layers[layers.size() - 1].GetNodeValue();

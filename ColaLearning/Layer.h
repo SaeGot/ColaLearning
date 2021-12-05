@@ -4,6 +4,12 @@
 
 using namespace std;
 
+enum class ActivationFunction
+{
+	Linear,
+	Step
+};
+
 class Layer
 {
 public:
@@ -11,16 +17,18 @@ public:
 	 * 노드값으로 Layer 생성.
 	 * 
 	 * \param node_Values : 노드값
+	 * \param activation_Function : 활성 함수
 	 * \param _bias : 편향
 	 */
-	Layer(vector<double> node_Values, bool _bias = false);
+	Layer(vector<double> node_Values, ActivationFunction activation_Function = ActivationFunction::Linear, bool _bias = false);
 	/**
 	 * 노드 개수로 Layer 생성.
 	 * 
 	 * \param count : 노드 개수
+	 * \param activation_Function : 활성 함수
 	 * \param _bias : 편향
 	 */
-	Layer(int count, bool _bias = false);
+	Layer(int count, ActivationFunction activation_Function = ActivationFunction::Linear, bool _bias = false);
 	Layer(const Layer& layer);
 	~Layer() {};
 
@@ -61,8 +69,14 @@ public:
 	 * \return 편향 여부
 	 */
 	bool CheckBias() const;
+	/**
+	 * Layer 활성.
+	 * 
+	 */
+	void Activate();
 
 private:
 	vector<double> nodeValues;
 	bool bias;
+	ActivationFunction activationFunction;
 };

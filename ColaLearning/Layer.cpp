@@ -1,21 +1,24 @@
 ﻿#include "Layer.h"
 
 
-Layer::Layer(vector<double> node_Values, bool _bias)
+Layer::Layer(vector<double> node_Values, ActivationFunction activation_Function, bool _bias)
 {
 	nodeValues = node_Values;
+	activationFunction = activation_Function;
 	bias = _bias;
 }
 
-Layer::Layer(int count, bool _bias)
+Layer::Layer(int count, ActivationFunction activation_Function, bool _bias)
 {
 	nodeValues.resize(count);
+	activationFunction = activation_Function;
 	bias = _bias;
 }
 
 Layer::Layer(const Layer& layer)
 {
 	nodeValues = layer.nodeValues;
+	activationFunction = layer.activationFunction;
 	bias = layer.bias;
 }
 
@@ -55,4 +58,24 @@ int Layer::GetNodeCount() const
 bool Layer::CheckBias() const
 {
 	return bias;
+}
+
+void Layer::Activate()
+{
+	for (int index = 0; index < nodeValues.size(); index++)
+	{
+		switch (activationFunction)
+		{
+		case ActivationFunction::Step:
+			if (nodeValues[index] > 0)
+			{
+				nodeValues[index] = 1;
+			}
+			else
+			{
+				nodeValues[index] = 0;
+			}
+			break;
+		}
+	}
 }

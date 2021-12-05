@@ -22,10 +22,10 @@ int main()
 
 	// 가중치
 	map<Gate, Weight> weight_list;
-	vector<vector<double>> weight_and = { {0.5}, {0.5}, {0.0} };
-	vector<vector<double>> weight_or = { {1.0}, {1.0}, {0.0} };
-	vector<vector<double>> weight_nand = { {-0.5}, {-0.5}, {1.5} };
-	vector<vector<double>> weight_nor = { {-1.0}, {-1.0}, {1.0} };
+	vector<vector<double>> weight_and = { {0.7}, {0.7}, {-1.0} };
+	vector<vector<double>> weight_or = { {1.1}, {1.1}, {-1.0} };
+	vector<vector<double>> weight_nand = { {-0.5}, {-0.5}, {0.7} };
+	vector<vector<double>> weight_nor = { {-1.1}, {-1.1}, {1.1} };
 	weight_list.insert({ Gate::AND, Weight(weight_and) });
 	weight_list.insert({ Gate::OR, Weight(weight_or) });
 	weight_list.insert({ Gate::NAND, Weight(weight_nand) });
@@ -58,8 +58,8 @@ int main()
 		{			
 			vector<double> input = *iter_input;
 			// 각 층 생성
-			Layer layer_input(input, true);
-			Layer layer_output(1);
+			Layer layer_input(input, ActivationFunction::Step, true);
+			Layer layer_output(1, ActivationFunction::Step);
 			vector<Layer> layers( {layer_input, layer_output} );
 			// 가중치 생성
 			vector<Weight> weights({ weight });
@@ -78,9 +78,9 @@ int main()
 	{
 		vector<double> input = *iter_input;
 		// 각 층 생성
-		Layer layer_input(input, true);
-		Layer layer_hidden(2);
-		Layer layer_output(1);
+		Layer layer_input(input, ActivationFunction::Step, true);
+		Layer layer_hidden(2, ActivationFunction::Step, true);
+		Layer layer_output(1, ActivationFunction::Step);
 		vector<Layer> layers({ layer_input, layer_hidden, layer_output });
 		// 각 가중치 생성
 		vector<vector<double>> vec_weight;
