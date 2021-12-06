@@ -30,7 +30,7 @@ public:
 	 */
 	Layer(int count, ActivationFunction activation_Function = ActivationFunction::Linear, bool _bias = false);
 	Layer(const Layer& layer);
-	~Layer() {};
+	~Layer();
 
 	/**
 	 * 노드 값 가져오기.

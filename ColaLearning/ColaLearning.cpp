@@ -32,11 +32,10 @@ int main()
 	weight_list.insert({ Gate::NOR, Weight(weight_nor) });
 
 	// 게이트별 테스트
-	map<Gate, Weight>::iterator iter_weight;
-	for (iter_weight = weight_list.begin(); iter_weight != weight_list.end(); iter_weight++)
+	for (pair<Gate, Weight> iter_weight : weight_list)
 	{
-		Weight weight(iter_weight->second);
-		switch (iter_weight->first)
+		Weight weight(iter_weight.second);
+		switch (iter_weight.first)
 		{
 		case Gate::AND:
 			printf_s("[AND 게이트] \n");
@@ -53,10 +52,9 @@ int main()
 		}
 
 		// 입력별 테스트
-		vector<vector<double>>::iterator iter_input;
-		for (iter_input = input_list.begin(); iter_input != input_list.end(); iter_input++)
+		for (auto iter_input : input_list)
 		{			
-			vector<double> input = *iter_input;
+			vector<double> input = iter_input;
 			// 각 층 생성
 			Layer layer_input(input, ActivationFunction::Step, true);
 			Layer layer_output(1, ActivationFunction::Step);
@@ -66,7 +64,7 @@ int main()
 			// 신경망 생성
 			NeuralNetwork net(layers, weights);
 
-			printf_s("입력 : %1lf, %1lf → 출력 : %lf\n", input[0], input[1], net.Predict()[0]);
+			printf_s("입력 : %1lf, %1lf → 출력 : %lf\n", input.at(0), input.at(1), net.Predict()[0]);
 		}
 		printf_s("\n");
 	}

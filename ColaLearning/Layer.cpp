@@ -22,6 +22,11 @@ Layer::Layer(const Layer& layer)
 	bias = layer.bias;
 }
 
+Layer::~Layer()
+{
+	nodeValues.clear();
+}
+
 double Layer::GetNodeValue(int index) const
 {
 	if (index < 0)

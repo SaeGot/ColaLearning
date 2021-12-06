@@ -20,6 +20,11 @@ Weight::Weight(const Weight &weight)
 	weightValues = weight.weightValues;
 }
 
+Weight::~Weight()
+{
+	weightValues.clear();
+}
+
 double Weight::GetWeight(int i, int j) const
 {
 	if (i < 0 || j < 0)
