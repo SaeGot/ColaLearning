@@ -22,10 +22,9 @@ vector<double> NeuralNetwork::Predict()
 		for (int j = 0; j < layers[index].GetNodeCount(); j++)
 		{
 			double value = Sum(layers[index - 1], weights[index - 1], j);
-			//value = Activate(value);
+			value = layers[index].Activate(value);
 			layers[index].SetNodeValue(j, value);
 		}
-		layers[index].Activate();
 	}
 
 	return layers[layers.size() - 1].GetNodeValue();
@@ -78,19 +77,4 @@ double NeuralNetwork::Sum(const Layer& layer, const Weight& weight, int j)
 	}
 
 	return output_sum;
-}
-
-double NeuralNetwork::Activate(double value)
-{
-	double output_activated;
-	if (value >= 1)
-	{
-		output_activated = 1.0;
-	}
-	else
-	{
-		output_activated = 0.0;
-	}
-
-	return output_activated;
 }

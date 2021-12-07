@@ -7,6 +7,7 @@ using namespace std;
 enum class ActivationFunction
 {
 	Linear,
+	ReLU,
 	Step
 };
 
@@ -48,7 +49,7 @@ public:
 	/**
 	 * 노드 값 설정.
 	 * 
-	 * \param index : 인덱스
+	 * \param index : 노드 인덱스
 	 * \param value : 가중치 값
 	 */
 	void SetNodeValue(int index, double value);
@@ -70,10 +71,11 @@ public:
 	 */
 	bool CheckBias() const;
 	/**
-	 * Layer 활성.
+	 * 활성화된 값 계산.
 	 * 
+	 * \param value : 활성화 전 값
 	 */
-	void Activate();
+	double Activate(double value);
 
 private:
 	vector<double> nodeValues;

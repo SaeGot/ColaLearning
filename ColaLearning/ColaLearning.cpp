@@ -32,7 +32,7 @@ int main()
 	weight_list.insert({ Gate::NOR, Weight(weight_nor) });
 
 	// 게이트별 테스트
-	for (pair<Gate, Weight> iter_weight : weight_list)
+	for (const pair<Gate, Weight> &iter_weight : weight_list)
 	{
 		Weight weight(iter_weight.second);
 		switch (iter_weight.first)
@@ -52,11 +52,10 @@ int main()
 		}
 
 		// 입력별 테스트
-		for (auto iter_input : input_list)
+		for (int index = 0; index < input_list.size(); index++)
 		{			
-			vector<double> input = iter_input;
 			// 각 층 생성
-			Layer layer_input(input, ActivationFunction::Step, true);
+			Layer layer_input(input_list[index], ActivationFunction::Step, true);
 			Layer layer_output(1, ActivationFunction::Step);
 			vector<Layer> layers( {layer_input, layer_output} );
 			// 가중치 생성
@@ -64,7 +63,7 @@ int main()
 			// 신경망 생성
 			NeuralNetwork net(layers, weights);
 
-			printf_s("입력 : %1lf, %1lf → 출력 : %lf\n", input.at(0), input.at(1), net.Predict()[0]);
+			printf_s("입력 : %1lf, %1lf → 출력 : %lf\n", input_list[index].at(0), input_list[index].at(1), net.Predict()[0]);
 		}
 		printf_s("\n");
 	}

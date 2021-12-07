@@ -65,22 +65,18 @@ bool Layer::CheckBias() const
 	return bias;
 }
 
-void Layer::Activate()
+double Layer::Activate(double value)
 {
-	for (int index = 0; index < nodeValues.size(); index++)
+	switch (activationFunction)
 	{
-		switch (activationFunction)
-		{
-		case ActivationFunction::Step:
-			if (nodeValues[index] > 0)
-			{
-				nodeValues[index] = 1;
-			}
-			else
-			{
-				nodeValues[index] = 0;
-			}
-			break;
-		}
+	case ActivationFunction::ReLU:
+		if (value >= 0) { return value; }
+		else { return 0.0; }
+
+	case ActivationFunction::Step:
+		if (value >= 0) { return 1.0; }
+		else { return 0.0; }
 	}
+
+	return value;
 }

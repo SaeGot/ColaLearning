@@ -50,11 +50,4 @@ private:
 	 * \return 다음 노드 j 번째 값
 	 */
 	double Sum(const Layer &layer, const Weight &weight, int j);
-	/**
-	 * 활성.
-	 * 
-	 * \param value : 활성 대상 값
-	 * \return 활성 값 
-	 */
-	double Activate(double value);
 };
