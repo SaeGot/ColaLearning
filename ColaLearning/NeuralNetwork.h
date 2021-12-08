@@ -28,9 +28,10 @@ public:
 	/**
 	 * 예측 값들 계산.
 	 * 
-	 * \return 예측 값들
+	 * \param layer : 입력층
+	 * \return 예측 값
 	 */
-	vector<double> Predict();
+	vector<double> Predict(Layer layer);
 
 private:
 	vector<Layer> layers;

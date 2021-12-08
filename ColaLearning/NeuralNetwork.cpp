@@ -13,9 +13,11 @@ NeuralNetwork::NeuralNetwork(vector<Layer> _layers, vector<Weight> _weights)
 	weights = _weights;
 }
 
-vector<double> NeuralNetwork::Predict()
+vector<double> NeuralNetwork::Predict(Layer layer)
 {
 	vector<double> predict_values;
+
+	layers.at(0) = layer;
 	for (size_t index = 1; index < layers.size(); index++)
 	{
 		layers[index].InitNodeValue();

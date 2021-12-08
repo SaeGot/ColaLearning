@@ -63,7 +63,7 @@ int main()
 			// 신경망 생성
 			NeuralNetwork net(layers, weights);
 
-			printf_s("입력 : %1lf, %1lf → 출력 : %lf\n", input_list[index].at(0), input_list[index].at(1), net.Predict()[0]);
+			printf_s("입력 : %1lf, %1lf → 출력 : %lf\n", input_list[index].at(0), input_list[index].at(1), net.Predict(layer_input)[0]);
 		}
 		printf_s("\n");
 	}
@@ -88,7 +88,7 @@ int main()
 		vector<Weight> weights({ vec_weight, weight_list.at(Gate::AND) });
 		// 신경망 생성
 		NeuralNetwork net(layers, weights);
-		printf_s("입력 : %1lf, %1lf → 출력 : %lf\n", input[0], input[1], net.Predict()[0]);
+		printf_s("입력 : %1lf, %1lf → 출력 : %lf\n", input[0], input[1], net.Predict(layer_input)[0]);
 	}
 	printf_s("\n");	
 	
