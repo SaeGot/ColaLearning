@@ -15,19 +15,7 @@ NeuralNetwork::NeuralNetwork(vector<Layer> _layers, vector<Weight> _weights)
 
 vector<double> NeuralNetwork::Predict(Layer layer)
 {
-	vector<double> predict_values;
-
-	layers.at(0) = layer;
-	for (size_t index = 1; index < layers.size(); index++)
-	{
-		layers[index].InitNodeValue();
-		for (int j = 0; j < layers[index].GetNodeCount(); j++)
-		{
-			double value = Sum(layers[index - 1], weights[index - 1], j);
-			value = layers[index].Activate(value);
-			layers[index].SetNodeValue(j, value);
-		}
-	}
+	FeedForward(layer);
 
 	return layers[layers.size() - 1].GetNodeValue();
 }
@@ -79,4 +67,21 @@ double NeuralNetwork::Sum(const Layer& layer, const Weight& weight, int j)
 	}
 
 	return output_sum;
+}
+
+void NeuralNetwork::FeedForward(Layer layer)
+{
+	vector<double> predict_values;
+
+	layers.at(0) = layer;
+	for (size_t index = 1; index < layers.size(); index++)
+	{
+		layers[index].InitNodeValue();
+		for (int j = 0; j < layers[index].GetNodeCount(); j++)
+		{
+			double value = Sum(layers[index - 1], weights[index - 1], j);
+			value = layers[index].Activate(value);
+			layers[index].SetNodeValue(j, value);
+		}
+	}
 }

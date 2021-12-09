@@ -51,4 +51,9 @@ private:
 	 * \return 다음 노드 j 번째 값
 	 */
 	double Sum(const Layer &layer, const Weight &weight, int j);
+	/**
+	 * Feed Forward 진행.
+	 * 
+	 */
+	void FeedForward(Layer layer);
 };
