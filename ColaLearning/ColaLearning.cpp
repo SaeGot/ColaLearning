@@ -25,7 +25,7 @@ int main()
 	vector<vector<double>> weight_and = { {0.7}, {0.7}, {-1.0} };
 	vector<vector<double>> weight_or = { {1.1}, {1.1}, {-1.0} };
 	vector<vector<double>> weight_nand = { {-0.5}, {-0.5}, {0.7} };
-	vector<vector<double>> weight_nor = { {-1.1}, {-1.1}, {1.1} };
+	vector<vector<double>> weight_nor = { {-1.0}, {-1.0}, {0.5} };
 	weight_list.insert({ Gate::AND, Weight(weight_and) });
 	weight_list.insert({ Gate::OR, Weight(weight_or) });
 	weight_list.insert({ Gate::NAND, Weight(weight_nand) });

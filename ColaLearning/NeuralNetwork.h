@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include <vector>
-
 #include "Weight.h"
 #include "Layer.h"
 
