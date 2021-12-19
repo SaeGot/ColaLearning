@@ -21,7 +21,7 @@ public:
 	 * \param activation_Function : 활성 함수
 	 * \param _bias : 편향
 	 */
-	Layer(vector<double> node_Values, ActivationFunction activation_Function = ActivationFunction::Linear, bool _bias = false);
+	Layer(vector<double> node_Values, const ActivationFunction &activation_Function = ActivationFunction::Linear, bool _bias = false);
 	/**
 	 * 노드 개수로 Layer 생성.
 	 * 
@@ -29,8 +29,8 @@ public:
 	 * \param activation_Function : 활성 함수
 	 * \param _bias : 편향
 	 */
-	Layer(int count, ActivationFunction activation_Function = ActivationFunction::Linear, bool _bias = false);
-	Layer(const Layer& layer);
+	Layer(int count, const ActivationFunction &activation_Function = ActivationFunction::Linear, bool _bias = false);
+	Layer(const Layer &layer);
 	~Layer();
 
 	/**

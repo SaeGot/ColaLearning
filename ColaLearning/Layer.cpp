@@ -1,14 +1,14 @@
 ﻿#include "Layer.h"
 
 
-Layer::Layer(vector<double> node_Values, ActivationFunction activation_Function, bool _bias)
+Layer::Layer(vector<double> node_Values, const ActivationFunction &activation_Function, bool _bias)
 {
 	nodeValues = node_Values;
 	activationFunction = activation_Function;
 	bias = _bias;
 }
 
-Layer::Layer(int count, ActivationFunction activation_Function, bool _bias)
+Layer::Layer(int count, const ActivationFunction &activation_Function, bool _bias)
 {
 	nodeValues.resize(count);
 	activationFunction = activation_Function;

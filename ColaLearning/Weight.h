@@ -20,7 +20,7 @@ public:
 	 * \param next_node_count : 다음 층 노드 개수
 	 */
 	Weight(int prev_node_count, int next_node_count);
-	Weight(const Weight& weight);
+	Weight(const Weight &weight);
 	~Weight();
 
 	/**
