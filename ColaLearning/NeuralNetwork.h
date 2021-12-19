@@ -55,4 +55,8 @@ private:
 	 * 
 	 */
 	void FeedForward(Layer layer);
+
+	void Learn(vector<Layer> input_Layers);
+
+	void BackPropagation();
 };

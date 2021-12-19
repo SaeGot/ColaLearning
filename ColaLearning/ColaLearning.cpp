@@ -11,9 +11,8 @@ enum class Gate
 	NOR
 };
 
-int main()
-{
-	// 입력
+void GateTest()
+{	// 입력
 	vector<vector<double>> input_list;
 	input_list.push_back({ 0, 0 });
 	input_list.push_back({ 0, 1 });
@@ -32,7 +31,7 @@ int main()
 	weight_list.insert({ Gate::NOR, Weight(weight_nor) });
 
 	// 게이트별 테스트
-	for (const pair<Gate, Weight> &iter_weight : weight_list)
+	for (const pair<Gate, Weight>& iter_weight : weight_list)
 	{
 		Weight weight(iter_weight.second);
 		switch (iter_weight.first)
@@ -53,11 +52,11 @@ int main()
 
 		// 입력별 테스트
 		for (int index = 0; index < input_list.size(); index++)
-		{			
+		{
 			// 각 층 생성
 			Layer layer_input(input_list[index], ActivationFunction::Step, true);
 			Layer layer_output(1, ActivationFunction::Step);
-			vector<Layer> layers( {layer_input, layer_output} );
+			vector<Layer> layers({ layer_input, layer_output });
 			// 가중치 생성
 			vector<Weight> weights({ weight });
 			// 신경망 생성
@@ -67,7 +66,7 @@ int main()
 		}
 		printf_s("\n");
 	}
-	
+
 	// XOR 게이트
 	printf_s("[XOR 게이트] \n");
 	vector<vector<double>>::iterator iter_input;
@@ -90,6 +89,10 @@ int main()
 		NeuralNetwork net(layers, weights);
 		printf_s("입력 : %1lf, %1lf → 출력 : %lf\n", input[0], input[1], net.Predict(layer_input)[0]);
 	}
-	printf_s("\n");	
-	
+	printf_s("\n");
+}
+
+int main()
+{
+	GateTest();
 }

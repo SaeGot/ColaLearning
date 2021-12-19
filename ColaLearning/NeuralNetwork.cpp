@@ -85,3 +85,17 @@ void NeuralNetwork::FeedForward(Layer layer)
 		}
 	}
 }
+
+void NeuralNetwork::Learn(vector<Layer> input_Layers)
+{
+	for (const Layer& layer : input_Layers)
+	{
+		FeedForward(layer);
+		BackPropagation();
+	}
+}
+
+void NeuralNetwork::BackPropagation()
+{
+	// ToDo
+}
