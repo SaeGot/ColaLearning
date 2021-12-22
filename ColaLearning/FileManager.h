@@ -13,6 +13,7 @@ public:
 	~FileManager();
 
 private:
-	vector<vector<double>> data;
+	vector<vector<string>> data;
+	vector<string> columnName;
 };
 
