@@ -20,6 +20,15 @@ vector<double> NeuralNetwork::Predict(Layer layer)
 	return layers[layers.size() - 1].GetNodeValue();
 }
 
+void NeuralNetwork::Learn(vector<Layer> input_Layers, vector<Layer> output_Layer)
+{
+	for (const Layer& layer : input_Layers)
+	{
+		FeedForward(layer);
+		BackPropagation();
+	}
+}
+
 void NeuralNetwork::InitWeights()
 {
 	int prev_node_count = 0;
@@ -83,15 +92,6 @@ void NeuralNetwork::FeedForward(Layer layer)
 			value = layers[index].Activate(value);
 			layers[index].SetNodeValue(j, value);
 		}
-	}
-}
-
-void NeuralNetwork::Learn(vector<Layer> input_Layers)
-{
-	for (const Layer& layer : input_Layers)
-	{
-		FeedForward(layer);
-		BackPropagation();
 	}
 }
 

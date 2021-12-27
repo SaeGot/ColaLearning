@@ -32,6 +32,8 @@ public:
 	 */
 	vector<double> Predict(Layer layer);
 
+	void Learn(vector<Layer> input_Layers, vector<Layer> output_Layer);
+
 private:
 	vector<Layer> layers;
 	vector<Weight> weights;
@@ -55,8 +57,6 @@ private:
 	 * 
 	 */
 	void FeedForward(Layer layer);
-
-	void Learn(vector<Layer> input_Layers);
 
 	void BackPropagation();
 };
