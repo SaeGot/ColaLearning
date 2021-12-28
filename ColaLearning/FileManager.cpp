@@ -28,3 +28,9 @@ FileManager::FileManager(string file_Name)
 	// 첫 행(헤더) 제거
 	data.erase(data.begin());
 }
+
+FileManager::~FileManager()
+{
+	columnName.clear();
+	data.clear();
+}
