@@ -22,6 +22,13 @@ public:
 	 * \param data_Type : 데이터 타입
 	 */
 	FileManager(string file_Name, Type data_Type = Type::Real);
+	/**
+	 * 각각의 칼럼에 타입을 설정하여 데이터 생성.
+	 * 
+	 * \param file_Name
+	 * \param data_Types
+	 */
+	FileManager(string file_Name, vector<Type> data_Types);
 	~FileManager();
 
 private:
@@ -41,6 +48,12 @@ private:
 	 * \param data_Type : 데이터 타입
 	 */
 	void SetDataType(Type data_Type);
+	/**
+	 * 각 칼럼의 타입을 순서대로 설정.
+	 * 
+	 * \param data_Types
+	 */
+	void SetDataType(vector<Type> data_Types);
 	/**
 	 * 데이터 설정.
 	 * 

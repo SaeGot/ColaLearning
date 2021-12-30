@@ -19,6 +19,11 @@ FileManager::FileManager(string file_Name, Type data_Type)
 	}
 }
 
+FileManager::FileManager(string file_Name, vector<Type> data_Types)
+{
+	// ToDo
+}
+
 FileManager::~FileManager()
 {
 	columnName.clear();
@@ -45,6 +50,11 @@ void FileManager::SetDataType(Type data_Type)
 	}
 }
 
+void FileManager::SetDataType(vector<Type> data_Types)
+{
+	// ToDo
+}
+
 void FileManager::SetData(string line)
 {
 	int col = 0;
@@ -58,5 +68,3 @@ void FileManager::SetData(string line)
 	}
 	data.push_back(line_data);
 }
-
-
