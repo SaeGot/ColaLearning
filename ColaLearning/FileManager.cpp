@@ -19,9 +19,22 @@ FileManager::FileManager(string file_Name, Type data_Type)
 	}
 }
 
-FileManager::FileManager(string file_Name, vector<Type> data_Types)
+FileManager::FileManager(string file_Name, vector<Type> data_TypeList)
 {
-	// ToDo
+	fstream file;
+	file.open(file_Name);
+	string line;
+
+	getline(file, line);
+	// 컬럼명 설정
+	SetColumnName(line);
+	// 데이터 타입 설정
+	SetDataType(data_TypeList);
+	// 데이터 설정
+	while (getline(file, line))
+	{
+		SetData(line);
+	}
 }
 
 FileManager::~FileManager()
@@ -50,9 +63,19 @@ void FileManager::SetDataType(Type data_Type)
 	}
 }
 
-void FileManager::SetDataType(vector<Type> data_Types)
+void FileManager::SetDataType(vector<Type> data_TypeList)
 {
-	// ToDo
+	if (columnName.size() == data_TypeList.size())
+	{
+		for (const Type &data_Type : data_TypeList)
+		{
+			dataType.push_back(data_Type);
+		}
+	}
+	else
+	{
+		printf("컬럼의 수와 형태의 수가 다릅니다.");
+	}
 }
 
 void FileManager::SetData(string line)

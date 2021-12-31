@@ -26,9 +26,9 @@ public:
 	 * 각각의 칼럼에 타입을 설정하여 데이터 생성.
 	 * 
 	 * \param file_Name
-	 * \param data_Types
+	 * \param data_TypeList
 	 */
-	FileManager(string file_Name, vector<Type> data_Types);
+	FileManager(string file_Name, vector<Type> data_TypeList);
 	~FileManager();
 
 private:
@@ -51,9 +51,9 @@ private:
 	/**
 	 * 각 칼럼의 타입을 순서대로 설정.
 	 * 
-	 * \param data_Types
+	 * \param data_TypeList : 데이터 타입
 	 */
-	void SetDataType(vector<Type> data_Types);
+	void SetDataType(vector<Type> data_TypeList);
 	/**
 	 * 데이터 설정.
 	 * 
