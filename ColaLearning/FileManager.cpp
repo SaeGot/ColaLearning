@@ -19,7 +19,7 @@ FileManager::FileManager(string file_Name, Type data_Type)
 	}
 }
 
-FileManager::FileManager(string file_Name, vector<Type> data_TypeList)
+FileManager::FileManager(string file_Name, vector<Type> data_Types)
 {
 	fstream file;
 	file.open(file_Name);
@@ -29,7 +29,7 @@ FileManager::FileManager(string file_Name, vector<Type> data_TypeList)
 	// 컬럼명 설정
 	SetColumnName(line);
 	// 데이터 타입 설정
-	SetDataType(data_TypeList);
+	SetDataType(data_Types);
 	// 데이터 설정
 	while (getline(file, line))
 	{
@@ -63,11 +63,11 @@ void FileManager::SetDataType(Type data_Type)
 	}
 }
 
-void FileManager::SetDataType(vector<Type> data_TypeList)
+void FileManager::SetDataType(vector<Type> data_Types)
 {
-	if (columnName.size() == data_TypeList.size())
+	if (columnName.size() == data_Types.size())
 	{
-		for (const Type &data_Type : data_TypeList)
+		for (const Type &data_Type : data_Types)
 		{
 			dataType.push_back(data_Type);
 		}

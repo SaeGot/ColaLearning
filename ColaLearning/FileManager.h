@@ -28,7 +28,7 @@ public:
 	 * \param file_Name
 	 * \param data_TypeList
 	 */
-	FileManager(string file_Name, vector<Type> data_TypeList);
+	FileManager(string file_Name, vector<Type> data_Types);
 	~FileManager();
 
 private:
@@ -53,7 +53,7 @@ private:
 	 * 
 	 * \param data_TypeList : 데이터 타입
 	 */
-	void SetDataType(vector<Type> data_TypeList);
+	void SetDataType(vector<Type> data_Types);
 	/**
 	 * 데이터 설정.
 	 * 
