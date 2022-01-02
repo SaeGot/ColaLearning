@@ -35,31 +35,11 @@ void NeuralNetwork::InitWeights()
 	int next_node_count;
 	for (const Layer &layer : layers)
 	{
-		if (prev_node_count == 0)
-		{
-			if (layer.CheckBias())
-			{
-				prev_node_count = layer.GetNodeCount() + 1;
-			}
-			else
-			{
-				prev_node_count = layer.GetNodeCount();
-			}
-			continue;
-		}
-
 		next_node_count = layer.GetNodeCount();
 		Weight weight(prev_node_count, next_node_count);
 		weights.push_back(weight);
-
-		if (layer.CheckBias())
-		{
-			prev_node_count = layer.GetNodeCount() + 1;
-		}
-		else
-		{
-			prev_node_count = layer.GetNodeCount();
-		}
+		// 이전 층 노드 수
+		prev_node_count = layer.GetNodeCount() + 1;
 	}
 }
 
@@ -82,7 +62,7 @@ void NeuralNetwork::FeedForward(Layer layer)
 {
 	vector<double> predict_values;
 
-	layers.at(0) = layer;
+	layers[0] = layer;
 	for (size_t index = 1; index < layers.size(); index++)
 	{
 		layers[index].InitNodeValue();
@@ -98,4 +78,5 @@ void NeuralNetwork::FeedForward(Layer layer)
 void NeuralNetwork::BackPropagation()
 {
 	// ToDo
+	// (y - t) * next(da * w) * da * x
 }
