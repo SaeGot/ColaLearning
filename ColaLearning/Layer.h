@@ -79,6 +79,7 @@ public:
 
 private:
 	vector<double> nodeValues;
-	bool bias;
+	vector<double> backNodeValues;
 	ActivationFunction activationFunction;
+	bool bias;
 };

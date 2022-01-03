@@ -63,12 +63,13 @@ void NeuralNetwork::FeedForward(Layer layer)
 	vector<double> predict_values;
 
 	layers[0] = layer;
-	for (size_t index = 1; index < layers.size(); index++)
+	for (int index = 1; index < layers.size(); index++)
 	{
 		layers[index].InitNodeValue();
 		for (int j = 0; j < layers[index].GetNodeCount(); j++)
 		{
-			double value = Sum(layers[index - 1], weights[index - 1], j);
+			int prev_index = index - 1;
+			double value = Sum(layers[prev_index], weights[prev_index], j);
 			value = layers[index].Activate(value);
 			layers[index].SetNodeValue(j, value);
 		}
@@ -79,4 +80,19 @@ void NeuralNetwork::BackPropagation()
 {
 	// ToDo
 	// (y - t) * next(da * w) * da * x
+	for (int index = layers.size() - 1; index >= 0; index--)
+	{
+		for (int j = 0; j < layers[index].GetNodeCount(); j++)
+		{
+			int prev_index = index - 1;
+			for (int i = 0; i < layers[prev_index].GetNodeCount(); i++)
+			{
+				// ToDo
+			}
+		}
+		if (layers[index].CheckBias())
+		{
+			// ToDo
+		}
+	}
 }

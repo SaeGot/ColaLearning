@@ -4,6 +4,7 @@
 Layer::Layer(vector<double> node_Values, const ActivationFunction &activation_Function, bool _bias)
 {
 	nodeValues = node_Values;
+	backNodeValues.resize(nodeValues.size());
 	activationFunction = activation_Function;
 	bias = _bias;
 }
@@ -11,6 +12,7 @@ Layer::Layer(vector<double> node_Values, const ActivationFunction &activation_Fu
 Layer::Layer(int count, const ActivationFunction &activation_Function, bool _bias)
 {
 	nodeValues.resize(count);
+	backNodeValues.resize(count);
 	activationFunction = activation_Function;
 	bias = _bias;
 }
@@ -18,6 +20,7 @@ Layer::Layer(int count, const ActivationFunction &activation_Function, bool _bia
 Layer::Layer(const Layer& layer)
 {
 	nodeValues = layer.nodeValues;
+	backNodeValues = layer.backNodeValues;
 	activationFunction = layer.activationFunction;
 	bias = layer.bias;
 }
