@@ -13,11 +13,27 @@ NeuralNetwork::NeuralNetwork(vector<Layer> _layers, vector<Weight> _weights)
 	weights = _weights;
 }
 
-vector<double> NeuralNetwork::Predict(Layer layer)
+vector<double> NeuralNetwork::Predict(Layer input_Layer)
 {
-	FeedForward(layer);
+	FeedForward(input_Layer);
 
 	return layers[layers.size() - 1].GetNodeValue();
+}
+
+vector<double> NeuralNetwork::GetError(Layer input_Layer, vector<double> target_Values)
+{
+	vector<double> errors;
+	errors.resize(layers[layers.size() - 1].GetNodeCount());
+	if (errors.size() == target_Values.size())
+	{
+		FeedForward(input_Layer);
+		for (int index = 0; index < input_Layer.GetNodeCount(); index++)
+		{
+			layers[layers.size() - 1].GetNodeValue(index) - target_Values[index];
+		}
+	}
+
+	return errors;
 }
 
 void NeuralNetwork::Learn(vector<Layer> input_Layers, vector<Layer> output_Layer)

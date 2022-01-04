@@ -27,10 +27,18 @@ public:
 	/**
 	 * 예측 값들 계산.
 	 * 
-	 * \param layer : 입력층
+	 * \param input_Layer : 입력층
 	 * \return 예측 값
 	 */
-	vector<double> Predict(Layer layer);
+	vector<double> Predict(Layer input_Layer);
+	/**
+	 * 오차 가져오기. (예측값 - 목표값)
+	 * 
+	 * \param input_Layer
+	 * \param target_Values
+	 * \return 
+	 */
+	vector<double> GetError(Layer input_Layer, vector<double> target_Values);
 
 	void Learn(vector<Layer> input_Layers, vector<Layer> output_Layer);
 
