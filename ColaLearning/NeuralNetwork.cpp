@@ -20,28 +20,40 @@ vector<double> NeuralNetwork::Predict(Layer input_Layer)
 	return layers[layers.size() - 1].GetNodeValue();
 }
 
-vector<double> NeuralNetwork::GetError(Layer input_Layer, vector<double> target_Values)
+vector<double> NeuralNetwork::GetError(Layer input_Layer, Layer target_Layer)
 {
 	vector<double> errors;
 	errors.resize(layers[layers.size() - 1].GetNodeCount());
-	if (errors.size() == target_Values.size())
+	if (errors.size() == target_Layer.GetNodeCount())
 	{
 		FeedForward(input_Layer);
-		for (int index = 0; index < input_Layer.GetNodeCount(); index++)
+		for (int index = 0; index < target_Layer.GetNodeCount(); index++)
 		{
-			layers[layers.size() - 1].GetNodeValue(index) - target_Values[index];
+			layers[layers.size() - 1].GetNodeValue(index) - target_Layer.GetNodeValue(index);
 		}
+	}
+	else
+	{
+		// Error
 	}
 
 	return errors;
 }
 
-void NeuralNetwork::Learn(vector<Layer> input_Layers, vector<Layer> output_Layer)
+void NeuralNetwork::Learn(vector<Layer> input_Layers, vector<Layer> target_Layers)
 {
-	for (const Layer& layer : input_Layers)
+	if (input_Layers.size() == target_Layers.size())
 	{
-		FeedForward(layer);
-		BackPropagation();
+		for (int index = 0; index < input_Layers.size(); index++)
+		{
+			FeedForward(input_Layers[index]);
+			vector<double> error = GetError(target_Layers[index]);
+			BackPropagation(target_Layers[index], error);
+		}
+	}
+	else
+	{
+		// Error
 	}
 }
 
@@ -92,7 +104,26 @@ void NeuralNetwork::FeedForward(Layer layer)
 	}
 }
 
-void NeuralNetwork::BackPropagation()
+vector<double> NeuralNetwork::GetError(Layer target_Layer)
+{
+	vector<double> errors;
+	errors.resize(layers[layers.size() - 1].GetNodeCount());
+	if (errors.size() == target_Layer.GetNodeCount())
+	{
+		for (int index = 0; index < target_Layer.GetNodeCount(); index++)
+		{
+			layers[layers.size() - 1].GetNodeValue(index) - target_Layer.GetNodeValue(index);
+		}
+	}
+	else
+	{
+		// Error
+	}
+
+	return errors;
+}
+
+void NeuralNetwork::BackPropagation(Layer target_Layer, vector<double> error)
 {
 	// ToDo
 	// (y - t) * next(da * w) * da * x
@@ -102,13 +133,15 @@ void NeuralNetwork::BackPropagation()
 		{
 			int prev_index = index - 1;
 			for (int i = 0; i < layers[prev_index].GetNodeCount(); i++)
-			{
+			{				
 				// ToDo
+				// update weight
 			}
 		}
 		if (layers[index].CheckBias())
 		{
 			// ToDo
+			// update weight
 		}
 	}
 }

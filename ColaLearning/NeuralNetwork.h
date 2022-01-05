@@ -32,15 +32,15 @@ public:
 	 */
 	vector<double> Predict(Layer input_Layer);
 	/**
-	 * 오차 가져오기. (예측값 - 목표값)
+	 * 오차 가져오기.
 	 * 
-	 * \param input_Layer
-	 * \param target_Values
-	 * \return 
+	 * \param input_Layer : 입력 층
+	 * \param target_Layer : 목표 층
+	 * \return 오차 (예측값 - 목표값)
 	 */
-	vector<double> GetError(Layer input_Layer, vector<double> target_Values);
+	vector<double> GetError(Layer input_Layer, Layer target_Layer);
 
-	void Learn(vector<Layer> input_Layers, vector<Layer> output_Layer);
+	void Learn(vector<Layer> input_Layers, vector<Layer> target_Layers);
 
 private:
 	vector<Layer> layers;
@@ -65,6 +65,13 @@ private:
 	 * 
 	 */
 	void FeedForward(Layer layer);
+	/**
+	 * 오차 가져오기.
+	 * 
+	 * \param target_Layer : 목표 층
+	 * \return 오차 (예측값 - 목표값)
+	 */
+	vector<double> GetError(Layer target_Layer);
 
-	void BackPropagation();
+	void BackPropagation(Layer target_Layer, vector<double> error);
 };
