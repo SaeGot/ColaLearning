@@ -31,6 +31,14 @@ public:
 	 * \return 
 	 */
 	double GetWeight(int i, int j) const;
+	/**
+	 * 가중치 업데이트.
+	 *
+	 * \param i : 이전 층 노드 인덱스
+	 * \param j : 다음 층 노드 인덱스
+	 * \param value
+	 */
+	void UpdateWeight(int i, int j, double value);
 
 private:
 	vector<vector<double>> weightValues;

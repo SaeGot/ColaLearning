@@ -83,3 +83,28 @@ double Layer::Activate(double value)
 
 	return value;
 }
+
+double Layer::DActivate(double value)
+{
+	switch (activationFunction)
+	{
+	case ActivationFunction::ReLU:
+		if (value >= 0) { return 1.0; }
+		else { return 0.0; }
+
+	case ActivationFunction::Step:
+		return 0.0;
+	}
+
+	return value;
+}
+
+void Layer::SetBackNodeValue(int index, double value)
+{
+	backNodeValues[index] = value;
+}
+
+double Layer::GetBackNodeValue(int index)
+{
+	return backNodeValues[index];
+}

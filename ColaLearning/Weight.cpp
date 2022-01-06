@@ -34,3 +34,8 @@ double Weight::GetWeight(int i, int j) const
 	}
 	return weightValues[i][j];
 }
+
+void Weight::UpdateWeight(int i, int j, double value)
+{
+	weightValues[i][j] -= value;
+}
