@@ -97,7 +97,7 @@ public:
 	 * \param index : 백노드 인덱스
 	 * \return 백노드 값
 	 */
-	double GetBackNodeValue(int index);
+	double GetBackNodeValue(int index) const;
 
 private:
 	vector<double> nodeValues;

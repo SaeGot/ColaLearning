@@ -75,10 +75,10 @@ private:
 	 */
 	vector<double> FeedForward(const Layer& input_Layer, const Layer& target_Layer);
 
-	double BackwardSum(const Layer& layer, const Weight& weight, int i);
+	double BackwardSum(const Layer& next_Layer, const Weight& weight, int i);
 	void BackPropagation(const Layer &target_Layer, vector<double> errors);
 	void UpdateWeight(Weight &weight, const Layer& prev_Layer, int i,
-		Layer &next_Layer, int j, double error);
+		Layer &next_Layer, int j);
 	void UpdateBiasWeight(Weight& weight, int i,
-		Layer& next_Layer, int j, double error);
+		Layer& next_Layer, int j);
 };

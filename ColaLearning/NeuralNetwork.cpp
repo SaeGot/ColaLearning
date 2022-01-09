@@ -136,60 +136,73 @@ vector<double> NeuralNetwork::FeedForward(const Layer& input_Layer, const Layer&
 	return errors;
 }
 
+double NeuralNetwork::BackwardSum(const Layer& next_Layer, const Weight& weight, int i)
+{
+	double output_sum = 0.0;
+	for (int j = 0; j < next_Layer.GetNodeCount(); j++)
+	{
+		output_sum += next_Layer.GetBackNodeValue(j) * weight.GetWeight(i, j);
+	}
+
+	return output_sum;
+}
+
 void NeuralNetwork::BackPropagation(const Layer &target_Layer, vector<double> errors)
 {
-	// 출력층과 출력 이전 층의 가중치 업데이트
+	// 출력층과 출력 이전 층 사이의 가중치 업데이트
 	for (int j = 0; j < layers[layers.size() - 1].GetNodeCount(); j++)
 	{
 		double d_activate = layers[layers.size() - 1].DActivate(layers[layers.size() - 1].GetNodeValue(j));
-		layers[layers.size() - 1].SetBackNodeValue(j, d_activate);
+		layers[layers.size() - 1].SetBackNodeValue(j, errors[j] * d_activate);
 		for (int i = 0; i < layers[layers.size() - 2].GetNodeCount(); i++)
 		{
 			UpdateWeight(weights[layers.size() - 1], layers[layers.size() - 2], i,
-				layers[layers.size() - 1], j, errors[j]);
+				layers[layers.size() - 1], j);
 		}
 		if (layers[layers.size() - 2].CheckBias())
 		{
 			UpdateBiasWeight(weights[layers.size() - 1], layers[layers.size() - 2].GetNodeCount(),
-				layers[layers.size() - 1], j, errors[j]);
+				layers[layers.size() - 1], j);
 		}
 	}
-
+	// 그 외 가중치 업데이트
 	for (int index = layers.size() - 2; index > 0; index--)
 	{
+		int next_index = index + 1;
+		int prev_index = index - 1;
 		for (int j = 0; j < layers[index].GetNodeCount(); j++)
-		{
+		{			
+			double sum = BackwardSum(layers[next_index], weights[index], j);
 			double d_activate = layers[index].DActivate(layers[index].GetNodeValue(j));
-			layers[index].SetBackNodeValue(j, d_activate);
-			int prev_index = index - 1;
+			layers[index].SetBackNodeValue(j, sum * d_activate);
+			
 			for (int i = 0; i < layers[prev_index].GetNodeCount(); i++)
 			{
-				// ToDo
-				// update weight
+				UpdateWeight(weights[prev_index], layers[prev_index], i,
+					layers[index], j);
 			}
-		}
-		if (layers[index].CheckBias())
-		{
-			// ToDo
-			// update weight
+			if (layers[index].CheckBias())
+			{
+				UpdateBiasWeight(weights[prev_index], layers[prev_index].GetNodeCount(),
+					layers[index], j);
+			}
 		}
 	}
 }
 
 void NeuralNetwork::UpdateWeight(Weight &weight, const Layer &prev_Layer, int i,
-	Layer &next_Layer, int j, double error)
+	Layer &next_Layer, int j)
 {
-	// (y - t) * backnode * x
+	// backnode * x
 	double backnode_value = next_Layer.GetBackNodeValue(j);
-	double update_value = error * backnode_value * prev_Layer.GetNodeValue(i);
+	double update_value = backnode_value * prev_Layer.GetNodeValue(i);
 	weight.UpdateWeight(i, j, update_value);
 }
 
 void NeuralNetwork::UpdateBiasWeight(Weight& weight, int i,
-	Layer& next_Layer, int j, double error)
+	Layer& next_Layer, int j)
 {
-	// (y - t) * backnode
+	// backnode * 1
 	double backnode_value = next_Layer.GetBackNodeValue(j);
-	double update_value = error * backnode_value;
-	weight.UpdateWeight(i, j, update_value);
+	weight.UpdateWeight(i, j, backnode_value);
 }

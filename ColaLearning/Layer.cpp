@@ -104,7 +104,7 @@ void Layer::SetBackNodeValue(int index, double value)
 	backNodeValues[index] = value;
 }
 
-double Layer::GetBackNodeValue(int index)
+double Layer::GetBackNodeValue(int index) const
 {
 	return backNodeValues[index];
 }
