@@ -147,7 +147,24 @@ double NeuralNetwork::BackwardSum(const Layer& next_Layer, const Weight& weight,
 	return output_sum;
 }
 
-void NeuralNetwork::BackPropagation(const Layer &target_Layer, vector<double> errors)
+void NeuralNetwork::UpdateWeight(Weight& weight, const Layer& prev_Layer, int i,
+	Layer& next_Layer, int j)
+{
+	// backnode * x
+	double backnode_value = next_Layer.GetBackNodeValue(j);
+	double update_value = backnode_value * prev_Layer.GetNodeValue(i);
+	weight.UpdateWeight(i, j, update_value);
+}
+
+void NeuralNetwork::UpdateBiasWeight(Weight& weight, int i,
+	Layer& next_Layer, int j)
+{
+	// backnode * 1
+	double backnode_value = next_Layer.GetBackNodeValue(j);
+	weight.UpdateWeight(i, j, backnode_value);
+}
+
+void NeuralNetwork::BackPropagation(vector<double> errors)
 {
 	// 출력층과 출력 이전 층 사이의 가중치 업데이트
 	for (int j = 0; j < layers[layers.size() - 1].GetNodeCount(); j++)
@@ -188,21 +205,4 @@ void NeuralNetwork::BackPropagation(const Layer &target_Layer, vector<double> er
 			}
 		}
 	}
-}
-
-void NeuralNetwork::UpdateWeight(Weight &weight, const Layer &prev_Layer, int i,
-	Layer &next_Layer, int j)
-{
-	// backnode * x
-	double backnode_value = next_Layer.GetBackNodeValue(j);
-	double update_value = backnode_value * prev_Layer.GetNodeValue(i);
-	weight.UpdateWeight(i, j, update_value);
-}
-
-void NeuralNetwork::UpdateBiasWeight(Weight& weight, int i,
-	Layer& next_Layer, int j)
-{
-	// backnode * 1
-	double backnode_value = next_Layer.GetBackNodeValue(j);
-	weight.UpdateWeight(i, j, backnode_value);
 }

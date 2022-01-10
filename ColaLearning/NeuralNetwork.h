@@ -74,11 +74,41 @@ private:
 	 * \return 오차 (예측값 - 목표값)
 	 */
 	vector<double> FeedForward(const Layer& input_Layer, const Layer& target_Layer);
-
+	/**
+	 * 백노드 합.
+	 * 
+	 * \param next_Layer : 다음 층
+	 * \param weight : 다음 층과 이전 층 사이의 가중치
+	 * \param i : 합산 대상 노드 인덱스
+	 * \return 
+	 */
 	double BackwardSum(const Layer& next_Layer, const Weight& weight, int i);
-	void BackPropagation(const Layer &target_Layer, vector<double> errors);
-	void UpdateWeight(Weight &weight, const Layer& prev_Layer, int i,
-		Layer &next_Layer, int j);
+	/**
+	 * 가중치 업데이트.
+	 * 
+	 * \param weight : 업데이트 대상 가중치
+	 * \param prev_Layer : 이전 층
+	 * \param i : 이전 층 노드 인덱스
+	 * \param next_Layer : 다음 층
+	 * \param j : 다음 층 노드 인덱스
+	 */
+	void UpdateWeight(Weight& weight, const Layer& prev_Layer, int i,
+		Layer& next_Layer, int j);
+	/**
+	 * 편향 가중치 업데이트.
+	 * 
+	 * \param weight : 업데이트 대상 가중치
+	 * \param i : 이전 층 노드 인덱스
+	 * \param next_Layer : 다음 층
+	 * \param j : 다음 층 노드 인덱스
+	 */
 	void UpdateBiasWeight(Weight& weight, int i,
 		Layer& next_Layer, int j);
+	/**
+	 * 역전파.
+	 * 
+	 * \param target_Layer : 목표 층 (정답)
+	 * \param errors : 오차
+	 */
+	void BackPropagation(vector<double> errors);
 };

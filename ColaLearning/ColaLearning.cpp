@@ -92,6 +92,11 @@ void GateTest()
 	printf_s("\n");
 }
 
+void LearnTest()
+{
+
+}
+
 int main()
 {
 	GateTest();
