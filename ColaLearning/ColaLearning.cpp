@@ -94,10 +94,12 @@ void GateTest()
 
 void LearnTest()
 {
+	FileManager file = FileManager("1.csv");
 
 }
 
 int main()
 {
-	GateTest();
+	LearnTest();
+	//GateTest();
 }

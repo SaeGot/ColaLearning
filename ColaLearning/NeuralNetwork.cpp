@@ -29,7 +29,7 @@ vector<double> NeuralNetwork::GetError(Layer input_Layer, Layer target_Layer)
 		FeedForward(input_Layer);
 		for (int index = 0; index < target_Layer.GetNodeCount(); index++)
 		{
-			layers[layers.size() - 1].GetNodeValue(index) - target_Layer.GetNodeValue(index);
+			errors.push_back(layers[layers.size() - 1].GetNodeValue(index) - target_Layer.GetNodeValue(index));
 		}
 	}
 	else
@@ -47,7 +47,7 @@ void NeuralNetwork::Learn(vector<Layer> input_Layers, vector<Layer> target_Layer
 		for (int index = 0; index < input_Layers.size(); index++)
 		{
 			vector<double> errors = FeedForward(input_Layers[index], target_Layers[index]);
-			BackPropagation(target_Layers[index], errors);
+			BackPropagation(errors);
 		}
 	}
 	else
@@ -122,7 +122,7 @@ vector<double> NeuralNetwork::FeedForward(const Layer& input_Layer, const Layer&
 	}
 	// 출력 층
 	vector<double> errors;
-	int index = layers.size() - 1;
+	int index = static_cast<int>(layers.size() - 1);
 	for (int j = 0; j < layers[index].GetNodeCount(); j++)
 	{
 		int prev_index = index - 1;
@@ -183,7 +183,7 @@ void NeuralNetwork::BackPropagation(vector<double> errors)
 		}
 	}
 	// 그 외 가중치 업데이트
-	for (int index = layers.size() - 2; index > 0; index--)
+	for (int index = static_cast<int>(layers.size() - 2); index > 0; index--)
 	{
 		int next_index = index + 1;
 		int prev_index = index - 1;

@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <map>
 
 
 using namespace std;
@@ -30,35 +31,52 @@ public:
 	 */
 	FileManager(string file_Name, vector<Type> data_Types);
 	~FileManager();
+	/**
+	 * 해당 칼럼 데이터 가져오기.
+	 * 
+	 * \param coloumn_Name : 칼럼명
+	 * \return 데이터 
+	 */
+	vector<double> GetData(string coloumn_Name);
 
 private:
-	vector<string> columnName;
-	vector<Type> dataType;
-	vector<vector<double>> data;
+	struct Data
+	{
+		string columnName;
+		Type type;
+		// <행, 값>
+		map<int, double> value;
+	};
+	// <열, 값>
+	map<int, Data> data;
 
 	/**
-	 * 컬럼명 설정.
+	 * 칼럼명 설정.
 	 * 
 	 * \param line : 첫 행
+	 * \return 칼럼명
 	 */
-	void SetColumnName(string first_line);
+	vector<string> SetColumnName(string first_line);
 	/**
 	 * 모든 타입을 동일하게 설정.
 	 * 
+	 * \param column_Names : 칼럼명
 	 * \param data_Type : 데이터 타입
 	 */
-	void SetDataType(Type data_Type);
+	vector<Type> SetDataType(vector<string> column_Names, Type data_Type);
 	/**
 	 * 각 칼럼의 타입을 순서대로 설정.
 	 * 
+	 * \param column_Names : 칼럼명
 	 * \param data_TypeList : 데이터 타입
 	 */
-	void SetDataType(vector<Type> data_Types);
+	vector<Type> SetDataType(vector<string> column_Names, vector<Type> data_Types);
 	/**
 	 * 데이터 설정.
 	 * 
-	 * \param line : 행
+	 * \param row : 행 인덱스
+	 * \param line : 행 데이터
 	 */
-	void SetData(string line);
+	map<int, double> SetData(int row, string line);
 };
 

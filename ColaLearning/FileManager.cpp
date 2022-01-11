@@ -1,21 +1,39 @@
 #include "FileManager.h"
+#include <codecvt>
 
 
 FileManager::FileManager(string file_Name, Type data_Type)
 {
 	fstream file;
 	file.open(file_Name);
+	//file.imbue(locale(file.getloc(), new std::codecvt_utf8<wchar_t, 0x10FFFF, consume_header>));
 	string line;
 
-	getline(file, line);
 	// 컬럼명 설정
-	SetColumnName(line);
-	// 데이터 타입 설정
-	SetDataType(data_Type);
+	vector<string> column_name;
+	getline(file, line);
+	column_name = SetColumnName(line);
 	// 데이터 설정
+	vector<map<int, double>> tmp_data;
+	int row = 0;
 	while (getline(file, line))
 	{
-		SetData(line);
+		map<int, double> row_data;
+		row_data = SetData(row, line);
+		tmp_data.push_back(row_data);
+		row++;
+	}
+	// 데이터 타입 설정
+	vector<Type> types;
+	types = SetDataType(column_name, data_Type);
+
+	for (int index = 0; index < column_name.size(); index++)
+	{
+		Data column_data;
+		column_data.columnName = column_name[index];
+		column_data.value = tmp_data[index];
+		column_data.type = types[index];
+		data.insert({ index, column_data });
 	}
 }
 
@@ -23,71 +41,98 @@ FileManager::FileManager(string file_Name, vector<Type> data_Types)
 {
 	fstream file;
 	file.open(file_Name);
+	//file.imbue(locale(file.getloc(), new std::codecvt_utf8<wchar_t, 0x10FFFF, consume_header>));
 	string line;
 
-	getline(file, line);
 	// 컬럼명 설정
-	SetColumnName(line);
-	// 데이터 타입 설정
-	SetDataType(data_Types);
+	vector<string> column_name;
+	getline(file, line);
+	column_name = SetColumnName(line);
 	// 데이터 설정
+	vector<map<int, double>> tmp_data;
+	int row = 0;
 	while (getline(file, line))
 	{
-		SetData(line);
+		map<int, double> row_data;
+		row_data = SetData(row, line);
+		tmp_data.push_back(row_data);
+		row++;
 	}
+	// 데이터 타입 설정
+	vector<Type> types;
+	types = SetDataType(column_name, data_Types);
+
+	for (int index = 0; index < column_name.size(); index++)
+	{
+		Data column_data;
+		column_data.columnName = column_name[index];
+		column_data.value = tmp_data[index];
+		column_data.type = types[index];
+		data.insert({ index, column_data });
+	}
+
 }
 
 FileManager::~FileManager()
 {
-	columnName.clear();
 	data.clear();
 }
 
-void FileManager::SetColumnName(string first_line)
+vector<string> FileManager::SetColumnName(string first_line)
 {
+	vector<string> column_name;
 	int col = 0;
 	stringstream ss_line(first_line);
 	string str_data;
-	while (getline(ss_line, str_data, '\t'))
+	while (getline(ss_line, str_data, ','))
 	{
-		columnName.push_back(str_data);
+		column_name.push_back(str_data);
 		col++;
 	}
+
+	return column_name;
 }
 
-void FileManager::SetDataType(Type data_Type)
+vector<FileManager::Type> FileManager::SetDataType(vector<string> column_Names, Type data_Type)
 {
-	for (int n = 0; n < columnName.size(); n++)
+	vector<Type> types;
+	for (string column_name : column_Names)
 	{
-		dataType.push_back(data_Type);
+		types.push_back(data_Type);
 	}
+
+	return types;
 }
 
-void FileManager::SetDataType(vector<Type> data_Types)
+vector<FileManager::Type> FileManager::SetDataType(vector<string> column_Names, vector<Type> data_Types)
 {
-	if (columnName.size() == data_Types.size())
+	vector<Type> types;
+	if (column_Names.size() == data_Types.size())
 	{
-		for (const Type &data_Type : data_Types)
+		for (Type data_type : data_Types)
 		{
-			dataType.push_back(data_Type);
+			types.push_back(data_type);
 		}
 	}
 	else
 	{
-		printf("컬럼의 수와 형태의 수가 다릅니다.");
+		printf("칼럼의 수와 형태의 수가 다릅니다.");
 	}
+
+	return types;
 }
 
-void FileManager::SetData(string line)
+map<int, double> FileManager::SetData(int row, string line)
 {
+	map<int, double> row_data;
 	int col = 0;
-	vector<double> line_data;
 	stringstream ss_line(line);
 	string str_data;
-	while (getline(ss_line, str_data, '\t'))
+	while (getline(ss_line, str_data, ','))
 	{
-		line_data.push_back(stod(str_data));
+		row_data.insert({ col, stod(str_data) });
 		col++;
 	}
-	data.push_back(line_data);
+
+	return row_data;
 }
