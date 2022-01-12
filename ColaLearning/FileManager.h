@@ -32,12 +32,21 @@ public:
 	FileManager(string file_Name, vector<Type> data_Types);
 	~FileManager();
 	/**
-	 * 해당 칼럼 데이터 가져오기.
+	 * 해당 행렬 데이터 가져오기.
 	 * 
-	 * \param coloumn_Name : 칼럼명
-	 * \return 데이터 
+	 * \param row : 행
+	 * \param column : 열
+	 * \return 데이터
 	 */
-	vector<double> GetData(string coloumn_Name);
+	double GetData(int row, int column);
+	/**
+	 * 해당 행 데이터 가져오기.
+	 * 
+	 * \param row : 행
+	 * \return 행 데이터
+	 */
+	vector<double> GetData(int row);
+
 
 private:
 	struct Data

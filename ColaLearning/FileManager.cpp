@@ -14,13 +14,16 @@ FileManager::FileManager(string file_Name, Type data_Type)
 	getline(file, line);
 	column_name = SetColumnName(line);
 	// 데이터 설정
-	vector<map<int, double>> tmp_data;
+	vector<map<int, double>> tmp_data(column_name.size());
 	int row = 0;
 	while (getline(file, line))
 	{
 		map<int, double> row_data;
 		row_data = SetData(row, line);
-		tmp_data.push_back(row_data);
+		for (int index = 0; index < tmp_data.size(); index++)
+		{
+			tmp_data[index].insert({ row, row_data[index]});
+		}
 		row++;
 	}
 	// 데이터 타입 설정
@@ -49,13 +52,16 @@ FileManager::FileManager(string file_Name, vector<Type> data_Types)
 	getline(file, line);
 	column_name = SetColumnName(line);
 	// 데이터 설정
-	vector<map<int, double>> tmp_data;
+	vector<map<int, double>> tmp_data(column_name.size());
 	int row = 0;
 	while (getline(file, line))
 	{
 		map<int, double> row_data;
 		row_data = SetData(row, line);
-		tmp_data.push_back(row_data);
+		for (int index = 0; index < tmp_data.size(); index++)
+		{
+			tmp_data[index].insert({ row, row_data[index] });
+		}
 		row++;
 	}
 	// 데이터 타입 설정
@@ -76,6 +82,11 @@ FileManager::FileManager(string file_Name, vector<Type> data_Types)
 FileManager::~FileManager()
 {
 	data.clear();
+}
+
+double FileManager::GetData(int row, int column)
+{
+	return data[column].value[row];
 }
 
 vector<string> FileManager::SetColumnName(string first_line)
