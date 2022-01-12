@@ -181,12 +181,12 @@ void NeuralNetwork::BackPropagation(vector<double> errors)
 		layers[layers.size() - 1].SetBackNodeValue(j, errors[j] * d_activate);
 		for (int i = 0; i < layers[layers.size() - 2].GetNodeCount(); i++)
 		{
-			UpdateWeight(weights[layers.size() - 1], layers[layers.size() - 2], i,
+			UpdateWeight(weights[layers.size() - 2], layers[layers.size() - 2], i,
 				layers[layers.size() - 1], j);
 		}
 		if (layers[layers.size() - 2].CheckBias())
 		{
-			UpdateBiasWeight(weights[layers.size() - 1], layers[layers.size() - 2].GetNodeCount(),
+			UpdateBiasWeight(weights[layers.size() - 2], layers[layers.size() - 2].GetNodeCount(),
 				layers[layers.size() - 1], j);
 		}
 	}

@@ -89,6 +89,17 @@ double FileManager::GetData(int row, int column)
 	return data[column].value[row];
 }
 
+vector<double> FileManager::GetData(int row)
+{
+	vector<double> row_data;
+	for (int index = 0; index < data.size(); index++)
+	{
+		row_data.push_back(data[index].value[row]);
+	}
+
+	return row_data;
+}
+
 vector<string> FileManager::SetColumnName(string first_line)
 {
 	vector<string> column_name;

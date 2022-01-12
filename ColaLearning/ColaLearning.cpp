@@ -55,7 +55,7 @@ void GateTest()
 		{
 			// 각 층 생성
 			Layer layer_input(input_list[index], ActivationFunction::Step, true);
-			Layer layer_output(1, ActivationFunction::Step);
+			Layer layer_output(1, ActivationFunction::Step, false);
 			vector<Layer> layers({ layer_input, layer_output });
 			// 가중치 생성
 			vector<Weight> weights({ weight });
@@ -76,7 +76,7 @@ void GateTest()
 		// 각 층 생성
 		Layer layer_input(input, ActivationFunction::Step, true);
 		Layer layer_hidden(2, ActivationFunction::Step, true);
-		Layer layer_output(1, ActivationFunction::Step);
+		Layer layer_output(1, ActivationFunction::Step, false);
 		vector<Layer> layers({ layer_input, layer_hidden, layer_output });
 		// 각 가중치 생성
 		vector<vector<double>> vec_weight;
@@ -95,7 +95,29 @@ void GateTest()
 void LearnTest()
 {
 	FileManager file = FileManager("1.csv");
+	Layer layer_input(1);
+	Layer layer_hidden(2, ActivationFunction::ReLU);
+	Layer layer_output(1);
+	vector<Layer> layers({ layer_input, layer_hidden, layer_output });
+	NeuralNetwork net(layers);
+	double input = file.GetData(1, 0);
 
+	vector<double> data = {input};
+	Layer layer_inputdata(data);
+	double output = net.Predict(layer_inputdata)[0];
+	vector<Layer> input_learning_layers;
+	vector<Layer> targe_layers;
+	for (int n = 0; n < 5; n++)
+	{
+		vector<double> input_value = { file.GetData(n, 0) };
+		Layer input_learning_layer(input_value);
+		vector<double> output_value = { file.GetData(n, 1) };
+		Layer targe_layer(output_value);
+		input_learning_layers.push_back(input_learning_layer);
+		targe_layers.push_back(targe_layer);
+	}
+	net.Learn(input_learning_layers, targe_layers);
+	output = net.Predict(layer_inputdata)[0];
 }
 
 int main()

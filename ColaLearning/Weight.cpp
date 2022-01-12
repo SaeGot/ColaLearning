@@ -9,7 +9,12 @@ Weight::Weight(vector<vector<double>> weight_Values)
 Weight::Weight(int prev_NodeCountWithBias, int next_NodeCount)
 {
 	vector<double> next_node(next_NodeCount);
-	for (int n = 0; n < prev_NodeCountWithBias; n++)
+	for (double& init_value : next_node)
+	{
+		// ToDo 가중치 초기화
+		init_value = 0.5;
+	}
+	for (int i = 0; i < prev_NodeCountWithBias; i++)
 	{
 		weightValues.push_back(next_node);
 	}
