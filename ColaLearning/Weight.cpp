@@ -6,10 +6,10 @@ Weight::Weight(vector<vector<double>> weight_Values)
 	weightValues = weight_Values;
 }
 
-Weight::Weight(int prev_node_count, int next_node_count)
+Weight::Weight(int prev_NodeCountWithBias, int next_NodeCount)
 {
-	vector<double> next_node(next_node_count);
-	for (int n = 0; n < next_node_count; n++)
+	vector<double> next_node(next_NodeCount);
+	for (int n = 0; n < prev_NodeCountWithBias; n++)
 	{
 		weightValues.push_back(next_node);
 	}

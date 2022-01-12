@@ -16,10 +16,10 @@ public:
 	/**
 	 * 이전 층, 다음 층 노드 개수로 Weight 생성.
 	 * 
-	 * \param prev_node_count : 이전 층 노드 개수
-	 * \param next_node_count : 다음 층 노드 개수
+	 * \param prev_NodeCountWithBias : 편항 포함한 이전 층 노드 개수
+	 * \param next_NodeCount : 다음 층 노드 개수
 	 */
-	Weight(int prev_node_count, int next_node_count);
+	Weight(int prev_NodeCountWithBias, int next_NodeCount);
 	Weight(const Weight &weight);
 	~Weight();
 

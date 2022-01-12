@@ -58,21 +58,29 @@ void NeuralNetwork::Learn(vector<Layer> input_Layers, vector<Layer> target_Layer
 
 void NeuralNetwork::InitWeights()
 {
-	int prev_node_count = 0;
+	int prev_node_count_with_bias = 0;
 	int next_node_count;
+	bool input = true;
 	for (const Layer &layer : layers)
 	{
 		next_node_count = layer.GetNodeCount();
-		Weight weight(prev_node_count, next_node_count);
-		weights.push_back(weight);
-		// 이전 층 노드 수
-		if (layer.CheckBias())
+		if (input)
 		{
-			prev_node_count = layer.GetNodeCount() + 1;
+			input = false;
 		}
 		else
 		{
-			prev_node_count = layer.GetNodeCount();
+			Weight weight(prev_node_count_with_bias, next_node_count);
+			weights.push_back(weight);
+		}
+		// 이전 층 노드 수
+		if (layer.CheckBias())
+		{
+			prev_node_count_with_bias = layer.GetNodeCount() + 1;
+		}
+		else
+		{
+			prev_node_count_with_bias = layer.GetNodeCount();
 		}
 	}
 }
