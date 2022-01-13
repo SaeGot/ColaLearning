@@ -2,6 +2,7 @@
 #include <vector>
 #include "Weight.h"
 #include "Layer.h"
+#include "Optimizer.h"
 
 
 using namespace std;
@@ -40,7 +41,7 @@ public:
 	 */
 	vector<double> GetError(Layer input_Layer, Layer target_Layer);
 
-	void Learn(vector<Layer> input_Layers, vector<Layer> target_Layers);
+	void Learn(vector<Layer> input_Layers, vector<Layer> target_Layers, Optimizer* optimizer);
 
 private:
 	vector<Layer> layers;
@@ -91,9 +92,10 @@ private:
 	 * \param i : 이전 층 노드 인덱스
 	 * \param next_Layer : 다음 층
 	 * \param j : 다음 층 노드 인덱스
+	 * \param optimizer : 최적화 기법
 	 */
 	void UpdateWeight(Weight& weight, const Layer& prev_Layer, int i,
-		Layer& next_Layer, int j);
+		Layer& next_Layer, int j, Optimizer* optimizer);
 	/**
 	 * 편향 가중치 업데이트.
 	 * 
@@ -101,14 +103,15 @@ private:
 	 * \param i : 이전 층 노드 인덱스
 	 * \param next_Layer : 다음 층
 	 * \param j : 다음 층 노드 인덱스
+	 * \param optimizer : 최적화 기법
 	 */
 	void UpdateBiasWeight(Weight& weight, int i,
-		Layer& next_Layer, int j);
+		Layer& next_Layer, int j, Optimizer* optimizer);
 	/**
 	 * 역전파.
 	 * 
-	 * \param target_Layer : 목표 층 (정답)
 	 * \param errors : 오차
+	 * \param optimizer : 최적화 기법
 	 */
-	void BackPropagation(vector<double> errors);
+	void BackPropagation(vector<double> errors, Optimizer* optimizer);
 };

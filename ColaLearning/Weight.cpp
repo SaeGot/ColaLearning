@@ -12,7 +12,7 @@ Weight::Weight(int prev_NodeCountWithBias, int next_NodeCount)
 	for (double& init_value : next_node)
 	{
 		// ToDo 가중치 초기화
-		init_value = 0.5;
+		init_value = 1.0;
 	}
 	for (int i = 0; i < prev_NodeCountWithBias; i++)
 	{
@@ -42,5 +42,5 @@ double Weight::GetWeight(int i, int j) const
 
 void Weight::UpdateWeight(int i, int j, double value)
 {
-	weightValues[i][j] -= value;
+	weightValues[i][j] = value;
 }

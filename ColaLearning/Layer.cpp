@@ -88,6 +88,8 @@ double Layer::DActivate(double value)
 {
 	switch (activationFunction)
 	{
+	case ActivationFunction::Linear:
+		return 1.0;
 	case ActivationFunction::ReLU:
 		if (value >= 0) { return 1.0; }
 		else { return 0.0; }
@@ -96,7 +98,7 @@ double Layer::DActivate(double value)
 		return 0.0;
 	}
 
-	return value;
+	return 1.0;
 }
 
 void Layer::SetBackNodeValue(int index, double value)
