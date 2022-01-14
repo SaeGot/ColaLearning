@@ -96,14 +96,17 @@ void LearnTest()
 {
 	FileManager file = FileManager("1.csv");
 	Layer layer_input(1);
+	Layer layer_hidden(3);
 	Layer layer_output(1);
-	vector<Layer> layers({ layer_input, layer_output });
+	vector<Layer> layers({ layer_input, layer_hidden, layer_output });
 	NeuralNetwork net(layers);
 	double input = file.GetData(0, 0);
 
 	vector<double> data = {input};
 	Layer layer_inputdata(data);
 	double output = net.Predict(layer_inputdata)[0];
+	printf("%lf\n", output);
+
 	vector<Layer> input_learning_layers;
 	vector<Layer> targe_layers;
 	for (int n = 0; n < 1; n++)
@@ -115,12 +118,13 @@ void LearnTest()
 		input_learning_layers.push_back(input_learning_layer);
 		targe_layers.push_back(targe_layer);
 	}
-	Optimizer* optimizer = new GradientDescent(0.1);
-	for (int n = 0; n < 10; n++)
+	Optimizer* optimizer = new GradientDescent(0.05);
+	for (int n = 0; n < 100; n++)
 	{
 		net.Learn(input_learning_layers, targe_layers, optimizer);
+		output = net.Predict(layer_inputdata)[0];
+		printf("%lf\n", output);
 	}
-	output = net.Predict(layer_inputdata)[0];
 }
 
 int main()
