@@ -119,12 +119,9 @@ void LearnTest()
 		targe_layers.push_back(targe_layer);
 	}
 	Optimizer* optimizer = new GradientDescent(0.05);
-	for (int n = 0; n < 100; n++)
-	{
-		net.Learn(input_learning_layers, targe_layers, optimizer);
-		output = net.Predict(layer_inputdata)[0];
-		printf("%lf\n", output);
-	}
+	net.Learn(input_learning_layers, targe_layers, optimizer, 100);
+	output = net.Predict(layer_inputdata)[0];
+	printf("%lf\n", output);
 }
 
 int main()

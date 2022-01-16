@@ -41,7 +41,7 @@ public:
 	 */
 	vector<double> GetError(Layer input_Layer, Layer target_Layer);
 
-	void Learn(vector<Layer> input_Layers, vector<Layer> target_Layers, Optimizer* optimizer);
+	void Learn(vector<Layer> input_Layers, vector<Layer> target_Layers, Optimizer* optimizer, int repeat = 1);
 
 private:
 	vector<Layer> layers;

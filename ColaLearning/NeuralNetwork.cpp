@@ -40,14 +40,18 @@ vector<double> NeuralNetwork::GetError(Layer input_Layer, Layer target_Layer)
 	return errors;
 }
 
-void NeuralNetwork::Learn(vector<Layer> input_Layers, vector<Layer> target_Layers, Optimizer* optimizer)
+void NeuralNetwork::Learn(vector<Layer> input_Layers, vector<Layer> target_Layers, Optimizer* optimizer, int repeat)
 {
 	if (input_Layers.size() == target_Layers.size())
 	{
-		for (int index = 0; index < input_Layers.size(); index++)
+		while (repeat>0)
 		{
-			vector<double> errors = FeedForward(input_Layers[index], target_Layers[index]);
-			BackPropagation(errors, optimizer);
+			for (int index = 0; index < input_Layers.size(); index++)
+			{
+				vector<double> errors = FeedForward(input_Layers[index], target_Layers[index]);
+				BackPropagation(errors, optimizer);
+			}
+			repeat--;
 		}
 	}
 	else
