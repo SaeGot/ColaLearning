@@ -40,7 +40,14 @@ public:
 	 * \return 오차 (예측값 - 목표값)
 	 */
 	vector<double> GetError(Layer input_Layer, Layer target_Layer);
-
+	/**
+	 * 학습.
+	 * 
+	 * \param input_Layers : 입력층
+	 * \param target_Layers : 목표층
+	 * \param optimizer : 최적화
+	 * \param repeat : 반복 횟수
+	 */
 	void Learn(vector<Layer> input_Layers, vector<Layer> target_Layers, Optimizer* optimizer, int repeat = 1);
 
 private:

@@ -4,7 +4,6 @@
 class Optimizer
 {
 public:
-
 	virtual double GetUpdateValue(double weight_value, double back_NodeValue, double prev_NodeValue) = 0;
 
 };
