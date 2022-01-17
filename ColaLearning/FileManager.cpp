@@ -20,9 +20,9 @@ FileManager::FileManager(string file_Name, Type data_Type)
 	{
 		map<int, double> row_data;
 		row_data = SetData(row, line);
-		for (int index = 0; index < tmp_data.size(); index++)
+		for (int n = 0; n < tmp_data.size(); n++)
 		{
-			tmp_data[index].insert({ row, row_data[index]});
+			tmp_data[n].insert({ row, row_data[n]});
 		}
 		row++;
 	}
@@ -30,13 +30,13 @@ FileManager::FileManager(string file_Name, Type data_Type)
 	vector<Type> types;
 	types = SetDataType(column_name, data_Type);
 
-	for (int index = 0; index < column_name.size(); index++)
+	for (int n = 0; n < column_name.size(); n++)
 	{
 		Data column_data;
-		column_data.columnName = column_name[index];
-		column_data.value = tmp_data[index];
-		column_data.type = types[index];
-		data.insert({ index, column_data });
+		column_data.columnName = column_name[n];
+		column_data.value = tmp_data[n];
+		column_data.type = types[n];
+		data.insert({ n, column_data });
 	}
 }
 
@@ -58,9 +58,9 @@ FileManager::FileManager(string file_Name, vector<Type> data_Types)
 	{
 		map<int, double> row_data;
 		row_data = SetData(row, line);
-		for (int index = 0; index < tmp_data.size(); index++)
+		for (int n = 0; n < tmp_data.size(); n++)
 		{
-			tmp_data[index].insert({ row, row_data[index] });
+			tmp_data[n].insert({ row, row_data[n] });
 		}
 		row++;
 	}
@@ -68,13 +68,13 @@ FileManager::FileManager(string file_Name, vector<Type> data_Types)
 	vector<Type> types;
 	types = SetDataType(column_name, data_Types);
 
-	for (int index = 0; index < column_name.size(); index++)
+	for (int n = 0; n < column_name.size(); n++)
 	{
 		Data column_data;
-		column_data.columnName = column_name[index];
-		column_data.value = tmp_data[index];
-		column_data.type = types[index];
-		data.insert({ index, column_data });
+		column_data.columnName = column_name[n];
+		column_data.value = tmp_data[n];
+		column_data.type = types[n];
+		data.insert({ n, column_data });
 	}
 
 }
@@ -92,9 +92,9 @@ double FileManager::GetData(int row, int column)
 vector<double> FileManager::GetData(int row)
 {
 	vector<double> row_data;
-	for (int index = 0; index < data.size(); index++)
+	for (int n = 0; n < data.size(); n++)
 	{
-		row_data.push_back(data[index].value[row]);
+		row_data.push_back(data[n].value[row]);
 	}
 
 	return row_data;

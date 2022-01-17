@@ -30,14 +30,14 @@ Layer::~Layer()
 	nodeValues.clear();
 }
 
-double Layer::GetNodeValue(int index) const
+double Layer::GetNodeValue(int n) const
 {
-	if (index < 0)
+	if (n < 0)
 	{
-		printf("Error : %d번째 인자를 선택하였습니다.\n", index);
+		printf("Error : %d번째 인자를 선택하였습니다.\n", n);
 		return 0;
 	}
-	return nodeValues[index];
+	return nodeValues[n];
 }
 
 vector<double> Layer::GetNodeValue() const
@@ -45,9 +45,9 @@ vector<double> Layer::GetNodeValue() const
 	return nodeValues;
 }
 
-void Layer::SetNodeValue(int index, double value)
+void Layer::SetNodeValue(int n, double value)
 {
-	nodeValues[index] = value;
+	nodeValues[n] = value;
 }
 
 void Layer::InitNodeValue()
@@ -101,12 +101,12 @@ double Layer::DActivate(double value)
 	return 1.0;
 }
 
-void Layer::SetBackNodeValue(int index, double value)
+void Layer::SetBackNodeValue(int n, double value)
 {
-	backNodeValues[index] = value;
+	backNodeValues[n] = value;
 }
 
-double Layer::GetBackNodeValue(int index) const
+double Layer::GetBackNodeValue(int n) const
 {
-	return backNodeValues[index];
+	return backNodeValues[n];
 }

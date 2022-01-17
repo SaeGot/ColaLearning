@@ -36,10 +36,10 @@ public:
 	/**
 	 * 노드 값 가져오기.
 	 *
-	 * \param index : 인덱스
+	 * \param n : 인덱스
 	 * \return 노드 값
 	 */
-	double GetNodeValue(int index) const;
+	double GetNodeValue(int n) const;
 	/**
 	 * 모든 노드 값 가져오기.
 	 * 
@@ -49,10 +49,10 @@ public:
 	/**
 	 * 노드 값 설정.
 	 * 
-	 * \param index : 노드 인덱스
+	 * \param n : 노드 인덱스
 	 * \param value : 노드 값
 	 */
-	void SetNodeValue(int index, double value);
+	void SetNodeValue(int n, double value);
 	/**
 	 * 노드 값 초기화.
 	 * 
@@ -87,17 +87,17 @@ public:
 	/**
 	 * BackPropagation을 위한 노드 값 설정.
 	 * 
-	 * \param index : 백노드 인덱스
+	 * \param n : 백노드 인덱스
 	 * \param value : 백노드 값
 	 */
-	void SetBackNodeValue(int index, double value);
+	void SetBackNodeValue(int n, double value);
 	/**
 	 * BackPropagation을 위한 노드 값 설정.
 	 * 
-	 * \param index : 백노드 인덱스
+	 * \param n : 백노드 인덱스
 	 * \return 백노드 값
 	 */
-	double GetBackNodeValue(int index) const;
+	double GetBackNodeValue(int n) const;
 
 private:
 	vector<double> nodeValues;

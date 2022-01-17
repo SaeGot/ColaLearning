@@ -127,5 +127,5 @@ void LearnTest()
 int main()
 {
 	LearnTest();
-	//GateTest();
+	GateTest();
 }
