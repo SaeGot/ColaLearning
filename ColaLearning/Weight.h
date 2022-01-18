@@ -4,6 +4,11 @@
 
 using namespace std;
 
+enum class InitWeight
+{
+	RamdomUniform
+};
+
 class Weight
 {
 public:
@@ -18,8 +23,9 @@ public:
 	 * 
 	 * \param prev_NodeCountWithBias : 편항 포함한 이전 층 노드 개수
 	 * \param next_NodeCount : 다음 층 노드 개수
+	 * \param init_Weight : 초기화 방법
 	 */
-	Weight(int prev_NodeCountWithBias, int next_NodeCount);
+	Weight(int prev_NodeCountWithBias, int next_NodeCount, InitWeight init_Weight);
 	Weight(const Weight &weight);
 	~Weight();
 
@@ -42,5 +48,13 @@ public:
 
 private:
 	vector<vector<double>> weightValues;
+
+	/**
+	 * 가중치 초기화.
+	 * 
+	 * \param init_Weight : 초기화 방법
+	 * \return 가중치 초기화 값
+	 */
+	double Initialize(InitWeight init_Weight);
 };
 

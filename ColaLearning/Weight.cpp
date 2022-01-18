@@ -1,4 +1,5 @@
 ﻿#include "Weight.h"
+#include <random>
 
 
 Weight::Weight(vector<vector<double>> weight_Values)
@@ -6,13 +7,13 @@ Weight::Weight(vector<vector<double>> weight_Values)
 	weightValues = weight_Values;
 }
 
-Weight::Weight(int prev_NodeCountWithBias, int next_NodeCount)
+Weight::Weight(int prev_NodeCountWithBias, int next_NodeCount, InitWeight init_Weight)
 {
 	vector<double> next_node(next_NodeCount);
 	for (double& init_value : next_node)
 	{
 		// ToDo 가중치 초기화
-		init_value = 1.0;
+		init_value = Initialize(init_Weight);
 	}
 	for (int i = 0; i < prev_NodeCountWithBias; i++)
 	{
@@ -43,4 +44,18 @@ double Weight::GetWeight(int i, int j) const
 void Weight::UpdateWeight(int i, int j, double value)
 {
 	weightValues[i][j] = value;
+}
+
+double Weight::Initialize(InitWeight init_Weight)
+{
+	random_device rd;
+	mt19937_64 gen(rd());
+	uniform_real_distribution<double> random_value(-1, 1);
+
+	switch (init_Weight)
+	{
+	case InitWeight::RamdomUniform:
+		return random_value(gen);
+	}
+	return 1.0;
 }

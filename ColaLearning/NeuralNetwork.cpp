@@ -74,7 +74,8 @@ void NeuralNetwork::InitWeights()
 		}
 		else
 		{
-			Weight weight(prev_node_count_with_bias, next_node_count);
+			// ToDo 초기화 방식 수정 필요
+			Weight weight(prev_node_count_with_bias, next_node_count, InitWeight::RamdomUniform);
 			weights.push_back(weight);
 		}
 		// 이전 층 노드 수
