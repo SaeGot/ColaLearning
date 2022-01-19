@@ -6,7 +6,9 @@ using namespace std;
 
 enum class InitWeight
 {
-	RamdomUniform
+	RamdomUniform,
+	He,
+	Xavier
 };
 
 class Weight
@@ -21,11 +23,11 @@ public:
 	/**
 	 * 이전 층, 다음 층 노드 개수로 Weight 생성.
 	 * 
-	 * \param prev_NodeCountWithBias : 편항 포함한 이전 층 노드 개수
-	 * \param next_NodeCount : 다음 층 노드 개수
+	 * \param input_NodeCountWithBias : 편항 포함한 입력 노드 개수
+	 * \param output_NodeCount : 출력 노드 개수
 	 * \param init_Weight : 초기화 방법
 	 */
-	Weight(int prev_NodeCountWithBias, int next_NodeCount, InitWeight init_Weight);
+	Weight(int input_NodeCountWithBias, int output_NodeCount, InitWeight init_Weight);
 	Weight(const Weight &weight);
 	~Weight();
 
@@ -53,8 +55,11 @@ private:
 	 * 가중치 초기화.
 	 * 
 	 * \param init_Weight : 초기화 방법
+	 * \param input_NodeCountWithBias : 편향 포함 입력 노드 개수
+	 * \param int output_NodeCount : 출력 노드 개수
+	 * \param limit : 상하한 값
 	 * \return 가중치 초기화 값
 	 */
-	double Initialize(InitWeight init_Weight);
+	double Initialize(InitWeight init_Weight, int input_NodeCountWithBias, int output_NodeCount, double limit = 1.0);
 };
 

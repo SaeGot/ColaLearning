@@ -74,8 +74,18 @@ void NeuralNetwork::InitWeights()
 		}
 		else
 		{
-			// ToDo 초기화 방식 수정 필요
-			Weight weight(prev_node_count_with_bias, next_node_count, InitWeight::RamdomUniform);
+			InitWeight init_weight{};
+			switch (layer.GetActivationFunction())
+			{
+			case ActivationFunction::Linear:
+			case ActivationFunction::ReLU:
+				init_weight = InitWeight::He;
+				break;
+			case ActivationFunction::Step:
+				init_weight = InitWeight::Xavier;
+				break;
+			}
+			Weight weight(prev_node_count_with_bias, next_node_count, init_weight);
 			weights.push_back(weight);
 		}
 		// 이전 층 노드 수

@@ -7,16 +7,15 @@ Weight::Weight(vector<vector<double>> weight_Values)
 	weightValues = weight_Values;
 }
 
-Weight::Weight(int prev_NodeCountWithBias, int next_NodeCount, InitWeight init_Weight)
+Weight::Weight(int input_NodeCountWithBias, int output_NodeCount, InitWeight init_Weight)
 {
-	vector<double> next_node(next_NodeCount);
-	for (double& init_value : next_node)
+	for (int i = 0; i < input_NodeCountWithBias; i++)
 	{
-		// ToDo 가중치 초기화
-		init_value = Initialize(init_Weight);
-	}
-	for (int i = 0; i < prev_NodeCountWithBias; i++)
-	{
+		vector<double> next_node(output_NodeCount);
+		for (double& init_value : next_node)
+		{
+			init_value = Initialize(init_Weight, input_NodeCountWithBias, output_NodeCount);
+		}
 		weightValues.push_back(next_node);
 	}
 }
@@ -46,16 +45,20 @@ void Weight::UpdateWeight(int i, int j, double value)
 	weightValues[i][j] = value;
 }
 
-double Weight::Initialize(InitWeight init_Weight)
+double Weight::Initialize(InitWeight init_Weight, int input_NodeCountWithBias, int output_NodeCount, double limit)
 {
 	random_device rd;
 	mt19937_64 gen(rd());
-	uniform_real_distribution<double> random_value(-1, 1);
+	uniform_real_distribution<double> random_value(-limit, limit);
 
 	switch (init_Weight)
 	{
 	case InitWeight::RamdomUniform:
 		return random_value(gen);
+	case InitWeight::He:
+		return random_value(gen) * sqrt(2.0 / input_NodeCountWithBias);
+	case InitWeight::Xavier:		
+		return random_value(gen) * sqrt(6.0 / (input_NodeCountWithBias + output_NodeCount));
 	}
 	return 1.0;
 }

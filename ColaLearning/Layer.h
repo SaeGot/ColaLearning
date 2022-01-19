@@ -98,6 +98,12 @@ public:
 	 * \return 백노드 값
 	 */
 	double GetBackNodeValue(int n) const;
+	/**
+	 * 활성 함수 가져오기.
+	 * 
+	 * \return : 활성 함수
+	 */
+	ActivationFunction GetActivationFunction() const;
 
 private:
 	vector<double> nodeValues;

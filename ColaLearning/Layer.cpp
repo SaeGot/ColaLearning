@@ -110,3 +110,8 @@ double Layer::GetBackNodeValue(int n) const
 {
 	return backNodeValues[n];
 }
+
+ActivationFunction Layer::GetActivationFunction() const
+{
+	return activationFunction;
+}
