@@ -56,9 +56,9 @@ void GateTest()
 			// 각 층 생성
 			Layer layer_input(input_list[index], ActivationFunction::Step, true);
 			Layer layer_output(1, ActivationFunction::Step, false);
-			vector<Layer> layers({ layer_input, layer_output });
+			Layer layers[2] = { layer_input, layer_output };
 			// 가중치 생성
-			vector<Weight> weights({ weight });
+			Weight weights[1] = { weight };
 			// 신경망 생성
 			NeuralNetwork net(layers, weights);
 
@@ -77,14 +77,14 @@ void GateTest()
 		Layer layer_input(input, ActivationFunction::Step, true);
 		Layer layer_hidden(2, ActivationFunction::Step, true);
 		Layer layer_output(1, ActivationFunction::Step, false);
-		vector<Layer> layers({ layer_input, layer_hidden, layer_output });
+		Layer* layers = new Layer[3]{ layer_input, layer_hidden, layer_output };
 		// 각 가중치 생성
 		vector<vector<double>> vec_weight;
 		for (int i = 0; i < 3; i++)
 		{
 			vec_weight.push_back({ weight_or[i][0], weight_nand[i][0] });
 		}
-		vector<Weight> weights({ vec_weight, weight_list.at(Gate::AND) });
+		Weight* weights = new Weight[2] { vec_weight, weight_list.at(Gate::AND) };
 		// 신경망 생성
 		NeuralNetwork net(layers, weights);
 		printf_s("입력 : %1lf, %1lf → 출력 : %lf\n", input[0], input[1], net.Predict(layer_input)[0]);
@@ -98,8 +98,9 @@ void LearnTest()
 	Layer layer_input(1);
 	Layer layer_hidden(3);
 	Layer layer_output(1);
-	vector<Layer> layers({ layer_input, layer_hidden, layer_output });
-	NeuralNetwork net(layers);
+	Layer layers[3] = { layer_input, layer_hidden, layer_output };
+	int layer_count = sizeof(layers) / sizeof(Layer);
+	NeuralNetwork net(layers, layer_count);
 	double input = file.GetData(0, 0);
 
 	vector<double> data = {input};
@@ -130,5 +131,5 @@ void LearnTest()
 int main()
 {
 	LearnTest();
-	GateTest();
+	//GateTest();
 }

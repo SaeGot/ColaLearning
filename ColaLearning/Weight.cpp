@@ -57,8 +57,9 @@ double Weight::Initialize(InitWeight init_Weight, int input_NodeCountWithBias, i
 		return random_value(gen);
 	case InitWeight::He:
 		return random_value(gen) * sqrt(2.0 / input_NodeCountWithBias);
-	case InitWeight::Xavier:		
-		return random_value(gen) * sqrt(6.0 / (input_NodeCountWithBias + output_NodeCount));
+	case InitWeight::Xavier:
+		int n = input_NodeCountWithBias + output_NodeCount;
+		return random_value(gen) * sqrt(6.0 / n);
 	}
 	return 1.0;
 }

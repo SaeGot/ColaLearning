@@ -1,35 +1,45 @@
 ﻿#include "NeuralNetwork.h"
 
 
-NeuralNetwork::NeuralNetwork(vector<Layer> _layers)
+NeuralNetwork::NeuralNetwork(const Layer* _layers, int layer_Count)
 {
-	layers = _layers;
+	layerCount = layer_Count;
+	layers = new Layer[layerCount];
+	for (int n = 0; n < layerCount; n++)
+	{
+		layers[n] = _layers[n];
+	}
 	InitWeights();
 }
 
-NeuralNetwork::NeuralNetwork(vector<Layer> _layers, vector<Weight> _weights)
+NeuralNetwork::NeuralNetwork(Layer* _layers, Weight* _weights)
 {
-	layers = _layers;
-	weights = _weights;
+	layers = new Layer(*_layers);
+	weights = new Weight(*_weights);
+}
+
+NeuralNetwork::~NeuralNetwork()
+{
+	delete[] weights;
 }
 
 vector<double> NeuralNetwork::Predict(Layer input_Layer)
 {
 	FeedForward(input_Layer);
 
-	return layers[layers.size() - 1].GetNodeValue();
+	return layers[layerCount - 1].GetNodeValue();
 }
 
 vector<double> NeuralNetwork::GetError(Layer input_Layer, Layer target_Layer)
 {
 	vector<double> errors;
-	errors.resize(layers[layers.size() - 1].GetNodeCount());
+	errors.resize(layers[layerCount - 1].GetNodeCount());
 	if (errors.size() == target_Layer.GetNodeCount())
 	{
 		FeedForward(input_Layer);
 		for (int n = 0; n < target_Layer.GetNodeCount(); n++)
 		{
-			errors.push_back(layers[layers.size() - 1].GetNodeValue(n) - target_Layer.GetNodeValue(n));
+			errors.push_back(layers[layerCount - 1].GetNodeValue(n) - target_Layer.GetNodeValue(n));
 		}
 	}
 	else
@@ -62,11 +72,14 @@ void NeuralNetwork::Learn(vector<Layer> input_Layers, vector<Layer> target_Layer
 
 void NeuralNetwork::InitWeights()
 {
+	weights = new Weight[layerCount];
 	int prev_node_count_with_bias = 0;
 	int next_node_count;
 	bool input = true;
-	for (const Layer &layer : layers)
+	int n = 0;
+	for (int n = 0; n < layerCount; n++)
 	{
+		const Layer& layer = layers[n];
 		next_node_count = layer.GetNodeCount();
 		if (input)
 		{
@@ -86,7 +99,7 @@ void NeuralNetwork::InitWeights()
 				break;
 			}
 			Weight weight(prev_node_count_with_bias, next_node_count, init_weight);
-			weights.push_back(weight);
+			weights[n - 1] = weight;
 		}
 		// 이전 층 노드 수
 		if (layer.CheckBias())
@@ -118,7 +131,7 @@ double NeuralNetwork::ForwardSum(const Layer& layer, const Weight& weight, int j
 void NeuralNetwork::FeedForward(const Layer &input_Layer)
 {
 	layers[0] = input_Layer;
-	for (int n = 1; n < layers.size(); n++)
+	for (int n = 1; n < layerCount; n++)
 	{
 		for (int j = 0; j < layers[n].GetNodeCount(); j++)
 		{
@@ -133,7 +146,7 @@ void NeuralNetwork::FeedForward(const Layer &input_Layer)
 vector<double> NeuralNetwork::FeedForward(const Layer& input_Layer, const Layer& target_Layer)
 {
 	layers[0] = input_Layer;
-	for (int n = 1; n < layers.size() - 1; n++)
+	for (int n = 1; n < layerCount - 1; n++)
 	{
 		for (int j = 0; j < layers[n].GetNodeCount(); j++)
 		{
@@ -145,7 +158,7 @@ vector<double> NeuralNetwork::FeedForward(const Layer& input_Layer, const Layer&
 	}
 	// 출력 층
 	vector<double> errors;
-	int n = static_cast<int>(layers.size() - 1);
+	int n = static_cast<int>(layerCount - 1);
 	for (int j = 0; j < layers[n].GetNodeCount(); j++)
 	{
 		int prev_n = n - 1;
@@ -190,23 +203,23 @@ void NeuralNetwork::UpdateBiasWeight(Weight& weight, int i,
 void NeuralNetwork::BackPropagation(vector<double> errors, Optimizer* optimizer)
 {
 	// 출력층과 출력 이전 층 사이의 가중치 업데이트
-	for (int j = 0; j < layers[layers.size() - 1].GetNodeCount(); j++)
+	for (int j = 0; j < layers[layerCount - 1].GetNodeCount(); j++)
 	{
-		double d_activate = layers[layers.size() - 1].DActivate(layers[layers.size() - 1].GetNodeValue(j));
-		layers[layers.size() - 1].SetBackNodeValue(j, errors[j] * d_activate);
-		for (int i = 0; i < layers[layers.size() - 2].GetNodeCount(); i++)
+		double d_activate = layers[layerCount - 1].DActivate(layers[layerCount - 1].GetNodeValue(j));
+		layers[layerCount - 1].SetBackNodeValue(j, errors[j] * d_activate);
+		for (int i = 0; i < layers[layerCount - 2].GetNodeCount(); i++)
 		{
-			UpdateWeight(weights[layers.size() - 2], layers[layers.size() - 2], i,
-				layers[layers.size() - 1], j, optimizer);
+			UpdateWeight(weights[layerCount - 2], layers[layerCount - 2], i,
+				layers[layerCount - 1], j, optimizer);
 		}
-		if (layers[layers.size() - 2].CheckBias())
+		if (layers[layerCount - 2].CheckBias())
 		{
-			UpdateBiasWeight(weights[layers.size() - 2], layers[layers.size() - 2].GetNodeCount(),
-				layers[layers.size() - 1], j, optimizer);
+			UpdateBiasWeight(weights[layerCount - 2], layers[layerCount - 2].GetNodeCount(),
+				layers[layerCount - 1], j, optimizer);
 		}
 	}
 	// 그 외 가중치 업데이트
-	for (int n = static_cast<int>(layers.size() - 2); n > 0; n--)
+	for (int n = static_cast<int>(layerCount - 2); n > 0; n--)
 	{
 		int next_n = n + 1;
 		int prev_n = n - 1;

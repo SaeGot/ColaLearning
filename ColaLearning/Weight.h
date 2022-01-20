@@ -28,6 +28,7 @@ public:
 	 * \param init_Weight : 초기화 방법
 	 */
 	Weight(int input_NodeCountWithBias, int output_NodeCount, InitWeight init_Weight);
+	Weight() {};
 	Weight(const Weight &weight);
 	~Weight();
 

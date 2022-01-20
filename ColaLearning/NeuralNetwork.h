@@ -13,17 +13,18 @@ public:
 	/**
 	 * Layer 만으로 NeuralNetwork 생성.
 	 * 
-	 * \param _layers
+	 * \param _layers : 모든 층 (입력, 은닉, 출력 포함)
+	 * \param layer_Count : 층 개수
 	 */
-	NeuralNetwork(vector<Layer> _layers);
+	NeuralNetwork(const Layer* _layers, int layer_Count);
 	/**
 	 * Layer와 Weight로 NeuralNetwork 생성.
 	 * 
 	 * \param _layers
 	 * \param _weights
 	 */
-	NeuralNetwork(vector<Layer> _layers, vector<Weight> _weights);
-	~NeuralNetwork() {};
+	NeuralNetwork(Layer* _layers, Weight* _weights);
+	~NeuralNetwork();
 
 	/**
 	 * 예측 값들 계산.
@@ -51,8 +52,9 @@ public:
 	void Learn(vector<Layer> input_Layers, vector<Layer> target_Layers, Optimizer* optimizer, int repeat = 1);
 
 private:
-	vector<Layer> layers;
-	vector<Weight> weights;
+	Layer* layers;
+	Weight* weights;
+	int layerCount;
 
 	/**
 	 * 모든 가중치 초기화.
