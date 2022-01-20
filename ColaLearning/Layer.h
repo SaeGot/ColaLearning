@@ -31,7 +31,7 @@ public:
 	 */
 	Layer(int count, const ActivationFunction &activation_Function = ActivationFunction::Linear, bool _bias = true);
 	Layer(const Layer &layer);
-	Layer() {};
+	Layer(const ActivationFunction& activation_Function = ActivationFunction::Linear, bool _bias = true);
 	~Layer();
 
 	/**

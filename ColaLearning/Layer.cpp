@@ -25,6 +25,13 @@ Layer::Layer(const Layer& layer)
 	bias = layer.bias;
 }
 
+Layer::Layer(const ActivationFunction& activation_Function, bool _bias)
+{
+	activationFunction = activation_Function;
+	bias = _bias;
+}
+
+
 Layer::~Layer()
 {
 	nodeValues.clear();

@@ -20,10 +20,11 @@ public:
 	/**
 	 * Layer와 Weight로 NeuralNetwork 생성.
 	 * 
-	 * \param _layers
-	 * \param _weights
+	 * \param _layers : 모든 층 (입력, 은닉, 출력 포함)
+	 * \param _weights : 모든 가중치
+	 * \param layer_Count : 층 개수
 	 */
-	NeuralNetwork(Layer* _layers, Weight* _weights);
+	NeuralNetwork(const Layer* _layers, const Weight* _weights, int layer_Count);
 	~NeuralNetwork();
 
 	/**

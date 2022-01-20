@@ -12,10 +12,19 @@ NeuralNetwork::NeuralNetwork(const Layer* _layers, int layer_Count)
 	InitWeights();
 }
 
-NeuralNetwork::NeuralNetwork(Layer* _layers, Weight* _weights)
+NeuralNetwork::NeuralNetwork(const Layer* _layers, const Weight* _weights, int layer_Count)
 {
-	layers = new Layer(*_layers);
-	weights = new Weight(*_weights);
+	layerCount = layer_Count;
+	layers = new Layer[layerCount];
+	for (int n = 0; n < layerCount; n++)
+	{
+		layers[n] = _layers[n];
+	}
+	weights = new Weight[static_cast<size_t>(layerCount - 1)];
+	for (int n = 0; n < layerCount - 1; n++)
+	{
+		weights[n] = _weights[n];
+	}
 }
 
 NeuralNetwork::~NeuralNetwork()
