@@ -20,7 +20,8 @@ NeuralNetwork::NeuralNetwork(const Layer* _layers, const Weight* _weights, int l
 	{
 		layers[n] = _layers[n];
 	}
-	weights = new Weight[static_cast<size_t>(layerCount - 1)];
+	int weight_count = layerCount - 1;
+	weights = new Weight[weight_count];
 	for (int n = 0; n < layerCount - 1; n++)
 	{
 		weights[n] = _weights[n];
