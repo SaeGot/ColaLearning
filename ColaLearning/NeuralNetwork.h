@@ -15,8 +15,9 @@ public:
 	 * 
 	 * \param _layers : 모든 층 (입력, 은닉, 출력 포함)
 	 * \param layer_Count : 층 개수
+	 * \param weight_InitialLimit : 가중치 초기값 상하한
 	 */
-	NeuralNetwork(const Layer* _layers, int layer_Count);
+	NeuralNetwork(const Layer* _layers, int layer_Count, double weight_InitialLimit = 1.0);
 	/**
 	 * Layer와 Weight로 NeuralNetwork 생성.
 	 * 
@@ -60,8 +61,9 @@ private:
 	/**
 	 * 모든 가중치 초기화.
 	 * 
+	 * \param weight_InitialLimit : 가중치 초기값 상하한
 	 */
-	void InitWeights();
+	void InitWeights(double weight_InitialLimit);
 	/**
 	 * 활성화 이전의 노드 값 계산.
 	 * 

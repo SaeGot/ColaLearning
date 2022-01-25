@@ -7,14 +7,14 @@ Weight::Weight(vector<vector<double>> weight_Values)
 	weightValues = weight_Values;
 }
 
-Weight::Weight(int input_NodeCountWithBias, int output_NodeCount, InitWeight init_Weight)
+Weight::Weight(int input_NodeCountWithBias, int output_NodeCount, InitWeight init_Weight, double initial_Limit)
 {
 	for (int i = 0; i < input_NodeCountWithBias; i++)
 	{
 		vector<double> next_node(output_NodeCount);
 		for (double& init_value : next_node)
 		{
-			init_value = Initialize(init_Weight, input_NodeCountWithBias, output_NodeCount);
+			init_value = Initialize(init_Weight, input_NodeCountWithBias, output_NodeCount, initial_Limit);
 		}
 		weightValues.push_back(next_node);
 	}

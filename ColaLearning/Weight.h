@@ -26,8 +26,9 @@ public:
 	 * \param input_NodeCountWithBias : 편항 포함한 입력 노드 개수
 	 * \param output_NodeCount : 출력 노드 개수
 	 * \param init_Weight : 초기화 방법
+	 * \param initial_Limit : 가중치 초기값 상하한
 	 */
-	Weight(int input_NodeCountWithBias, int output_NodeCount, InitWeight init_Weight);
+	Weight(int input_NodeCountWithBias, int output_NodeCount, InitWeight init_Weight, double initial_Limit);
 	Weight() {};
 	Weight(const Weight &weight);
 	~Weight();
@@ -61,6 +62,6 @@ private:
 	 * \param limit : 상하한 값
 	 * \return 가중치 초기화 값
 	 */
-	double Initialize(InitWeight init_Weight, int input_NodeCountWithBias, int output_NodeCount, double limit = 1.0);
+	double Initialize(InitWeight init_Weight, int input_NodeCountWithBias, int output_NodeCount, double limit);
 };
 

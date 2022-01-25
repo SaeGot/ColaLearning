@@ -1,7 +1,7 @@
 ﻿#include "NeuralNetwork.h"
 
 
-NeuralNetwork::NeuralNetwork(const Layer* _layers, int layer_Count)
+NeuralNetwork::NeuralNetwork(const Layer* _layers, int layer_Count, double weight_InitialLimit)
 {
 	layerCount = layer_Count;
 	layers = new Layer[layerCount];
@@ -9,7 +9,7 @@ NeuralNetwork::NeuralNetwork(const Layer* _layers, int layer_Count)
 	{
 		layers[n] = _layers[n];
 	}
-	InitWeights();
+	InitWeights(weight_InitialLimit);
 }
 
 NeuralNetwork::NeuralNetwork(const Layer* _layers, const Weight* _weights, int layer_Count)
@@ -80,7 +80,7 @@ void NeuralNetwork::Learn(vector<Layer> input_Layers, vector<Layer> target_Layer
 	}
 }
 
-void NeuralNetwork::InitWeights()
+void NeuralNetwork::InitWeights(double weight_InitialLimit)
 {
 	weights = new Weight[layerCount];
 	int prev_node_count_with_bias = 0;
@@ -108,7 +108,7 @@ void NeuralNetwork::InitWeights()
 				init_weight = InitWeight::Xavier;
 				break;
 			}
-			Weight weight(prev_node_count_with_bias, next_node_count, init_weight);
+			Weight weight(prev_node_count_with_bias, next_node_count, init_weight, weight_InitialLimit);
 			weights[n - 1] = weight;
 		}
 		// 이전 층 노드 수
