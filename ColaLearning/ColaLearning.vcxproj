@@ -144,6 +144,8 @@
     <ClCompile Include="NeuralNetwork.cpp" />
     <ClCompile Include="Layer.cpp" />
     <ClCompile Include="Optimizer.cpp" />
+    <ClCompile Include="QLearning.cpp" />
+    <ClCompile Include="ReinforcementLearning.cpp" />
     <ClCompile Include="Weight.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -152,6 +154,8 @@
     <ClInclude Include="NeuralNetwork.h" />
     <ClInclude Include="Layer.h" />
     <ClInclude Include="Optimizer.h" />
+    <ClInclude Include="QLearning.h" />
+    <ClInclude Include="ReinforcementLearning.h" />
     <ClInclude Include="Weight.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
