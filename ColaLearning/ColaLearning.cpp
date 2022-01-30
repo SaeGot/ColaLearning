@@ -128,8 +128,14 @@ void LearnTest()
 	}
 }
 
+void QLearningTest()
+{
+	QLearning q_learning("2.csv");
+}
+
 int main()
 {
 	LearnTest();
 	GateTest();
+	QLearningTest();
 }

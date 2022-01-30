@@ -16,6 +16,7 @@ public:
 		Real,
 		String
 	};
+	FileManager() {};
 	/**
 	 * 모든 타입을 동일하게 데이터 생성.
 	 *
@@ -26,8 +27,8 @@ public:
 	/**
 	 * 각각의 칼럼에 타입을 설정하여 데이터 생성.
 	 * 
-	 * \param file_Name
-	 * \param data_TypeList
+	 * \param file_Name : 파일 이름
+	 * \param data_TypeList : 데이터 타입
 	 */
 	FileManager(string file_Name, vector<Type> data_Types);
 	~FileManager();
@@ -46,13 +47,19 @@ public:
 	 * \return 행 데이터
 	 */
 	vector<double> GetData(int row);
-
+	/**
+	 * 표 형태로 읽기.
+	 * 
+	 * \param file_Name : 파일 이름
+	 * \return 
+	 */
+	vector<vector<string>> GetTable(string file_Name);
 
 private:
 	struct Data
 	{
 		string columnName;
-		Type type;
+		Type type = Type::Real;
 		// <행, 값>
 		map<int, double> value;
 	};

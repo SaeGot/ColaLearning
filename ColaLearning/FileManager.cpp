@@ -1,5 +1,5 @@
 #include "FileManager.h"
-#include <codecvt>
+//#include <codecvt>
 
 
 FileManager::FileManager(string file_Name, Type data_Type)
@@ -98,6 +98,30 @@ vector<double> FileManager::GetData(int row)
 	}
 
 	return row_data;
+}
+
+vector<vector<string>> FileManager::GetTable(string file_Name)
+{
+	vector<vector<string>> table;
+
+	fstream file;
+	file.open(file_Name);
+	//file.imbue(locale(file.getloc(), new std::codecvt_utf8<wchar_t, 0x10FFFF, consume_header>));
+	string line;
+
+	while (getline(file, line))
+	{
+		vector<string> row;
+		stringstream ss_line(line);
+		string str_data;
+		while (getline(ss_line, str_data, ','))
+		{
+			row.push_back(str_data);
+		}
+		table.push_back(row);
+	}
+
+	return table;
 }
 
 vector<string> FileManager::SetColumnName(string first_line)
