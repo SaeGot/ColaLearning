@@ -25,6 +25,34 @@ QLearning::QLearning(string file_Name)
 	}
 }
 
+void QLearning::Learn(string state)
+{
+	Initialize(state);
+}
+
+void QLearning::Initialize(string state)
+{
+	vector<string> current_episode_states = { state };
+	stateList.push_back(current_episode_states);
+}
+
+void QLearning::Action(string action)
+{
+	vector<string> current_episode_states = stateList.back();
+	string current_state = current_episode_states.back();
+	string next_state;
+	if (action == "")
+	{
+		//ToDo ·£´ý¼±ÅÃ		
+	}
+	else
+	{
+		StateAction state_action = { current_state, action };
+		next_state = nextStateTable[state_action];
+	}
+	stateList.back().push_back(next_state);
+}
+
 bool QLearning::StateAction::operator<(const StateAction& rhs) const
 {
 	if (state != rhs.state)

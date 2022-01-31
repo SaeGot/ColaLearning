@@ -13,11 +13,12 @@ public:
 	 * \param file_Name : 파일명
 	 */
 	QLearning(string file_Name);
-	void Learn();
+	void Learn(string state);
+	void Action(string action = "");
 	vector<string> GetBest();
 
 protected:
-	void TryStep();
+	void Initialize(string state);
 
 private:
 	struct StateAction
@@ -31,7 +32,7 @@ private:
 	map<StateAction, string> nextStateTable;
 
 	// i : 에피소드, j : 상태
-	vector<vector<string>> states;
+	vector<vector<string>> stateList;
 	// i : 에피소드, j : 행동
-	vector<vector<string>> action;
+	vector<vector<string>> actionList;
 };
