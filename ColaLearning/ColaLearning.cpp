@@ -131,8 +131,9 @@ void LearnTest()
 void QLearningTest()
 {
 	QLearning q_learning("2.csv");
-	q_learning.Learn("가위");
-	q_learning.Action("바위");
+	q_learning.Learn("0");
+	q_learning.Action();
+	q_learning.Action();
 }
 
 int main()

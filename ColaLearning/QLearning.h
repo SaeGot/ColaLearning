@@ -8,7 +8,7 @@ class QLearning : public ReinforcementLearning
 {
 public:
 	/**
-	 * csv 파일로 상태별 행동에 따른 다음 상태 표 생성. (행 : 상태, 열 : 행동)
+	 * csv 파일로 상태별 행동에 따른 다음 상태 표 생성. (행 : 행동, 열 : 상태)
 	 * 
 	 * \param file_Name : 파일명
 	 */
@@ -28,9 +28,10 @@ private:
 
 		bool operator<(const StateAction& rhs) const;
 	};
-	// ToDo 각 상태별 행동에 대해 어떤 상태가 되는지에 대한 표
+	// 각 상태별 행동에 대해 어떤 상태가 되는지에 대한 표
 	map<StateAction, string> nextStateTable;
-
+	// 각 상태별 가능한 행동
+	map<string, vector<string>> enableAction;
 	// i : 에피소드, j : 상태
 	vector<vector<string>> stateList;
 	// i : 에피소드, j : 행동

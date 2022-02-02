@@ -1,5 +1,6 @@
 #include "QLearning.h"
 #include "FileManager.h"
+#include <random>
 
 
 QLearning::QLearning(string file_Name)
@@ -17,11 +18,17 @@ QLearning::QLearning(string file_Name)
 	for (int i = 1; i < table.size(); i++)
 	{
 		const vector<string>& row = table[i];
+		vector<string> action;
 		for (int j = 1; j < row.size(); j++)
 		{
-			StateAction state_action = { first_row[j], row[0] };
-			nextStateTable.insert({ state_action, row[j] });
+			StateAction state_action = { row[0], first_row[j] };
+			if (row[j] != "")
+			{
+				nextStateTable.insert({ state_action, row[j] });
+				action.push_back(first_row[j]);
+			}
 		}
+		enableAction.insert({ row[0], action });
 	}
 }
 
@@ -43,7 +50,14 @@ void QLearning::Action(string action)
 	string next_state;
 	if (action == "")
 	{
-		//ToDo ·£´ý¼±ÅÃ		
+		const vector<string>& enable_action = enableAction[current_state];
+
+		random_device rd;
+		mt19937_64 gen(rd());
+		uniform_int_distribution<int> random_number(0, enable_action.size() - 1);
+
+		StateAction state_action = { current_state, enable_action[random_number(gen)] };
+		next_state = nextStateTable[state_action];
 	}
 	else
 	{
