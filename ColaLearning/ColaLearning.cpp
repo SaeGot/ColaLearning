@@ -94,7 +94,7 @@ void GateTest()
 
 void LearnTest()
 {
-	FileManager file = FileManager("1.csv");
+	FileManager file = FileManager("NeuralNetwork_Example.csv");
 	Layer layer_input(1);
 	Layer layer_hidden(3);
 	Layer layer_output(1);
@@ -130,10 +130,8 @@ void LearnTest()
 
 void QLearningTest()
 {
-	QLearning q_learning("2.csv");
-	q_learning.Learn("0");
-	q_learning.Action();
-	q_learning.Action();
+	QLearning q_learning("55", "QLearning_Example.csv");
+	q_learning.Learn("00");
 }
 
 int main()
