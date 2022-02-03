@@ -19,7 +19,8 @@ FileManager::FileManager(string file_Name, Type data_Type)
 	while (getline(file, line))
 	{
 		map<int, double> row_data;
-		row_data = SetData(row, line);
+		int column_count = static_cast<int>(column_name.size());
+		row_data = SetData(row, line, column_count);
 		for (int n = 0; n < tmp_data.size(); n++)
 		{
 			tmp_data[n].insert({ row, row_data[n]});
@@ -57,7 +58,8 @@ FileManager::FileManager(string file_Name, vector<Type> data_Types)
 	while (getline(file, line))
 	{
 		map<int, double> row_data;
-		row_data = SetData(row, line);
+		int column_count = static_cast<int>(column_name.size());
+		row_data = SetData(row, line, column_count);
 		for (int n = 0; n < tmp_data.size(); n++)
 		{
 			tmp_data[n].insert({ row, row_data[n] });
@@ -109,13 +111,26 @@ vector<vector<string>> FileManager::GetTable(string file_Name)
 	//file.imbue(locale(file.getloc(), new std::codecvt_utf8<wchar_t, 0x10FFFF, consume_header>));
 	string line;
 
+	getline(file, line);
+	vector<string> row;
+	stringstream ss_line(line);
+	string str_data;
+	int column_count = 0;
+	while (getline(ss_line, str_data, ','))
+	{
+		row.push_back(str_data);
+		column_count++;
+	}
+	table.push_back(row);
+
 	while (getline(file, line))
 	{
 		vector<string> row;
 		stringstream ss_line(line);
 		string str_data;
-		while (getline(ss_line, str_data, ','))
+		for (int n = 0; n < column_count; n++)
 		{
+			getline(ss_line, str_data, ',');
 			row.push_back(str_data);
 		}
 		table.push_back(row);
@@ -168,16 +183,15 @@ vector<FileManager::Type> FileManager::SetDataType(vector<string> column_Names, 
 	return types;
 }
 
-map<int, double> FileManager::SetData(int row, string line)
+map<int, double> FileManager::SetData(int row, string line, int column_Count)
 {
 	map<int, double> row_data;
-	int col = 0;
 	stringstream ss_line(line);
 	string str_data;
-	while (getline(ss_line, str_data, ','))
+	for (int col = 0; col < column_Count; col++)
 	{
+		getline(ss_line, str_data, ',');
 		row_data.insert({ col, stod(str_data) });
-		col++;
 	}
 
 	return row_data;

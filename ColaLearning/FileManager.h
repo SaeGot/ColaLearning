@@ -93,6 +93,6 @@ private:
 	 * \param row : 행 인덱스
 	 * \param line : 행 데이터
 	 */
-	map<int, double> SetData(int row, string line);
+	map<int, double> SetData(int row, string line, int column_Count);
 };
 
