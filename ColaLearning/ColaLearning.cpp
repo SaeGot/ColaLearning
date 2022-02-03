@@ -130,7 +130,7 @@ void LearnTest()
 
 void QLearningTest()
 {
-	QLearning q_learning("55", "QLearning_Example.csv");
+	QLearning q_learning("55", "QLearning_Example_nextStateTable.csv", "QLearning_Example_rewardTable.csv");
 	q_learning.Learn("00");
 }
 
