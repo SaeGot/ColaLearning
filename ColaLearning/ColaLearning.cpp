@@ -131,7 +131,15 @@ void LearnTest()
 void QLearningTest()
 {
 	QLearning q_learning("55", "QLearning_Example_nextStateTable.csv", "QLearning_Example_rewardTable.csv");
-	q_learning.Learn("00");
+	for (int n = 0; n < 100; n++)
+	{
+		q_learning.Learn("00", 0.8);
+	}
+	vector<string> best_way = q_learning.GetBest("00");
+	for (string state : best_way)
+	{
+		printf("%s\n", state.c_str());
+	}
 }
 
 int main()

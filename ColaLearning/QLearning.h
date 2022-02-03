@@ -26,16 +26,19 @@ public:
 	 */
 	QLearning(int reward_EndCondition, string next_StateTable, string reward_Table);
 	/**
+	 * 모든 에피소드 초기화.
+	 * 
+	 */
+	void Initialize();
+	/**
 	 * 특정 상태에서 시작하여 하나의 에피소드를 진행 및 학습.
 	 * 
 	 * \param starting_State : 시작 상태
+	 * \param discount_Factor : 감가율
 	 */
-	void Learn(string starting_State);
+	void Learn(string starting_State, double discount_Factor);
 	void Action(string action = "");
-	vector<string> GetBest();
-
-protected:
-	void Initialize(string state);
+	vector<string> GetBest(string starting_State);
 
 private:
 	struct StateAction
@@ -51,7 +54,10 @@ private:
 	map<StateAction, double> rewardTable;
 	// 각 상태별 가능한 행동
 	map<string, vector<string>> enableAction;
+	// 각 상태별 Q값 표
+	map<StateAction, double> QTable;
 
 	void SetNextStateTable(const vector<vector<string>>& table);
 	void SetRewardTable(const vector<vector<string>>& table);
+	void UpdateQTable(double discount_Factor);
 };

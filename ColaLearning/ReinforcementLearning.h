@@ -24,7 +24,6 @@ protected:
 	string stateEndCondition;
 	int rewardEndCondition;
 	string currentState;
-	int currentReward;
 	// i : 에피소드, j : 상태
 	vector<vector<SARS>> sarsList;
 };
