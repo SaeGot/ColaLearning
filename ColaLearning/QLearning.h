@@ -35,8 +35,9 @@ public:
 	 * 
 	 * \param starting_State : 시작 상태
 	 * \param discount_Factor : 감가율
+	 * \param epsilon_Greedy
 	 */
-	void Learn(string starting_State, double discount_Factor);
+	void Learn(string starting_State, double discount_Factor, EpsilonGreedy& epsilon_Greedy);
 	void Action(string action = "");
 	vector<string> GetBest(string starting_State);
 
@@ -60,4 +61,6 @@ private:
 	void SetNextStateTable(const vector<vector<string>>& table);
 	void SetRewardTable(const vector<vector<string>>& table);
 	void UpdateQTable(double discount_Factor);
+	string GetBestAction(string state);
+	bool GetRandomPolicy(EpsilonGreedy& epsilon_Greedy, size_t step);
 };

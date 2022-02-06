@@ -31,8 +31,18 @@ QLearning::QLearning(int reward_EndCondition, string next_StateTable, string rew
 	Initialize();
 }
 
-void QLearning::Learn(string starting_State, double discount_Factor)
+void QLearning::Learn(string starting_State, double discount_Factor, EpsilonGreedy& epsilon_Greedy)
 {
+	// ToDo 예외 처리
+	if (epsilon_Greedy.interval <= 0)
+	{
+		epsilon_Greedy.interval = 1;
+	}
+	if (epsilon_Greedy.gamma < 0 || epsilon_Greedy.gamma > 1)
+	{
+		epsilon_Greedy.gamma = 1;
+	}
+
 	currentState = starting_State;
 	if (episodeEndCondition == EpisodeEndCondition::State)
 	{
@@ -40,7 +50,12 @@ void QLearning::Learn(string starting_State, double discount_Factor)
 		sarsList.push_back(sars);
 		while (currentState != stateEndCondition)
 		{
-			Action();
+			string action = "";
+			if (!GetRandomPolicy(epsilon_Greedy, sarsList.back().size() + 1))
+			{
+				action = GetBestAction(currentState);
+			}
+			Action(action);
 			UpdateQTable(discount_Factor);
 		}
 	}
@@ -220,4 +235,47 @@ void QLearning::UpdateQTable(double discount_Factor)
 		}
 	}
 	QTable[state_action] = reward + (discount_Factor * max_q);
+}
+
+string QLearning::GetBestAction(string state)
+{
+	// 첫번째
+	string action = enableAction[state][0];
+	string best_action = action;
+	StateAction state_action = { state, best_action };
+	double best_q = QTable[state_action];
+	// 두번째 부터
+	for (int n = 1; n < enableAction[state].size(); n++)
+	{
+		action = enableAction[state][n];
+		state_action = { state, action };
+		if (QTable[state_action] > best_q)
+		{
+			best_action = action;
+		}
+	}
+
+	return best_action;
+}
+
+bool QLearning::GetRandomPolicy(EpsilonGreedy& epsilon_Greedy, size_t step)
+{
+	random_device rd;
+	mt19937_64 gen(rd());
+	uniform_real_distribution<double> random_value(0, 1);
+
+	if (step % epsilon_Greedy.interval == 0)
+	{
+		epsilon_Greedy.beginningValue *= epsilon_Greedy.gamma;
+	}
+
+	if (epsilon_Greedy.beginningValue <= 0)
+	{
+		return false;
+	}
+	else if (epsilon_Greedy.beginningValue >= random_value(gen))
+	{
+		return true;
+	}
+	return false;
 }

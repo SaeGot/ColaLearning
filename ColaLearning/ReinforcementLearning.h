@@ -11,12 +11,10 @@ public:
 		State,
 		Reward
 	};
-	struct epsilonGreedy
+	struct EpsilonGreedy
 	{
-		float startValue;
-		// true : 스텝마다 감가율 적용, false : 에피소드마다 감가율 적용
-		bool discountPerStep;
-		// 몇 interval마다 스텝 혹은 에피소드마다 감가율 적용하는지 결정. 0 이하는 1로 적용
+		float beginningValue;
+		// 몇 스텝 마다 감가율 적용하는지 결정. 0 이하는 1로 적용
 		int interval;
 		// 감가율
 		float gamma;
