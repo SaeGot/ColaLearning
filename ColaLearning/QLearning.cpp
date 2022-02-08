@@ -44,10 +44,10 @@ void QLearning::Learn(string starting_State, double discount_Factor, EpsilonGree
 	}
 
 	currentState = starting_State;
+	vector<SARS> sars;
+	sarsList.push_back(sars);
 	if (episodeEndCondition == EpisodeEndCondition::State)
 	{
-		vector<SARS> sars;
-		sarsList.push_back(sars);
 		while (currentState != stateEndCondition)
 		{
 			string action = "";
@@ -61,7 +61,17 @@ void QLearning::Learn(string starting_State, double discount_Factor, EpsilonGree
 	}
 	else if (episodeEndCondition == EpisodeEndCondition::Reward)
 	{
-		//ToDo
+		//ToDo 보상이 조건보다 큰 경우 외에도 필요
+		while (sarsList.back().size() > 0 || sarsList.back().back().reward >= rewardEndCondition)
+		{
+			string action = "";
+			if (!GetRandomPolicy(epsilon_Greedy, sarsList.back().size() + 1))
+			{
+				action = GetBestAction(currentState);
+			}
+			Action(action);
+			UpdateQTable(discount_Factor);
+		}
 	}
 }
 
