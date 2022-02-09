@@ -17,7 +17,7 @@ QLearning::QLearning(string state_EndCondition, string next_StateTable, string r
 	Initialize();
 }
 
-QLearning::QLearning(int reward_EndCondition, string next_StateTable, string reward_Table)
+QLearning::QLearning(double reward_EndCondition, string next_StateTable, string reward_Table)
 {
 	episodeEndCondition = EpisodeEndCondition::Reward;
 	rewardEndCondition = reward_EndCondition;
@@ -44,6 +44,7 @@ void QLearning::Learn(string starting_State, double discount_Factor, EpsilonGree
 	}
 
 	currentState = starting_State;
+	cumulativeReward = 0;
 	vector<SARS> sars;
 	sarsList.push_back(sars);
 	if (episodeEndCondition == EpisodeEndCondition::State)
@@ -62,7 +63,7 @@ void QLearning::Learn(string starting_State, double discount_Factor, EpsilonGree
 	else if (episodeEndCondition == EpisodeEndCondition::Reward)
 	{
 		//ToDo 보상이 조건보다 큰 경우 외에도 필요
-		while (sarsList.back().size() > 0 || sarsList.back().back().reward >= rewardEndCondition)
+		while (cumulativeReward < rewardEndCondition)
 		{
 			string action = "";
 			if (!GetRandomPolicy(epsilon_Greedy, sarsList.back().size() + 1))
@@ -114,6 +115,7 @@ void QLearning::Action(string action)
 	sarsList.back().push_back(sars);
 	// 다음 상태로 전이
 	currentState = next_state;
+	cumulativeReward += reward;
 }
 
 vector<string> QLearning::GetBest(string starting_State)
@@ -122,6 +124,7 @@ vector<string> QLearning::GetBest(string starting_State)
 
 	string current_state = starting_State;
 	string next_state;
+	double cumulative_reward = 0;
 
 	if (episodeEndCondition == EpisodeEndCondition::State)
 	{
@@ -144,6 +147,7 @@ vector<string> QLearning::GetBest(string starting_State)
 					if (QTable[state_action] > max_q)
 					{
 						next_state = nextStateTable[state_action];
+						max_q = QTable[state_action];
 					}
 				}
 			}
@@ -153,7 +157,37 @@ vector<string> QLearning::GetBest(string starting_State)
 	}
 	else if (episodeEndCondition == EpisodeEndCondition::Reward)
 	{
-		// ToDo
+		//ToDo 보상이 조건보다 큰 경우 외에도 필요
+		while (cumulative_reward < rewardEndCondition)
+		{
+			string max_q_state;
+			double max_q;
+			bool first_action = true;
+			double reward = 0;
+			for (const string& action : enableAction[current_state])
+			{
+				StateAction state_action = { current_state, action };
+				if (first_action)
+				{
+					next_state = nextStateTable[state_action];
+					max_q = QTable[state_action];
+					reward = rewardTable[state_action];
+					first_action = false;
+				}
+				else
+				{
+					if (QTable[state_action] > max_q)
+					{
+						next_state = nextStateTable[state_action];
+						max_q = QTable[state_action];
+						reward = rewardTable[state_action];
+					}
+				}
+			}
+			best_way.push_back(next_state);
+			current_state = next_state;
+			cumulative_reward += reward;
+		}
 	}
 
 	return best_way;

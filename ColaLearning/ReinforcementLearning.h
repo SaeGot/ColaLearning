@@ -30,8 +30,9 @@ protected:
 	};
 	EpisodeEndCondition episodeEndCondition;
 	string stateEndCondition;
-	int rewardEndCondition;
+	double rewardEndCondition;
 	string currentState;
+	double cumulativeReward;
 	// i : 에피소드, j : 상태
 	vector<vector<SARS>> sarsList;
 };

@@ -128,9 +128,28 @@ void LearnTest()
 	}
 }
 
-void QLearningTest()
+void QLearningTestStateEnd()
 {
 	QLearning q_learning("55", "QLearning_Example_nextStateTable.csv", "QLearning_Example_rewardTable.csv");
+	QLearning::EpsilonGreedy epsilon;
+	epsilon.beginningValue = 1;
+	epsilon.interval = 2;
+	epsilon.gamma = 0.9999;
+
+	for (int n = 0; n < 100; n++)
+	{
+		q_learning.Learn("00", 0.8, epsilon);
+	}
+	vector<string> best_way = q_learning.GetBest("00");
+	for (string state : best_way)
+	{
+		printf("%s\n", state.c_str());
+	}
+}
+
+void QLearningTestRewardEnd()
+{
+	QLearning q_learning(200, "QLearning_Example_nextStateTable.csv", "QLearning_Example_rewardTable2.csv");
 	QLearning::EpsilonGreedy epsilon;
 	epsilon.beginningValue = 1;
 	epsilon.interval = 2;
@@ -151,5 +170,8 @@ int main()
 {
 	LearnTest();
 	GateTest();
-	QLearningTest();
+	printf("State End\n");
+	QLearningTestStateEnd();
+	printf("Reward End\n");
+	QLearningTestRewardEnd();
 }

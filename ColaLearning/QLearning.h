@@ -24,7 +24,7 @@ public:
 	 * \param next_StateTable : 다음 상태 표
 	 * \param reward_Table : 보상표
 	 */
-	QLearning(int reward_EndCondition, string next_StateTable, string reward_Table);
+	QLearning(double reward_EndCondition, string next_StateTable, string reward_Table);
 	/**
 	 * 모든 에피소드 초기화.
 	 * 
