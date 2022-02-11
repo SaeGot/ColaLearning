@@ -149,7 +149,7 @@ void QLearningTestStateEnd()
 
 void QLearningTestRewardEnd()
 {
-	QLearning q_learning(200, "QLearning_Example_nextStateTable.csv", "QLearning_Example_rewardTable2.csv");
+	QLearning q_learning(0, 200, "QLearning_Example_nextStateTable.csv", "QLearning_Example_rewardTable2.csv");
 	QLearning::EpsilonGreedy epsilon;
 	epsilon.beginningValue = 1;
 	epsilon.interval = 2;

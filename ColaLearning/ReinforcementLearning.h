@@ -30,7 +30,7 @@ protected:
 	};
 	EpisodeEndCondition episodeEndCondition;
 	string stateEndCondition;
-	double rewardEndCondition;
+	double rewardEndCondition[2];
 	string currentState;
 	double cumulativeReward;
 	// i : 에피소드, j : 상태

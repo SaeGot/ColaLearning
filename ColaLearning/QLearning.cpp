@@ -17,10 +17,12 @@ QLearning::QLearning(string state_EndCondition, string next_StateTable, string r
 	Initialize();
 }
 
-QLearning::QLearning(double reward_EndCondition, string next_StateTable, string reward_Table)
+QLearning::QLearning(double min_RewardEndCondition, double max_RewardEndCondition, string next_StateTable, string reward_Table)
 {
+	// ToDo 예외 처리
 	episodeEndCondition = EpisodeEndCondition::Reward;
-	rewardEndCondition = reward_EndCondition;
+	rewardEndCondition[0] = min_RewardEndCondition;
+	rewardEndCondition[1] = max_RewardEndCondition;
 
 	FileManager file;
 	vector<vector<string>> next_state_table = file.GetTable(next_StateTable);
@@ -62,8 +64,7 @@ void QLearning::Learn(string starting_State, double discount_Factor, EpsilonGree
 	}
 	else if (episodeEndCondition == EpisodeEndCondition::Reward)
 	{
-		//ToDo 보상이 조건보다 큰 경우 외에도 필요
-		while (cumulativeReward < rewardEndCondition)
+		while (CheckRewardEndCondition(cumulativeReward))
 		{
 			string action = "";
 			if (!GetRandomPolicy(epsilon_Greedy, sarsList.back().size() + 1))
@@ -157,8 +158,7 @@ vector<string> QLearning::GetBest(string starting_State)
 	}
 	else if (episodeEndCondition == EpisodeEndCondition::Reward)
 	{
-		//ToDo 보상이 조건보다 큰 경우 외에도 필요
-		while (cumulative_reward < rewardEndCondition)
+		while (CheckRewardEndCondition(cumulative_reward))
 		{
 			string max_q_state;
 			double max_q;
@@ -322,4 +322,16 @@ bool QLearning::GetRandomPolicy(EpsilonGreedy& epsilon_Greedy, size_t step)
 		return true;
 	}
 	return false;
+}
+
+bool QLearning::CheckRewardEndCondition(double cumulative_Reward)
+{
+	if (rewardEndCondition[0] == 0)
+	{
+		return cumulative_Reward < rewardEndCondition[1];
+	}
+	else
+	{
+		return cumulative_Reward > rewardEndCondition[1] && cumulative_Reward < rewardEndCondition[1];
+	}
 }
