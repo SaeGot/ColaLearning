@@ -94,5 +94,6 @@ private:
 	 * \param line : 행 데이터
 	 */
 	map<int, double> SetData(int row, string line, int column_Count);
+	void OneHotEncoding();
 };
 
