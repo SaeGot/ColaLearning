@@ -28,15 +28,14 @@ FileManager::FileManager(string file_Name, Type data_Type)
 		row++;
 	}
 	// 데이터 타입 설정
-	vector<Type> types;
-	types = SetDataType(column_name, data_Type);
+	typeList = SetDataType(column_name, data_Type);
 
 	for (int n = 0; n < column_name.size(); n++)
 	{
 		Data column_data;
 		column_data.columnName = column_name[n];
 		column_data.value = tmp_data[n];
-		column_data.type = types[n];
+		column_data.type = typeList[n];
 		data.insert({ n, column_data });
 	}
 }
@@ -67,15 +66,14 @@ FileManager::FileManager(string file_Name, vector<Type> data_Types)
 		row++;
 	}
 	// 데이터 타입 설정
-	vector<Type> types;
-	types = SetDataType(column_name, data_Types);
+	typeList = SetDataType(column_name, data_Types);
 
 	for (int n = 0; n < column_name.size(); n++)
 	{
 		Data column_data;
 		column_data.columnName = column_name[n];
 		column_data.value = tmp_data[n];
-		column_data.type = types[n];
+		column_data.type = typeList[n];
 		data.insert({ n, column_data });
 	}
 
@@ -191,8 +189,14 @@ map<int, double> FileManager::SetData(int row, string line, int column_Count)
 	for (int col = 0; col < column_Count; col++)
 	{
 		getline(ss_line, str_data, ',');
+		// ToDo 타입별 나눠서
 		row_data.insert({ col, stod(str_data) });
 	}
 
 	return row_data;
+}
+
+double FileManager::OneHotEncoding(int column, string value)
+{
+	return oneHotEncodingList[column][value];
 }

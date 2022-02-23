@@ -166,6 +166,11 @@ void QLearningTestRewardEnd()
 	}
 }
 
+void OneHotEncodingTest()
+{
+	FileManager file = FileManager("OneHotEncoding_Example.csv", FileManager::Type::Real);
+}
+
 int main()
 {
 	LearnTest();
@@ -174,4 +179,5 @@ int main()
 	QLearningTestStateEnd();
 	printf("Reward End\n");
 	QLearningTestRewardEnd();
+	//OneHotEncodingTest();
 }

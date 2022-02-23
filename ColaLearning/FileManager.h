@@ -65,6 +65,10 @@ private:
 	};
 	// <열, 값>
 	map<int, Data> data;
+	// 타입 리스트
+	vector<Type> typeList;
+	// <칼럼인덱스, <값, 인코딩>>
+	map<int, map<string, double>> oneHotEncodingList;
 
 	/**
 	 * 칼럼명 설정.
@@ -94,6 +98,6 @@ private:
 	 * \param line : 행 데이터
 	 */
 	map<int, double> SetData(int row, string line, int column_Count);
-	void OneHotEncoding();
+	double OneHotEncoding(int column, string value);
 };
 
