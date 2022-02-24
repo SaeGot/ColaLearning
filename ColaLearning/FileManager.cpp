@@ -13,7 +13,9 @@ FileManager::FileManager(string file_Name, Type data_Type)
 	vector<string> column_name;
 	getline(file, line);
 	column_name = SetColumnName(line);
-	// 데이터 설정
+	// 데이터 타입 설정
+	typeList = SetDataType(column_name, data_Type);
+	// 데이터 설정 (컬럼별 <row, 값>)
 	vector<map<int, double>> tmp_data(column_name.size());
 	int row = 0;
 	while (getline(file, line))
@@ -27,8 +29,6 @@ FileManager::FileManager(string file_Name, Type data_Type)
 		}
 		row++;
 	}
-	// 데이터 타입 설정
-	typeList = SetDataType(column_name, data_Type);
 
 	for (int n = 0; n < column_name.size(); n++)
 	{
@@ -51,7 +51,9 @@ FileManager::FileManager(string file_Name, vector<Type> data_Types)
 	vector<string> column_name;
 	getline(file, line);
 	column_name = SetColumnName(line);
-	// 데이터 설정
+	// 데이터 타입 설정
+	typeList = SetDataType(column_name, data_Types);
+	// 데이터 설정 (컬럼별 <row, 값>)
 	vector<map<int, double>> tmp_data(column_name.size());
 	int row = 0;
 	while (getline(file, line))
@@ -65,8 +67,6 @@ FileManager::FileManager(string file_Name, vector<Type> data_Types)
 		}
 		row++;
 	}
-	// 데이터 타입 설정
-	typeList = SetDataType(column_name, data_Types);
 
 	for (int n = 0; n < column_name.size(); n++)
 	{
@@ -189,14 +189,32 @@ map<int, double> FileManager::SetData(int row, string line, int column_Count)
 	for (int col = 0; col < column_Count; col++)
 	{
 		getline(ss_line, str_data, ',');
-		// ToDo 타입별 나눠서
-		row_data.insert({ col, stod(str_data) });
+		// 타입별 나눠서
+		if (typeList[col] == Type::Real)
+		{
+			row_data.insert({ col, stod(str_data) });
+		}
+		else if (typeList[col] == Type::String)
+		{
+			row_data.insert({ col, StringToReal(col, str_data) });
+		}
 	}
 
 	return row_data;
 }
 
-double FileManager::OneHotEncoding(int column, string value)
+double FileManager::StringToReal(int column, string value)
 {
+	if (oneHotEncodingList[column].count(value) <= 0)
+	{
+		int oneHotNumber = oneHotEncodingList[column].size();
+		oneHotEncodingList[column].insert({ value, static_cast<double>(oneHotNumber) });
+	}
+
 	return oneHotEncodingList[column][value];
+}
+
+void FileManager::OneHotEncoding(int column, string value)
+{
+
 }

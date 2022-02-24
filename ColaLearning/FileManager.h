@@ -98,6 +98,15 @@ private:
 	 * \param line : 행 데이터
 	 */
 	map<int, double> SetData(int row, string line, int column_Count);
-	double OneHotEncoding(int column, string value);
+	/**
+	 * String 타입에서 Real(double) 타입으로 변경.
+	 * 
+	 * \param column : 열 인덱스
+	 * \param value : string 형 데이터 값
+	 * \return double 형 데이터 값
+	 */
+	double StringToReal(int column, string value);
+	// String 타입 칼럼을 존재하는 값만큼 생성
+	void OneHotEncoding(int column, string value);
 };
 
