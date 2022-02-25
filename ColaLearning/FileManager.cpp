@@ -6,7 +6,6 @@ FileManager::FileManager(string file_Name, Type data_Type)
 {
 	fstream file;
 	file.open(file_Name);
-	//file.imbue(locale(file.getloc(), new std::codecvt_utf8<wchar_t, 0x10FFFF, consume_header>));
 	string line;
 
 	// 컬럼명 설정
@@ -29,13 +28,13 @@ FileManager::FileManager(string file_Name, Type data_Type)
 		}
 		row++;
 	}
-
+	OneHotEncoding(tmp_data, column_name);
 	for (int n = 0; n < column_name.size(); n++)
 	{
 		Data column_data;
 		column_data.columnName = column_name[n];
-		column_data.value = tmp_data[n];
 		column_data.type = typeList[n];
+		column_data.value = tmp_data[n];
 		data.insert({ n, column_data });
 	}
 }
@@ -44,7 +43,6 @@ FileManager::FileManager(string file_Name, vector<Type> data_Types)
 {
 	fstream file;
 	file.open(file_Name);
-	//file.imbue(locale(file.getloc(), new std::codecvt_utf8<wchar_t, 0x10FFFF, consume_header>));
 	string line;
 
 	// 컬럼명 설정
@@ -67,13 +65,13 @@ FileManager::FileManager(string file_Name, vector<Type> data_Types)
 		}
 		row++;
 	}
-
+	OneHotEncoding(tmp_data, column_name);
 	for (int n = 0; n < column_name.size(); n++)
 	{
 		Data column_data;
 		column_data.columnName = column_name[n];
-		column_data.value = tmp_data[n];
 		column_data.type = typeList[n];
+		column_data.value = tmp_data[n];
 		data.insert({ n, column_data });
 	}
 
@@ -106,7 +104,6 @@ vector<vector<string>> FileManager::GetTable(string file_Name)
 
 	fstream file;
 	file.open(file_Name);
-	//file.imbue(locale(file.getloc(), new std::codecvt_utf8<wchar_t, 0x10FFFF, consume_header>));
 	string line;
 
 	getline(file, line);
@@ -214,7 +211,48 @@ double FileManager::StringToReal(int column, string value)
 	return oneHotEncodingList[column][value];
 }
 
-void FileManager::OneHotEncoding(int column, string value)
+void FileManager::OneHotEncoding(vector<map<int, double>>& tmp_Data, vector<string>& column_Name)
 {
+	vector<int> string_column_list;
+	for (const pair<int, map<string, double>>& encoding_list : oneHotEncodingList)
+	{
+		// 인코딩 대상 칼럼 인덱스
+		int column_index = encoding_list.first;
+		// 기존 칼럼 삭제용 인덱스 추가
+		string_column_list.push_back(column_index);
+		// 칼럼에 해당되는 데이터
+		map<int, double> column_data = tmp_Data[column_index];
 
+		// 추가될 칼럼
+		vector<map<int, double>> new_column = vector<map<int, double>>(encoding_list.second.size());
+		// 데이터 설정
+		//const pair<int, double>& row_data : tmp_data[column_index]
+		for (int row = 0; row < column_data.size(); row++)
+		{
+			// 인코딩 관련 모든 칼럼 0 으로 초기화 (add_col : 추가될 칼럼 인덱스)
+			for (int add_col = 0; add_col < new_column.size(); add_col++)
+			{
+				new_column[add_col].insert({ row, 0 });
+			}
+			// 값에 해당하는 칼럼을 1로
+			int encoding_value_index = static_cast<int>(column_data[row]);
+			new_column[encoding_value_index][row] = 1;
+		}
+		// 임시 데이터에 인코딩 칼럼들 추가, 칼럼명, 칼럼타입 추가
+		for (int n = 0; n < new_column.size(); n++)
+		{
+			tmp_Data.push_back(new_column[n]);
+			string add_column_name = column_Name[column_index] + "_Encoding_" + to_string(n);
+			column_Name.push_back(add_column_name);
+			typeList.push_back(Type::OneHot);
+		}
+	}
+	/*
+	// 기존 인코딩 대상 칼럼 및 칼럼명 삭제
+	for (int n = string_column_list.size() - 1; n >= 0; n--)
+	{
+		tmp_Data.erase(tmp_Data.begin() + string_column_list[n]);
+		column_Name.erase(column_Name.begin() + string_column_list[n]);
+	}
+	*/
 }

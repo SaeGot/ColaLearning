@@ -14,7 +14,8 @@ public:
 	enum class Type
 	{
 		Real,
-		String
+		String,
+		OneHot
 	};
 	FileManager() {};
 	/**
@@ -107,6 +108,7 @@ private:
 	 */
 	double StringToReal(int column, string value);
 	// String 타입 칼럼을 존재하는 값만큼 생성
-	void OneHotEncoding(int column, string value);
+	void OneHotEncoding(vector<map<int, double>>& tmp_Data, vector<string>& column_Name);
+	
 };
 
