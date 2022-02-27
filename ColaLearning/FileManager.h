@@ -15,7 +15,8 @@ public:
 	{
 		Real,
 		String,
-		OneHot
+		OneHot,
+		Categorical
 	};
 	FileManager() {};
 	/**
@@ -70,6 +71,10 @@ private:
 	vector<Type> typeList;
 	// <Ä®·³ÀÎµ¦½º, <°ª, ÀÎÄÚµù>>
 	map<int, map<string, double>> oneHotEncodingList;
+	// <Ä®·³ÀÎµ¦½º, <°ª, ÀÎÄÚµù>>
+	map<int, map<double, string>> oneHotDecodingList;
+	// ±âÁ¸ Ä®·³°ú ¸ÅÄªµÇ´Â ÀÎÄÚµù Ä®·³ ¸®½ºÆ® <Ä®·³ÀÎµ¦½º, Ä®·³¸í>
+	map<int, vector<string>> oneHotEncodingColumnList;
 
 	/**
 	 * Ä®·³¸í ¼³Á¤.
