@@ -2,7 +2,7 @@
 //#include <codecvt>
 
 
-FileManager::FileManager(string file_Name, Type data_Type)
+FileManager::FileManager(string file_Name, Type data_Type, Type encoding_Type)
 {
 	fstream file;
 	file.open(file_Name);
@@ -28,7 +28,14 @@ FileManager::FileManager(string file_Name, Type data_Type)
 		}
 		row++;
 	}
-	OneHotEncoding(tmp_data, column_name);
+	if (encoding_Type == Type::OneHot)
+	{
+		OneHotEncoding(tmp_data, column_name);
+	}
+	else
+	{
+		CategoricalEncoding(tmp_data, column_name);
+	}
 	for (int n = 0; n < column_name.size(); n++)
 	{
 		Data column_data;
@@ -39,7 +46,7 @@ FileManager::FileManager(string file_Name, Type data_Type)
 	}
 }
 
-FileManager::FileManager(string file_Name, vector<Type> data_Types)
+FileManager::FileManager(string file_Name, vector<Type> data_Types, Type encoding_Type)
 {
 	fstream file;
 	file.open(file_Name);
@@ -65,7 +72,14 @@ FileManager::FileManager(string file_Name, vector<Type> data_Types)
 		}
 		row++;
 	}
-	OneHotEncoding(tmp_data, column_name);
+	if (encoding_Type == Type::OneHot)
+	{
+		OneHotEncoding(tmp_data, column_name);
+	}
+	else
+	{
+		CategoricalEncoding(tmp_data, column_name);
+	}
 	for (int n = 0; n < column_name.size(); n++)
 	{
 		Data column_data;
@@ -202,31 +216,28 @@ map<int, double> FileManager::SetData(int row, string line, int column_Count)
 
 double FileManager::StringToReal(int column, string value)
 {
-	if (oneHotEncodingList[column].count(value) <= 0)
+	if (encodingList[column].count(value) <= 0)
 	{
-		int oneHotNumber = oneHotEncodingList[column].size();
-		oneHotEncodingList[column].insert({ value, static_cast<double>(oneHotNumber) });
+		int oneHotNumber = encodingList[column].size();
+		encodingList[column].insert({ value, static_cast<double>(oneHotNumber) });
+		decodingList[column].insert({ static_cast<double>(oneHotNumber), value });
 	}
 
-	return oneHotEncodingList[column][value];
+	return encodingList[column][value];
 }
 
 void FileManager::OneHotEncoding(vector<map<int, double>>& tmp_Data, vector<string>& column_Name)
 {
-	vector<int> string_column_list;
-	for (const pair<int, map<string, double>>& encoding_list : oneHotEncodingList)
+	for (const pair<int, map<string, double>>& encoding_list : encodingList)
 	{
 		// 인코딩 대상 칼럼 인덱스
 		int column_index = encoding_list.first;
-		// 기존 칼럼 삭제용 인덱스 추가
-		string_column_list.push_back(column_index);
 		// 칼럼에 해당되는 데이터
 		map<int, double> column_data = tmp_Data[column_index];
 
-		// 추가될 칼럼
+		// 추가될 칼럼들
 		vector<map<int, double>> new_column = vector<map<int, double>>(encoding_list.second.size());
 		// 데이터 설정
-		//const pair<int, double>& row_data : tmp_data[column_index]
 		for (int row = 0; row < column_data.size(); row++)
 		{
 			// 인코딩 관련 모든 칼럼 0 으로 초기화 (add_col : 추가될 칼럼 인덱스)
@@ -247,12 +258,32 @@ void FileManager::OneHotEncoding(vector<map<int, double>>& tmp_Data, vector<stri
 			typeList.push_back(Type::OneHot);
 		}
 	}
-	/*
-	// 기존 인코딩 대상 칼럼 및 칼럼명 삭제
-	for (int n = string_column_list.size() - 1; n >= 0; n--)
+}
+
+void FileManager::CategoricalEncoding(vector<map<int, double>>& tmp_Data, vector<string>& column_Name)
+{
+	for (const pair<int, map<string, double>>& encoding_list : encodingList)
 	{
-		tmp_Data.erase(tmp_Data.begin() + string_column_list[n]);
-		column_Name.erase(column_Name.begin() + string_column_list[n]);
+		// 인코딩 대상 칼럼 인덱스
+		int column_index = encoding_list.first;
+		// 칼럼에 해당되는 데이터
+		map<int, double> column_data = tmp_Data[column_index];
+
+		// 추가될 칼럼
+		map<int, double> new_column;
+		// 데이터 설정
+		for (int row = 0; row < column_data.size(); row++)
+		{
+			// 인코딩 관련 모든 칼럼 0 으로 초기화 (add_col : 추가될 칼럼 인덱스)
+			new_column.insert({ row, 0 });
+			// 값에 해당하는 칼럼을 1로
+			int encoding_value_index = static_cast<int>(column_data[row]);
+			new_column[row] = encoding_value_index;
+		}
+		// 임시 데이터에 인코딩 칼럼들 추가, 칼럼명, 칼럼타입 추가
+		tmp_Data.push_back(new_column);
+		string add_column_name = column_Name[column_index] + "_Encoding";
+		column_Name.push_back(add_column_name);
+		typeList.push_back(Type::Categorical);
 	}
-	*/
 }

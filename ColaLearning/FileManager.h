@@ -24,15 +24,17 @@ public:
 	 *
 	 * \param file_Name : 파일 이름
 	 * \param data_Type : 데이터 타입
+	 * \param encoding_Type : 인코딩 타입
 	 */
-	FileManager(string file_Name, Type data_Type = Type::Real);
+	FileManager(string file_Name, Type data_Type = Type::Real, Type encoding_Type = Type::Categorical);
 	/**
 	 * 각각의 칼럼에 타입을 설정하여 데이터 생성.
 	 * 
 	 * \param file_Name : 파일 이름
 	 * \param data_TypeList : 데이터 타입
+	 * \param encoding_Type : 인코딩 타입
 	 */
-	FileManager(string file_Name, vector<Type> data_Types);
+	FileManager(string file_Name, vector<Type> data_Types, Type encoding_Type = Type::Categorical);
 	~FileManager();
 	/**
 	 * 해당 행렬 데이터 가져오기.
@@ -70,9 +72,9 @@ private:
 	// 타입 리스트
 	vector<Type> typeList;
 	// <칼럼인덱스, <값, 인코딩>>
-	map<int, map<string, double>> oneHotEncodingList;
-	// <칼럼인덱스, <값, 인코딩>>
-	map<int, map<double, string>> oneHotDecodingList;
+	map<int, map<string, double>> encodingList;
+	// <칼럼인덱스, <값, 디코딩>>
+	map<int, map<double, string>> decodingList;
 	// 기존 칼럼과 매칭되는 인코딩 칼럼 리스트 <칼럼인덱스, 칼럼명>
 	map<int, vector<string>> oneHotEncodingColumnList;
 
@@ -114,6 +116,7 @@ private:
 	double StringToReal(int column, string value);
 	// String 타입 칼럼을 존재하는 값만큼 생성
 	void OneHotEncoding(vector<map<int, double>>& tmp_Data, vector<string>& column_Name);
+	void CategoricalEncoding(vector<map<int, double>>& tmp_Data, vector<string>& column_Name);
 	
 };
 

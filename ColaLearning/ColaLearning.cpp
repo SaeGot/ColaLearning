@@ -168,7 +168,7 @@ void QLearningTestRewardEnd()
 
 void OneHotEncodingTest()
 {
-	FileManager file = FileManager("OneHotEncoding_Example.csv", FileManager::Type::String);
+	FileManager file = FileManager("OneHotEncoding_Example.csv", FileManager::Type::String, FileManager::Type::OneHot);
 }
 
 int main()
