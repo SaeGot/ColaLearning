@@ -165,6 +165,11 @@ vector<string> FileManager::SetColumnName(string first_line)
 
 vector<FileManager::Type> FileManager::SetDataType(vector<string> column_Names, Type data_Type)
 {
+	// 기존 변수들이 인코딩형 타입이 될 수 없어, 이때는 String 타입으로 변환
+	if (data_Type == Type::OneHot || data_Type == Type::Categorical)
+	{
+		data_Type = Type::String;
+	}
 	vector<Type> types;
 	for (string column_name : column_Names)
 	{
@@ -181,6 +186,11 @@ vector<FileManager::Type> FileManager::SetDataType(vector<string> column_Names, 
 	{
 		for (Type data_type : data_Types)
 		{
+			// 기존 변수들이 인코딩형 타입이 될 수 없어, 이때는 String 타입으로 변환
+			if (data_type == Type::OneHot || data_type == Type::Categorical)
+			{
+				data_type = Type::String;
+			}
 			types.push_back(data_type);
 		}
 	}
@@ -228,6 +238,7 @@ double FileManager::StringToReal(int column, string value)
 
 void FileManager::OneHotEncoding(vector<map<int, double>>& tmp_Data, vector<string>& column_Name)
 {
+	int final_index = column_Name.size();
 	for (const pair<int, map<string, double>>& encoding_list : encodingList)
 	{
 		// 인코딩 대상 칼럼 인덱스
@@ -250,18 +261,24 @@ void FileManager::OneHotEncoding(vector<map<int, double>>& tmp_Data, vector<stri
 			new_column[encoding_value_index][row] = 1;
 		}
 		// 임시 데이터에 인코딩 칼럼들 추가, 칼럼명, 칼럼타입 추가
+		vector<int> encoding_column_index;
 		for (int n = 0; n < new_column.size(); n++)
 		{
 			tmp_Data.push_back(new_column[n]);
 			string add_column_name = column_Name[column_index] + "_Encoding_" + to_string(n);
 			column_Name.push_back(add_column_name);
 			typeList.push_back(Type::OneHot);
+			// 인코딩 칼럼 인덱스 추가
+			encoding_column_index.push_back(final_index);
+			final_index++;
 		}
+		oneHotEncodingColumnList.insert({ column_index , encoding_column_index });
 	}
 }
 
 void FileManager::CategoricalEncoding(vector<map<int, double>>& tmp_Data, vector<string>& column_Name)
 {
+	int final_index = column_Name.size();
 	for (const pair<int, map<string, double>>& encoding_list : encodingList)
 	{
 		// 인코딩 대상 칼럼 인덱스
@@ -281,9 +298,14 @@ void FileManager::CategoricalEncoding(vector<map<int, double>>& tmp_Data, vector
 			new_column[row] = encoding_value_index;
 		}
 		// 임시 데이터에 인코딩 칼럼들 추가, 칼럼명, 칼럼타입 추가
+		vector<int> encoding_column_index;
 		tmp_Data.push_back(new_column);
 		string add_column_name = column_Name[column_index] + "_Encoding";
 		column_Name.push_back(add_column_name);
 		typeList.push_back(Type::Categorical);
+		// 인코딩 칼럼 인덱스 추가
+		encoding_column_index.push_back(final_index);
+		final_index++;
+		oneHotEncodingColumnList.insert({ column_index , encoding_column_index });
 	}
 }

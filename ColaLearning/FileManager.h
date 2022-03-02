@@ -55,9 +55,10 @@ public:
 	 * 표 형태로 읽기.
 	 * 
 	 * \param file_Name : 파일 이름
-	 * \return 
+	 * \return 행열 데이터
 	 */
 	vector<vector<string>> GetTable(string file_Name);
+
 
 private:
 	struct Data
@@ -76,7 +77,7 @@ private:
 	// <칼럼인덱스, <값, 디코딩>>
 	map<int, map<double, string>> decodingList;
 	// 기존 칼럼과 매칭되는 인코딩 칼럼 리스트 <칼럼인덱스, 칼럼명>
-	map<int, vector<string>> oneHotEncodingColumnList;
+	map<int, vector<int>> oneHotEncodingColumnList;
 
 	/**
 	 * 칼럼명 설정.
@@ -114,9 +115,19 @@ private:
 	 * \return double 형 데이터 값
 	 */
 	double StringToReal(int column, string value);
-	// String 타입 칼럼을 존재하는 값만큼 생성
+	/**
+	 * String 타입의 변수를 OneHot Encoding.
+	 * 
+	 * \param tmp_Data
+	 * \param column_Name : 칼럼명 리스트
+	 */
 	void OneHotEncoding(vector<map<int, double>>& tmp_Data, vector<string>& column_Name);
-	void CategoricalEncoding(vector<map<int, double>>& tmp_Data, vector<string>& column_Name);
-	
+	/**
+	 * String 타입의 변수를 Categorical Encoding.
+	 *
+	 * \param tmp_Data
+	 * \param column_Name : 칼럼명 리스트
+	 */
+	void CategoricalEncoding(vector<map<int, double>>& tmp_Data, vector<string>& column_Name);	
 };
 

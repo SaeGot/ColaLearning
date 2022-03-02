@@ -168,7 +168,14 @@ void QLearningTestRewardEnd()
 
 void OneHotEncodingTest()
 {
-	FileManager file = FileManager("OneHotEncoding_Example.csv", FileManager::Type::String, FileManager::Type::OneHot);
+	vector<FileManager::Type> types = { FileManager::Type::String, FileManager::Type::String, FileManager::Type::Real };
+	FileManager file = FileManager("OneHotEncoding_Example.csv", types, FileManager::Type::OneHot);
+
+	Layer layer_input(2);
+	Layer layer_output(1);
+	Layer layers[3] = { layer_input, layer_output };
+	int layer_count = sizeof(layers) / sizeof(Layer);
+	NeuralNetwork net(layers, layer_count);
 }
 
 int main()
