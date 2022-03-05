@@ -112,6 +112,18 @@ vector<double> FileManager::GetData(int row)
 	return row_data;
 }
 
+vector<double> FileManager::GetEncodingData(int row, int column)
+{
+	vector<double> row_data;
+	vector<int> encoding_columns = oneHotEncodingColumnList[column];
+	for (int encoding_column : encoding_columns)
+	{
+		row_data.push_back(data[encoding_column].value[row]);
+	}
+
+	return row_data;
+}
+
 vector<vector<string>> FileManager::GetTable(string file_Name)
 {
 	vector<vector<string>> table;
@@ -228,7 +240,7 @@ double FileManager::StringToReal(int column, string value)
 {
 	if (encodingList[column].count(value) <= 0)
 	{
-		int oneHotNumber = encodingList[column].size();
+		int oneHotNumber = static_cast<int>(encodingList[column].size());
 		encodingList[column].insert({ value, static_cast<double>(oneHotNumber) });
 		decodingList[column].insert({ static_cast<double>(oneHotNumber), value });
 	}
@@ -238,7 +250,7 @@ double FileManager::StringToReal(int column, string value)
 
 void FileManager::OneHotEncoding(vector<map<int, double>>& tmp_Data, vector<string>& column_Name)
 {
-	int final_index = column_Name.size();
+	int final_index = static_cast<int>(column_Name.size());
 	for (const pair<int, map<string, double>>& encoding_list : encodingList)
 	{
 		// 인코딩 대상 칼럼 인덱스
@@ -278,7 +290,7 @@ void FileManager::OneHotEncoding(vector<map<int, double>>& tmp_Data, vector<stri
 
 void FileManager::CategoricalEncoding(vector<map<int, double>>& tmp_Data, vector<string>& column_Name)
 {
-	int final_index = column_Name.size();
+	int final_index = static_cast<int>(column_Name.size());
 	for (const pair<int, map<string, double>>& encoding_list : encodingList)
 	{
 		// 인코딩 대상 칼럼 인덱스

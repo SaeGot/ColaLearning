@@ -52,6 +52,14 @@ public:
 	 */
 	vector<double> GetData(int row);
 	/**
+	 * 해당 칼럼의 인코딩된 데이터의 해당 행 가져오기.
+	 * 
+	 * \param row : 행
+	 * \param column : 열
+	 * \return 인코딩 데이터
+	 */
+	vector<double> GetEncodingData(int row, int column);
+	/**
 	 * 표 형태로 읽기.
 	 * 
 	 * \param file_Name : 파일 이름

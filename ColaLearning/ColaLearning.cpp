@@ -170,6 +170,8 @@ void OneHotEncodingTest()
 {
 	vector<FileManager::Type> types = { FileManager::Type::String, FileManager::Type::String, FileManager::Type::Real };
 	FileManager file = FileManager("OneHotEncoding_Example.csv", types, FileManager::Type::OneHot);
+	vector<double> input_1_encoding = file.GetEncodingData(0, 0);
+	vector<double> input_2_encoding = file.GetEncodingData(0, 1);
 
 	Layer layer_input(2);
 	Layer layer_output(1);
