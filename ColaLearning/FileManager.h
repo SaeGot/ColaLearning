@@ -60,6 +60,14 @@ public:
 	 */
 	vector<double> GetEncodingData(int row, int column);
 	/**
+	 * 해당 칼럼들의 인코딩된 데이터의 해당 행 가져오기.
+	 * 
+	 * \param row : 행
+	 * \param columns : 열
+	 * \return 인코딩 데이터
+	 */
+	vector<double> GetEncodingData(int row, vector<int> columns);
+	/**
 	 * 표 형태로 읽기.
 	 * 
 	 * \param file_Name : 파일 이름
@@ -74,7 +82,7 @@ private:
 		string columnName;
 		Type type = Type::Real;
 		// <행, 값>
-		map<int, double> value;
+		map<int, string> value;
 	};
 	// <열, 값>
 	map<int, Data> data;
@@ -114,28 +122,27 @@ private:
 	 * \param row : 행 인덱스
 	 * \param line : 행 데이터
 	 */
-	map<int, double> SetData(int row, string line, int column_Count);
+	map<int, string> SetData(int row, string line, int column_Count);
 	/**
-	 * String 타입에서 Real(double) 타입으로 변경.
+	 * 인코딩 리스트 추가.
 	 * 
 	 * \param column : 열 인덱스
 	 * \param value : string 형 데이터 값
-	 * \return double 형 데이터 값
 	 */
-	double StringToReal(int column, string value);
+	void AddEncoingList(int column, string value);
 	/**
 	 * String 타입의 변수를 OneHot Encoding.
 	 * 
 	 * \param tmp_Data
 	 * \param column_Name : 칼럼명 리스트
 	 */
-	void OneHotEncoding(vector<map<int, double>>& tmp_Data, vector<string>& column_Name);
+	void OneHotEncoding(vector<map<int, string>>& tmp_Data, vector<string>& column_Name);
 	/**
 	 * String 타입의 변수를 Categorical Encoding.
 	 *
 	 * \param tmp_Data
 	 * \param column_Name : 칼럼명 리스트
 	 */
-	void CategoricalEncoding(vector<map<int, double>>& tmp_Data, vector<string>& column_Name);	
+	void CategoricalEncoding(vector<map<int, string>>& tmp_Data, vector<string>& column_Name);
 };
 

@@ -173,11 +173,19 @@ void OneHotEncodingTest()
 	vector<double> input_1_encoding = file.GetEncodingData(0, 0);
 	vector<double> input_2_encoding = file.GetEncodingData(0, 1);
 
-	Layer layer_input(2);
+	Layer layer_input(input_1_encoding.size() + input_2_encoding.size());
 	Layer layer_output(1);
-	Layer layers[3] = { layer_input, layer_output };
+	Layer layers[2] = { layer_input, layer_output };
 	int layer_count = sizeof(layers) / sizeof(Layer);
 	NeuralNetwork net(layers, layer_count);
+
+	vector<double> data = file.GetEncodingData(0, {0, 1});
+	Layer layer_inputdata(data);
+	double output = net.Predict(layer_inputdata)[0];
+	printf("%lf\n", output);
+
+
+	FileManager file_categorcal = FileManager("OneHotEncoding_Example.csv", types, FileManager::Type::Categorical);
 }
 
 int main()
@@ -188,5 +196,6 @@ int main()
 	QLearningTestStateEnd();
 	printf("Reward End\n");
 	QLearningTestRewardEnd();
+	printf("QLearning End\n");
 	OneHotEncodingTest();
 }
