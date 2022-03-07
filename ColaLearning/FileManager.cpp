@@ -143,6 +143,11 @@ vector<double> FileManager::GetEncodingData(int row, vector<int> columns)
 	return row_data;
 }
 
+int FileManager::GetRowCount()
+{
+	return data.begin()->second.value.size();
+}
+
 vector<vector<string>> FileManager::GetTable(string file_Name)
 {
 	vector<vector<string>> table;

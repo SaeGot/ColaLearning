@@ -74,6 +74,12 @@ public:
 	 * \return 행열 데이터
 	 */
 	vector<vector<string>> GetTable(string file_Name);
+	/**
+	 * 행 개수 가져오기.
+	 * 
+	 * \return 행 개수
+	 */
+	int GetRowCount();
 
 
 private:

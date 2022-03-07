@@ -110,7 +110,8 @@ void LearnTest()
 
 	vector<Layer> input_learning_layers;
 	vector<Layer> targe_layers;
-	for (int n = 0; n < 1; n++)
+	int row_count = file.GetRowCount();
+	for (int n = 0; n < row_count; n++)
 	{
 		vector<double> input_value = { file.GetData(n, 0) };
 		Layer input_learning_layer(input_value);
@@ -119,13 +120,19 @@ void LearnTest()
 		input_learning_layers.push_back(input_learning_layer);
 		targe_layers.push_back(targe_layer);
 	}
-	Optimizer* optimizer = new GradientDescent(0.005);
+	Optimizer* optimizer = new GradientDescent(0.0005);
 	for (int n = 0; n < 100; n++)
 	{
 		net.Learn(input_learning_layers, targe_layers, optimizer);
 		output = net.Predict(layer_inputdata)[0];
-		printf("%lf\n", output);
+		printf("learn %d, target = 7, predict = %lf\n", n + 1, output);
 	}
+	output = net.Predict(input_learning_layers[1])[0];
+	printf("target = 10, predict = %lf\n", output);
+	output = net.Predict(input_learning_layers[2])[0];
+	printf("target = 31, predict =%lf\n", output);
+	output = net.Predict(input_learning_layers[3])[0];
+	printf("target = 61, predict =%lf\n", output);
 }
 
 void QLearningTestStateEnd()
@@ -183,6 +190,35 @@ void OneHotEncodingTest()
 	Layer layer_inputdata(data);
 	double output = net.Predict(layer_inputdata)[0];
 	printf("%lf\n", output);
+
+	vector<Layer> input_learning_layers;
+	vector<Layer> targe_layers;
+	int row_count = file.GetRowCount();
+	for (int n = 0; n < row_count; n++)
+	{
+		vector<double> input_value = file.GetEncodingData(n, {0, 1});
+		Layer input_learning_layer(input_value);
+		vector<double> output_value = { file.GetData(n, 2) };
+		Layer targe_layer(output_value);
+		input_learning_layers.push_back(input_learning_layer);
+		targe_layers.push_back(targe_layer);
+	}
+	Optimizer* optimizer = new GradientDescent(0.005);
+	for (int n = 0; n < 1000; n++)
+	{
+		net.Learn(input_learning_layers, targe_layers, optimizer);
+		output = net.Predict(layer_inputdata)[0];
+		if ((n + 1) % 100 == 0)
+		{
+			printf("learn %d, target = 2, predict = %lf\n", n+1, output);
+		}
+	}
+	output = net.Predict(input_learning_layers[1])[0];
+	printf("target = 3, predict = %lf\n", output);
+	output = net.Predict(input_learning_layers[2])[0];
+	printf("target = 4, predict =%lf\n", output);
+	output = net.Predict(input_learning_layers[3])[0];
+	printf("target = 5, predict =%lf\n", output);
 
 
 	FileManager file_categorcal = FileManager("OneHotEncoding_Example.csv", types, FileManager::Type::Categorical);
