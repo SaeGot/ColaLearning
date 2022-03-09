@@ -60,7 +60,7 @@ void GateTest()
 			// 가중치 생성
 			Weight weights[1] = { weight };
 			// 신경망 생성
-			NeuralNetwork net(layers, weights, 2);
+			NeuralNetwork net(layers, 2, weights);
 
 			printf_s("입력 : %1lf, %1lf → 출력 : %lf\n", input_list[index].at(0), input_list[index].at(1), net.Predict(layer_input)[0]);
 		}
@@ -86,7 +86,7 @@ void GateTest()
 		}
 		Weight* weights = new Weight[2] { vec_weight, weight_list.at(Gate::AND) };
 		// 신경망 생성
-		NeuralNetwork net(layers, weights, 3);
+		NeuralNetwork net(layers, 3, weights);
 		printf_s("입력 : %1lf, %1lf → 출력 : %lf\n", input[0], input[1], net.Predict(layer_input)[0]);
 	}
 	printf_s("\n");

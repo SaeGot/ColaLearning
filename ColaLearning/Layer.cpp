@@ -31,7 +31,6 @@ Layer::Layer(const ActivationFunction& activation_Function, bool _bias)
 	bias = _bias;
 }
 
-
 Layer::~Layer()
 {
 	nodeValues.clear();
@@ -122,3 +121,5 @@ ActivationFunction Layer::GetActivationFunction() const
 {
 	return activationFunction;
 }
+
+

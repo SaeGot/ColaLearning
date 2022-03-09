@@ -107,14 +107,8 @@ public:
 	ActivationFunction GetActivationFunction() const;
 
 private:
-	struct MinMax
-	{
-		double min;
-		double max;
-	};
 	vector<double> nodeValues;
 	vector<double> backNodeValues;
-	vector<MinMax> nodeMinMax;
 	ActivationFunction activationFunction;
 	bool bias;
 };

@@ -22,10 +22,10 @@ public:
 	 * Layer와 Weight로 NeuralNetwork 생성.
 	 * 
 	 * \param _layers : 모든 층 (입력, 은닉, 출력 포함)
-	 * \param _weights : 모든 가중치
 	 * \param layer_Count : 층 개수
+	 * \param _weights : 모든 가중치
 	 */
-	NeuralNetwork(const Layer* _layers, const Weight* _weights, int layer_Count);
+	NeuralNetwork(const Layer* _layers, int layer_Count, const Weight* _weights);
 	~NeuralNetwork();
 
 	/**
@@ -54,9 +54,18 @@ public:
 	void Learn(vector<Layer> input_Layers, vector<Layer> target_Layers, Optimizer* optimizer, int repeat = 1);
 
 private:
+	struct MinMax
+	{
+		double min = 0;
+		double max = 0;
+	};
 	Layer* layers;
 	Weight* weights;
 	int layerCount;
+	vector<MinMax> inputNodeMinMax;
+	vector<MinMax> outputNodeMinMax;
+	// 정규화 위한 최소 최대 설정 완료 여부
+	bool minMaxSet;
 
 	/**
 	 * 모든 가중치 초기화.
@@ -74,13 +83,13 @@ private:
 	 */
 	double ForwardSum(const Layer &layer, const Weight &weight, int j);
 	/**
-	 * Feed Forward 진행.
+	 * Feed Forward 진행 (예측용).
 	 * 
 	 * \param input_Layer : 입력층
 	 */
 	void FeedForward(const Layer &input_Layer);
 	/**
-	 * Feed Forward 진행.
+	 * Feed Forward 진행 (학습용).
 	 * 
 	 * \param input_Layer : 입력층
 	 * \param target_Layer : 목표층
@@ -126,4 +135,15 @@ private:
 	 * \param optimizer : 최적화 기법
 	 */
 	void BackPropagation(vector<double> errors, Optimizer* optimizer);
+	/**
+	 * Normalize 위산 최소 최대 설정.
+	 * 
+	 * \param input_Layers : 입력 층
+	 * \param target_Layers : 출력 층
+	 */
+	void SetMinMax(vector<Layer> input_Layers, vector<Layer> target_Layers);
 };
+
+
+
+

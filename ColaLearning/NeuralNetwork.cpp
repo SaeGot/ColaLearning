@@ -10,9 +10,10 @@ NeuralNetwork::NeuralNetwork(const Layer* _layers, int layer_Count, double weigh
 		layers[n] = _layers[n];
 	}
 	InitWeights(weight_InitialLimit);
+	minMaxSet = false;
 }
 
-NeuralNetwork::NeuralNetwork(const Layer* _layers, const Weight* _weights, int layer_Count)
+NeuralNetwork::NeuralNetwork(const Layer* _layers, int layer_Count, const Weight* _weights)
 {
 	layerCount = layer_Count;
 	layers = new Layer[layerCount];
@@ -26,6 +27,7 @@ NeuralNetwork::NeuralNetwork(const Layer* _layers, const Weight* _weights, int l
 	{
 		weights[n] = _weights[n];
 	}
+	minMaxSet = false;
 }
 
 NeuralNetwork::~NeuralNetwork()
@@ -62,6 +64,7 @@ vector<double> NeuralNetwork::GetError(Layer input_Layer, Layer target_Layer)
 
 void NeuralNetwork::Learn(vector<Layer> input_Layers, vector<Layer> target_Layers, Optimizer* optimizer, int repeat)
 {
+	SetMinMax(input_Layers, target_Layers);
 	if (input_Layers.size() == target_Layers.size())
 	{
 		while (repeat>0)
@@ -250,5 +253,29 @@ void NeuralNetwork::BackPropagation(vector<double> errors, Optimizer* optimizer)
 					layers[n], j, optimizer);
 			}
 		}
+	}
+}
+
+void NeuralNetwork::SetMinMax(vector<Layer> input_Layers, vector<Layer> target_Layers)
+{
+	if (!minMaxSet)
+	{
+		inputNodeMinMax.resize(input_Layers[0].GetNodeCount());
+		outputNodeMinMax.resize(target_Layers[0].GetNodeCount());
+		for (int n = 0; n < input_Layers.size(); n++)
+		{
+			for (int node_index = 0; node_index < input_Layers[n].GetNodeCount(); node_index++)
+			{
+				inputNodeMinMax[node_index].min = min(inputNodeMinMax[node_index].min, input_Layers[n].GetNodeValue(node_index));
+				inputNodeMinMax[node_index].max = max(inputNodeMinMax[node_index].max, input_Layers[n].GetNodeValue(node_index));
+			}
+			for (int node_index = 0; node_index < target_Layers[n].GetNodeCount(); node_index++)
+			{
+				outputNodeMinMax[node_index].min = min(outputNodeMinMax[node_index].min, target_Layers[n].GetNodeValue(node_index));
+				outputNodeMinMax[node_index].max = max(outputNodeMinMax[node_index].max, target_Layers[n].GetNodeValue(node_index));
+			}
+		}
+		// 정규화 기준을 첫 학습에만 설정
+		minMaxSet = true;
 	}
 }
