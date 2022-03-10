@@ -90,7 +90,7 @@ double Layer::Activate(double value)
 	return value;
 }
 
-double Layer::DActivate(double value)
+double Layer::Deactivate(double value)
 {
 	switch (activationFunction)
 	{

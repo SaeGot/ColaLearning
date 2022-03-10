@@ -84,7 +84,7 @@ public:
 	 * \param value : 활성함수 미분의 변수
 	 * \return 활성함수 미분 값
 	 */
-	double DActivate(double value);
+	double Deactivate(double value);
 	/**
 	 * BackPropagation을 위한 노드 값 설정.
 	 * 

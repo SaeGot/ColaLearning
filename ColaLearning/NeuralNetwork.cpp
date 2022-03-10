@@ -35,31 +35,22 @@ NeuralNetwork::~NeuralNetwork()
 	delete[] weights;
 }
 
-vector<double> NeuralNetwork::Predict(Layer input_Layer)
+vector<double> NeuralNetwork::Predict(const Layer& input_Layer)
 {
-	FeedForward(input_Layer);
-
-	return layers[layerCount - 1].GetNodeValue();
-}
-
-vector<double> NeuralNetwork::GetError(Layer input_Layer, Layer target_Layer)
-{
-	vector<double> errors;
-	errors.resize(layers[layerCount - 1].GetNodeCount());
-	if (errors.size() == target_Layer.GetNodeCount())
+	Layer output;
+	if (minMaxSet)
 	{
-		FeedForward(input_Layer);
-		for (int n = 0; n < target_Layer.GetNodeCount(); n++)
-		{
-			errors.push_back(layers[layerCount - 1].GetNodeValue(n) - target_Layer.GetNodeValue(n));
-		}
+		Layer normaized_input = GetNormalized(input_Layer, inputNodeMinMax);
+		FeedForward(normaized_input);
+		output = GetDenormalized(layers[layerCount - 1], outputNodeMinMax);
 	}
 	else
 	{
-		// Error
+		FeedForward(input_Layer);
+		output = layers[layerCount - 1].GetNodeValue();
 	}
 
-	return errors;
+	return output.GetNodeValue();
 }
 
 void NeuralNetwork::Learn(vector<Layer> input_Layers, vector<Layer> target_Layers, Optimizer* optimizer, int repeat)
@@ -71,7 +62,9 @@ void NeuralNetwork::Learn(vector<Layer> input_Layers, vector<Layer> target_Layer
 		{
 			for (int n = 0; n < input_Layers.size(); n++)
 			{
-				vector<double> errors = FeedForward(input_Layers[n], target_Layers[n]);
+				Layer normaized_input = GetNormalized(input_Layers[n], inputNodeMinMax);
+				Layer normaized_target = GetNormalized(target_Layers[n], outputNodeMinMax);
+				vector<double> errors = FeedForward(normaized_input, normaized_target);
 				BackPropagation(errors, optimizer);
 			}
 			repeat--;
@@ -157,8 +150,9 @@ void NeuralNetwork::FeedForward(const Layer &input_Layer)
 }
 
 vector<double> NeuralNetwork::FeedForward(const Layer& input_Layer, const Layer& target_Layer)
-{
+{	
 	layers[0] = input_Layer;
+	// 출력층 직전의 층까지
 	for (int n = 1; n < layerCount - 1; n++)
 	{
 		for (int j = 0; j < layers[n].GetNodeCount(); j++)
@@ -218,7 +212,7 @@ void NeuralNetwork::BackPropagation(vector<double> errors, Optimizer* optimizer)
 	// 출력층과 출력 이전 층 사이의 가중치 업데이트
 	for (int j = 0; j < layers[layerCount - 1].GetNodeCount(); j++)
 	{
-		double d_activate = layers[layerCount - 1].DActivate(layers[layerCount - 1].GetNodeValue(j));
+		double d_activate = layers[layerCount - 1].Deactivate(layers[layerCount - 1].GetNodeValue(j));
 		layers[layerCount - 1].SetBackNodeValue(j, errors[j] * d_activate);
 		for (int i = 0; i < layers[layerCount - 2].GetNodeCount(); i++)
 		{
@@ -239,7 +233,7 @@ void NeuralNetwork::BackPropagation(vector<double> errors, Optimizer* optimizer)
 		for (int j = 0; j < layers[n].GetNodeCount(); j++)
 		{			
 			double sum = BackwardSum(layers[next_n], weights[n], j);
-			double d_activate = layers[n].DActivate(layers[n].GetNodeValue(j));
+			double d_activate = layers[n].Deactivate(layers[n].GetNodeValue(j));
 			layers[n].SetBackNodeValue(j, sum * d_activate);
 			
 			for (int i = 0; i < layers[prev_n].GetNodeCount(); i++)
@@ -278,4 +272,28 @@ void NeuralNetwork::SetMinMax(vector<Layer> input_Layers, vector<Layer> target_L
 		// 정규화 기준을 첫 학습에만 설정
 		minMaxSet = true;
 	}
+}
+
+Layer NeuralNetwork::GetNormalized(const Layer& layer, vector<MinMax> min_Max)
+{
+	Layer normalized_layer = layer;
+	for (int n = 0; n < normalized_layer.GetNodeCount(); n++)
+	{
+		double normalized_value = (layer.GetNodeValue(n) - min_Max[n].min) / (min_Max[n].max - min_Max[n].min);
+		normalized_layer.SetNodeValue(n, normalized_value);
+	}
+
+	return normalized_layer;
+}
+
+Layer NeuralNetwork::GetDenormalized(const Layer& layer, vector<MinMax> min_Max)
+{
+	Layer denormalized_layer = layer;
+	for (int n = 0; n < denormalized_layer.GetNodeCount(); n++)
+	{
+		double denormalized_value = layer.GetNodeValue(n) * (min_Max[n].max - min_Max[n].min) + min_Max[n].min;
+		denormalized_layer.SetNodeValue(n, denormalized_value);
+	}
+
+	return denormalized_layer;
 }

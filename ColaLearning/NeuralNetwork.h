@@ -34,15 +34,7 @@ public:
 	 * \param input_Layer : 입력층
 	 * \return 예측 값
 	 */
-	vector<double> Predict(Layer input_Layer);
-	/**
-	 * 오차 가져오기.
-	 * 
-	 * \param input_Layer : 입력층
-	 * \param target_Layer : 목표층
-	 * \return 오차 (예측값 - 목표값)
-	 */
-	vector<double> GetError(Layer input_Layer, Layer target_Layer);
+	vector<double> Predict(const Layer& input_Layer);
 	/**
 	 * 학습.
 	 * 
@@ -136,12 +128,14 @@ private:
 	 */
 	void BackPropagation(vector<double> errors, Optimizer* optimizer);
 	/**
-	 * Normalize 위산 최소 최대 설정.
+	 * Normalize 위한 최소 최대 설정.
 	 * 
 	 * \param input_Layers : 입력 층
 	 * \param target_Layers : 출력 층
 	 */
 	void SetMinMax(vector<Layer> input_Layers, vector<Layer> target_Layers);
+	Layer GetNormalized(const Layer& layer, vector<MinMax> min_Max);
+	Layer GetDenormalized(const Layer& layer, vector<MinMax> min_Max);
 };
 
 

@@ -120,12 +120,15 @@ void LearnTest()
 		input_learning_layers.push_back(input_learning_layer);
 		targe_layers.push_back(targe_layer);
 	}
-	Optimizer* optimizer = new GradientDescent(0.0005);
-	for (int n = 0; n < 100; n++)
+	Optimizer* optimizer = new GradientDescent(0.005);
+	for (int n = 0; n < 1000; n++)
 	{
 		net.Learn(input_learning_layers, targe_layers, optimizer);
 		output = net.Predict(layer_inputdata)[0];
-		printf("learn %d, target = 7, predict = %lf\n", n + 1, output);
+		if ((n + 1) % 100 == 0)
+		{
+			printf("learn %d, target = 7, predict = %lf\n", n + 1, output);
+		}
 	}
 	output = net.Predict(input_learning_layers[1])[0];
 	printf("target = 10, predict = %lf\n", output);
@@ -219,7 +222,6 @@ void OneHotEncodingTest()
 	printf("target = 4, predict =%lf\n", output);
 	output = net.Predict(input_learning_layers[3])[0];
 	printf("target = 5, predict =%lf\n", output);
-
 
 	FileManager file_categorcal = FileManager("OneHotEncoding_Example.csv", types, FileManager::Type::Categorical);
 }
