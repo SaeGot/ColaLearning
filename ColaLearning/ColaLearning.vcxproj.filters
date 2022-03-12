@@ -39,6 +39,15 @@
     <ClCompile Include="QLearning.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Layer2D.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Layer1D.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Tensor.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NeuralNetwork.h">
@@ -63,6 +72,15 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="QLearning.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Layer2D.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Layer1D.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Tensor.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

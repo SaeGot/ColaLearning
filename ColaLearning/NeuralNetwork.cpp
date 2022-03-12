@@ -47,7 +47,7 @@ vector<double> NeuralNetwork::Predict(const Layer& input_Layer)
 	else
 	{
 		FeedForward(input_Layer);
-		output = layers[layerCount - 1].GetNodeValue();
+		output = layers[layerCount - 1];
 	}
 
 	return output.GetNodeValue();

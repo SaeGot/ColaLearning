@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include <vector>
+#include <map>
+#include "Tensor.h"
 
 
 using namespace std;
@@ -55,11 +57,6 @@ public:
 	 */
 	void SetNodeValue(int n, double value);
 	/**
-	 * 노드 값 초기화.
-	 * 
-	 */
-	void InitNodeValue();
-	/**
 	 * 노드 개수 가져오기.
 	 *
 	 * \return 노드 개수
@@ -107,8 +104,14 @@ public:
 	ActivationFunction GetActivationFunction() const;
 
 private:
-	vector<double> nodeValues;
-	vector<double> backNodeValues;
+	map<Tensor, double> nodeValues;
+	map<Tensor, double> backNodeValues;
 	ActivationFunction activationFunction;
 	bool bias;
+
+	/**
+	 * 초기화.
+	 *
+	 */
+	void Initialize();
 };

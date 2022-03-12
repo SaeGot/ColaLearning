@@ -3,16 +3,24 @@
 
 Layer::Layer(vector<double> node_Values, const ActivationFunction &activation_Function, bool _bias)
 {
-	nodeValues = node_Values;
-	backNodeValues.resize(nodeValues.size());
+	Initialize();
+	for (int n = 0; n < node_Values.size(); n++)
+	{
+		nodeValues.emplace(Tensor(n), node_Values[n]);
+		backNodeValues.emplace(Tensor(n), 0);
+	}
 	activationFunction = activation_Function;
 	bias = _bias;
 }
 
 Layer::Layer(int count, const ActivationFunction &activation_Function, bool _bias)
 {
-	nodeValues.resize(count);
-	backNodeValues.resize(count);
+	Initialize();
+	for (int n = 0; n < count; n++)
+	{
+		nodeValues.emplace(Tensor(n), 0);
+		backNodeValues.emplace(Tensor(n), 0);
+	}
 	activationFunction = activation_Function;
 	bias = _bias;
 }
@@ -33,7 +41,7 @@ Layer::Layer(const ActivationFunction& activation_Function, bool _bias)
 
 Layer::~Layer()
 {
-	nodeValues.clear();
+	Initialize();
 }
 
 double Layer::GetNodeValue(int n) const
@@ -43,25 +51,24 @@ double Layer::GetNodeValue(int n) const
 		printf("Error : %d번째 인자를 선택하였습니다.\n", n);
 		return 0;
 	}
-	return nodeValues[n];
+
+	return nodeValues.at(Tensor(n));
 }
 
 vector<double> Layer::GetNodeValue() const
 {
-	return nodeValues;
+	vector<double> values;
+	for (int n = 0; n < nodeValues.size(); n++)
+	{
+		values.push_back( nodeValues.at(Tensor(n)) );
+	}
+
+	return values;
 }
 
 void Layer::SetNodeValue(int n, double value)
 {
 	nodeValues[n] = value;
-}
-
-void Layer::InitNodeValue()
-{
-	for (double value : nodeValues)
-	{
-		value = 0.0;
-	}
 }
 
 int Layer::GetNodeCount() const
@@ -109,12 +116,12 @@ double Layer::Deactivate(double value)
 
 void Layer::SetBackNodeValue(int n, double value)
 {
-	backNodeValues[n] = value;
+	backNodeValues.at(Tensor(n)) = value;
 }
 
 double Layer::GetBackNodeValue(int n) const
 {
-	return backNodeValues[n];
+	return backNodeValues.at(Tensor(n));
 }
 
 ActivationFunction Layer::GetActivationFunction() const
@@ -122,4 +129,8 @@ ActivationFunction Layer::GetActivationFunction() const
 	return activationFunction;
 }
 
-
+void Layer::Initialize()
+{
+	nodeValues.clear();
+	backNodeValues.clear();
+}

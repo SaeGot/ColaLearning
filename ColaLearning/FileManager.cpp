@@ -145,7 +145,7 @@ vector<double> FileManager::GetEncodingData(int row, vector<int> columns)
 
 int FileManager::GetRowCount()
 {
-	return data.begin()->second.value.size();
+	return static_cast<int>(data.begin()->second.value.size());
 }
 
 vector<vector<string>> FileManager::GetTable(string file_Name)
