@@ -3,9 +3,8 @@
 #include "Weight.h"
 #include "Layer.h"
 #include "Optimizer.h"
-
-
 using namespace std;
+
 
 class NeuralNetwork
 {
@@ -70,10 +69,10 @@ private:
 	 * 
 	 * \param layer : 이전 Layer
 	 * \param weight : 이전 Layer와 다음 Layer 사이의 가중치
-	 * \param j : 다음 Layer의 노드 인덱스
+	 * \Tensor j : 다음 Layer의 노드 인덱스
 	 * \return 다음 노드 j 번째 값
 	 */
-	double ForwardSum(const Layer &layer, const Weight &weight, int j);
+	double ForwardSum(const Layer &layer, const Weight &weight, Tensor j);
 	/**
 	 * Feed Forward 진행 (예측용).
 	 * 
@@ -107,8 +106,8 @@ private:
 	 * \param j : 다음 층 노드 인덱스
 	 * \param optimizer : 최적화 기법
 	 */
-	void UpdateWeight(Weight& weight, const Layer& prev_Layer, int i,
-		Layer& next_Layer, int j, Optimizer* optimizer);
+	void UpdateWeight(Weight& weight, const Layer& prev_Layer, Tensor i,
+		Layer& next_Layer, Tensor j, Optimizer* optimizer);
 	/**
 	 * 편향 가중치 업데이트.
 	 * 
@@ -118,8 +117,7 @@ private:
 	 * \param j : 다음 층 노드 인덱스
 	 * \param optimizer : 최적화 기법
 	 */
-	void UpdateBiasWeight(Weight& weight, int i,
-		Layer& next_Layer, int j, Optimizer* optimizer);
+	void UpdateBiasWeight(Weight& weight, Layer& next_Layer, Tensor j, Optimizer* optimizer);
 	/**
 	 * 역전파.
 	 * 

@@ -228,8 +228,8 @@ void OneHotEncodingTest()
 
 int main()
 {
-	LearnTest();
 	GateTest();
+	LearnTest();
 	printf("State End\n");
 	QLearningTestStateEnd();
 	printf("Reward End\n");

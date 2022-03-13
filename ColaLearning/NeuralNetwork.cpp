@@ -119,16 +119,22 @@ void NeuralNetwork::InitWeights(double weight_InitialLimit)
 	}
 }
 
-double NeuralNetwork::ForwardSum(const Layer& layer, const Weight& weight, int j)
+double NeuralNetwork::ForwardSum(const Layer& layer, const Weight& weight, Tensor j)
 {
 	double output_sum = 0.0;
+	for (const Tensor& tensor : layer.GetTensorWithoutBias())
+	{
+		output_sum += layer.GetNodeValue(tensor) * weight.GetWeight(tensor, j);
+	}
+	/*
 	for (int i = 0; i < layer.GetNodeCount(); i++)
 	{
 		output_sum += layer.GetNodeValue(i) * weight.GetWeight(i, j);
 	}
+	*/
 	if (layer.CheckBias())
 	{
-		output_sum += weight.GetWeight(layer.GetNodeCount(), j);
+		output_sum += weight.GetWeight(Tensor::GetBias(), j);
 	}
 
 	return output_sum;
@@ -139,7 +145,7 @@ void NeuralNetwork::FeedForward(const Layer &input_Layer)
 	layers[0] = input_Layer;
 	for (int n = 1; n < layerCount; n++)
 	{
-		for (int j = 0; j < layers[n].GetNodeCount(); j++)
+		for (Tensor j : layers[n].GetTensorWithoutBias())
 		{
 			int prev_n = n - 1;
 			double value = ForwardSum(layers[prev_n], weights[prev_n], j);
@@ -190,8 +196,8 @@ double NeuralNetwork::BackwardSum(const Layer& next_Layer, const Weight& weight,
 	return output_sum;
 }
 
-void NeuralNetwork::UpdateWeight(Weight& weight, const Layer& prev_Layer, int i,
-	Layer& next_Layer, int j, Optimizer* optimizer)
+void NeuralNetwork::UpdateWeight(Weight& weight, const Layer& prev_Layer, Tensor i,
+	Layer& next_Layer, Tensor j, Optimizer* optimizer)
 {
 	// backnode * x
 	double backnode_value = next_Layer.GetBackNodeValue(j);
@@ -199,12 +205,11 @@ void NeuralNetwork::UpdateWeight(Weight& weight, const Layer& prev_Layer, int i,
 	weight.UpdateWeight(i, j, update_value);
 }
 
-void NeuralNetwork::UpdateBiasWeight(Weight& weight, int i,
-	Layer& next_Layer, int j, Optimizer* optimizer)
+void NeuralNetwork::UpdateBiasWeight(Weight& weight, Layer& next_Layer, Tensor j, Optimizer* optimizer)
 {
 	// backnode * 1
-	double update_value = optimizer->GetUpdateValue(weight.GetWeight(i, j), next_Layer.GetBackNodeValue(j), 1);
-	weight.UpdateWeight(i, j, update_value);
+	double update_value = optimizer->GetUpdateValue(weight.GetWeight(Tensor::GetBias(), j), next_Layer.GetBackNodeValue(j), 1);
+	weight.UpdateWeight(Tensor::GetBias(), j, update_value);
 }
 
 void NeuralNetwork::BackPropagation(vector<double> errors, Optimizer* optimizer)
@@ -221,8 +226,7 @@ void NeuralNetwork::BackPropagation(vector<double> errors, Optimizer* optimizer)
 		}
 		if (layers[layerCount - 2].CheckBias())
 		{
-			UpdateBiasWeight(weights[layerCount - 2], layers[layerCount - 2].GetNodeCount(),
-				layers[layerCount - 1], j, optimizer);
+			UpdateBiasWeight(weights[layerCount - 2], layers[layerCount - 1], j, optimizer);
 		}
 	}
 	// 그 외 가중치 업데이트
@@ -243,8 +247,7 @@ void NeuralNetwork::BackPropagation(vector<double> errors, Optimizer* optimizer)
 			}
 			if (layers[n].CheckBias())
 			{
-				UpdateBiasWeight(weights[prev_n], layers[prev_n].GetNodeCount(),
-					layers[n], j, optimizer);
+				UpdateBiasWeight(weights[prev_n], layers[n], j, optimizer);
 			}
 		}
 	}

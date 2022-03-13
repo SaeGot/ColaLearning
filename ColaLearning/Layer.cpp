@@ -44,14 +44,15 @@ Layer::~Layer()
 	Initialize();
 }
 
-double Layer::GetNodeValue(int n) const
+double Layer::GetNodeValue(Tensor n) const
 {
+	/*
 	if (n < 0)
 	{
 		printf("Error : %d번째 인자를 선택하였습니다.\n", n);
 		return 0;
 	}
-
+	*/
 	return nodeValues.at(Tensor(n));
 }
 
@@ -66,7 +67,7 @@ vector<double> Layer::GetNodeValue() const
 	return values;
 }
 
-void Layer::SetNodeValue(int n, double value)
+void Layer::SetNodeValue(Tensor n, double value)
 {
 	nodeValues[n] = value;
 }
@@ -74,6 +75,20 @@ void Layer::SetNodeValue(int n, double value)
 int Layer::GetNodeCount() const
 {
 	return static_cast<int>(nodeValues.size());
+}
+
+vector<Tensor> Layer::GetTensorWithoutBias() const
+{
+	vector<Tensor> tensors;
+	for (const pair<Tensor, double>& node_value : nodeValues)
+	{
+		if (node_value.first != Tensor::GetBias())
+		{
+			tensors.push_back(node_value.first);
+		}
+	}
+
+	return tensors;
 }
 
 bool Layer::CheckBias() const
@@ -114,12 +129,12 @@ double Layer::Deactivate(double value)
 	return 1.0;
 }
 
-void Layer::SetBackNodeValue(int n, double value)
+void Layer::SetBackNodeValue(Tensor n, double value)
 {
 	backNodeValues.at(Tensor(n)) = value;
 }
 
-double Layer::GetBackNodeValue(int n) const
+double Layer::GetBackNodeValue(Tensor n) const
 {
 	return backNodeValues.at(Tensor(n));
 }

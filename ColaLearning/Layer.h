@@ -2,9 +2,8 @@
 #include <vector>
 #include <map>
 #include "Tensor.h"
-
-
 using namespace std;
+
 
 enum class ActivationFunction
 {
@@ -42,7 +41,7 @@ public:
 	 * \param n : 인덱스
 	 * \return 노드 값
 	 */
-	double GetNodeValue(int n) const;
+	double GetNodeValue(Tensor n) const;
 	/**
 	 * 모든 노드 값 가져오기.
 	 * 
@@ -55,13 +54,19 @@ public:
 	 * \param n : 노드 인덱스
 	 * \param value : 노드 값
 	 */
-	void SetNodeValue(int n, double value);
+	void SetNodeValue(Tensor n, double value);
 	/**
 	 * 노드 개수 가져오기.
 	 *
 	 * \return 노드 개수
 	 */
 	int GetNodeCount() const;
+	/**
+	 * 모든 텐서 가져오기.
+	 *
+	 * \return 텐서
+	 */
+	vector<Tensor> GetTensorWithoutBias() const;
 	/**
 	 * 편향 여부 확인.
 	 * 
@@ -88,14 +93,14 @@ public:
 	 * \param n : 백노드 인덱스
 	 * \param value : 백노드 값
 	 */
-	void SetBackNodeValue(int n, double value);
+	void SetBackNodeValue(Tensor n, double value);
 	/**
 	 * BackPropagation을 위한 노드 값 설정.
 	 * 
 	 * \param n : 백노드 인덱스
 	 * \return 백노드 값
 	 */
-	double GetBackNodeValue(int n) const;
+	double GetBackNodeValue(Tensor n) const;
 	/**
 	 * 활성 함수 가져오기.
 	 * 

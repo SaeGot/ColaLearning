@@ -1,8 +1,9 @@
 ﻿#pragma once
 #include <vector>
-
-
+#include <map>
+#include "Tensor.h"
 using namespace std;
+
 
 enum class InitWeight
 {
@@ -15,22 +16,23 @@ class Weight
 {
 public:
 	/**
-	 * 가중치값으로 Weight 생성.
+	 * 가중치값으로 Weight 생성. (1D 전용)
 	 * 
 	 * \param weight_Values : 가중치
+	 * \param bias : 이전 층 편향 유무
 	 */
-	Weight(vector<vector<double>> weight_Values);
+	Weight(vector<vector<double>> weight_Values, bool previous_Bias = true);
 	/**
-	 * 이전 층, 다음 층 노드 개수로 Weight 생성.
+	 * 이전 층, 다음 층 노드 개수로 Weight 생성. (편향 무조건 포함)
 	 * 
-	 * \param input_NodeCountWithBias : 편항 포함한 입력 노드 개수
-	 * \param output_NodeCount : 출력 노드 개수
+	 * \param previous_NodeCountWithBias : 편항 포함한 이전층 노드 개수
+	 * \param next_NodeCount : 다음층 노드 개수
 	 * \param init_Weight : 초기화 방법
 	 * \param initial_Limit : 가중치 초기값 상하한
 	 */
 	Weight(int input_NodeCountWithBias, int output_NodeCount, InitWeight init_Weight, double initial_Limit);
-	Weight() {};
 	Weight(const Weight &weight);
+	Weight();
 	~Weight();
 
 	/**
@@ -38,20 +40,21 @@ public:
 	 * 
 	 * \param i : 이전 층 노드 인덱스
 	 * \param j : 다음 층 노드 인덱스
-	 * \return 
+	 * \return 가중치
 	 */
-	double GetWeight(int i, int j) const;
+	double GetWeight(Tensor i, Tensor j) const;
 	/**
 	 * 가중치 업데이트.
 	 *
 	 * \param i : 이전 층 노드 인덱스
 	 * \param j : 다음 층 노드 인덱스
-	 * \param value
+	 * \param value : 업데이트할 가중치 값
 	 */
-	void UpdateWeight(int i, int j, double value);
+	void UpdateWeight(Tensor i, Tensor j, double value);
 
 private:
-	vector<vector<double>> weightValues;
+	map<TensorConnection, double> weightValues;
+	bool previousBias;
 
 	/**
 	 * 가중치 초기화.
@@ -63,5 +66,10 @@ private:
 	 * \return 가중치 초기화 값
 	 */
 	double Initialize(InitWeight init_Weight, int input_NodeCountWithBias, int output_NodeCount, double limit);
+	/**
+	 * 가중치 모두 제거(초기화).
+	 * 
+	 */
+	void Initialize();
 };
 

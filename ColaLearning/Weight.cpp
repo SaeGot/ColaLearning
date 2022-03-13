@@ -2,47 +2,83 @@
 #include <random>
 
 
-Weight::Weight(vector<vector<double>> weight_Values)
+Weight::Weight(vector<vector<double>> weight_Values, bool previous_Bias)
 {
-	weightValues = weight_Values;
+	Initialize();
+	previousBias = previous_Bias;
+	int previous_count = static_cast<int>( weight_Values.size() );
+	for (int i = 0; i < previous_count - 1; i++)
+	{
+		for (int j = 0; j < weight_Values[i].size(); j++)
+		{
+			weightValues[TensorConnection( Tensor(i), Tensor(j) )] = weight_Values[i][j];
+		}
+	}
+	// 편향 or 마지막
+	int previous_index = previous_count - 1;
+	for (int j = 0; j < weight_Values[previous_index].size(); j++)
+	{
+		if (previousBias)
+		{
+			weightValues[TensorConnection( Tensor::GetBias(), Tensor(j) )] = weight_Values[previous_index][j];
+		}
+		else
+		{
+			weightValues[TensorConnection( Tensor(previous_count - 1), Tensor(j) )] = weight_Values[previous_index][j];
+		}
+	}
 }
 
 Weight::Weight(int input_NodeCountWithBias, int output_NodeCount, InitWeight init_Weight, double initial_Limit)
 {
-	for (int i = 0; i < input_NodeCountWithBias; i++)
+	Initialize();
+	previousBias = true;
+	for (int i = 0; i < input_NodeCountWithBias - 1; i++)
 	{
-		vector<double> next_node(output_NodeCount);
-		for (double& init_value : next_node)
+		for (int j = 0; j < output_NodeCount; j++)
 		{
-			init_value = Initialize(init_Weight, input_NodeCountWithBias, output_NodeCount, initial_Limit);
+			weightValues[TensorConnection( Tensor(i), Tensor(j) )] = Initialize(init_Weight, input_NodeCountWithBias, output_NodeCount, initial_Limit);
 		}
-		weightValues.push_back(next_node);
+	}
+	// 편향
+	int previous_index = input_NodeCountWithBias - 1;
+	for (int j = 0; j < output_NodeCount; j++)
+	{
+		weightValues[TensorConnection(Tensor::GetBias(), Tensor(j))] = Initialize(init_Weight, input_NodeCountWithBias, output_NodeCount, initial_Limit);
 	}
 }
 
 Weight::Weight(const Weight &weight)
 {
 	weightValues = weight.weightValues;
+	previousBias = weight.previousBias;
+}
+
+Weight::Weight()
+{
+	Initialize();
 }
 
 Weight::~Weight()
 {
-	weightValues.clear();
+	Initialize();
 }
 
-double Weight::GetWeight(int i, int j) const
+double Weight::GetWeight(Tensor i, Tensor j) const
 {
+	/*
 	if (i < 0 || j < 0)
 	{
 		printf("Error : %d, %d번째 인자를 선택하였습니다.\n", i, j);
 		return 0;
 	}
-	return weightValues[i][j];
+	*/
+	return weightValues.at( TensorConnection(i, j) );
 }
 
-void Weight::UpdateWeight(int i, int j, double value)
+void Weight::UpdateWeight(Tensor i, Tensor j, double value)
 {
-	weightValues[i][j] = value;
+	weightValues[TensorConnection(i, j)] = value;
 }
 
 double Weight::Initialize(InitWeight init_Weight, int input_NodeCountWithBias, int output_NodeCount, double limit)
@@ -62,4 +98,10 @@ double Weight::Initialize(InitWeight init_Weight, int input_NodeCountWithBias, i
 		return random_value(gen) * sqrt(6.0 / n);
 	}
 	return 1.0;
+}
+
+void Weight::Initialize()
+{
+	weightValues.clear();
+	previousBias = false;
 }
