@@ -111,10 +111,11 @@ double Layer::Activate(double node_Value)
 	case ActivationFunction::ReLU:
 		if (node_Value >= 0) { return node_Value; }
 		else { return 0.0; }
-
 	case ActivationFunction::Step:
 		if (node_Value >= 0) { return 1.0; }
 		else { return 0.0; }
+	case ActivationFunction::Softmax:
+		return exp(node_Value);
 	}
 
 	return node_Value;
@@ -129,9 +130,11 @@ double Layer::Deactivate(double node_Value)
 	case ActivationFunction::ReLU:
 		if (node_Value >= 0) { return 1.0; }
 		else { return 0.0; }
-
 	case ActivationFunction::Step:
 		return 0.0;
+		// ToDo Softmax는 output에서만
+	case ActivationFunction::Softmax:
+		return 1.0;
 	}
 
 	return 1.0;
@@ -155,6 +158,11 @@ Layer::ActivationFunction Layer::GetActivationFunction() const
 Layer::LayerType Layer::GetLayerType() const
 {
 	return layerType;
+}
+
+void Layer::SetActivationFunction(ActivationFunction activation_Function)
+{
+	activationFunction = activation_Function;
 }
 
 void Layer::Initialize()

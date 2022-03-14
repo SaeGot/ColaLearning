@@ -123,7 +123,7 @@ void LearnTest()
 	Optimizer* optimizer = new GradientDescent(0.005);
 	for (int n = 0; n < 1000; n++)
 	{
-		net.Learn(input_learning_layers, targe_layers, optimizer);
+		net.Learn(input_learning_layers, targe_layers, optimizer, NeuralNetwork::ErrorType::SquareError);
 		output = net.Predict(layer_inputdata)[0];
 		if ((n + 1) % 100 == 0)
 		{
@@ -209,7 +209,7 @@ void OneHotEncodingTest()
 	Optimizer* optimizer = new GradientDescent(0.005);
 	for (int n = 0; n < 1000; n++)
 	{
-		net.Learn(input_learning_layers, targe_layers, optimizer);
+		net.Learn(input_learning_layers, targe_layers, optimizer, NeuralNetwork::ErrorType::SquareError);
 		output = net.Predict(layer_inputdata)[0];
 		if ((n + 1) % 100 == 0)
 		{
@@ -222,8 +222,58 @@ void OneHotEncodingTest()
 	printf("target = 4, predict =%lf\n", output);
 	output = net.Predict(input_learning_layers[3])[0];
 	printf("target = 5, predict =%lf\n", output);
+	printf("\n");
+}
 
-	FileManager file_categorcal = FileManager("OneHotEncoding_Example.csv", types, FileManager::Type::Categorical);
+void CrossEntropyTest()
+{
+	FileManager file = FileManager("OneHotEncoding_Example.csv", FileManager::Type::String, FileManager::Type::OneHot);
+
+	vector<double> input_1_encoding = file.GetEncodingData(0, 0);
+	vector<double> input_2_encoding = file.GetEncodingData(0, 1);
+	vector<double> output_encoding = file.GetEncodingData(0, 2);
+	Layer layer_input(input_1_encoding.size() + input_2_encoding.size());
+	Layer layer_output(output_encoding.size(), Layer::ActivationFunction::Softmax);
+	Layer layers[2] = { layer_input, layer_output };
+	int layer_count = sizeof(layers) / sizeof(Layer);
+	NeuralNetwork net(layers, layer_count);
+	vector<double> data = file.GetEncodingData(0, { 0, 1 });
+	Layer layer_inputdata(data);
+
+	vector<Layer> input_learning_layers;
+	vector<Layer> targe_layers;
+	int row_count = file.GetRowCount();
+	for (int n = 0; n < row_count; n++)
+	{
+		vector<double> input_value = file.GetEncodingData(n, { 0, 1 });
+		Layer input_learning_layer(input_value);
+		vector<double> output_value = { file.GetEncodingData(n, 2) };
+		Layer targe_layer(output_value, Layer::ActivationFunction::Softmax);
+		input_learning_layers.push_back(input_learning_layer);
+		targe_layers.push_back(targe_layer);
+	}
+	Optimizer* optimizer = new GradientDescent(0.05);
+	vector<double> output;
+	for (int n = 0; n < 1000; n++)
+	{
+		net.Learn(input_learning_layers, targe_layers, optimizer, NeuralNetwork::ErrorType::CrossEntropy);
+		output = net.Predict(layer_inputdata);
+		if ((n + 1) % 100 == 0)
+		{
+			printf("learn %d, target = 2, predict = %lf, %lf, %lf, %lf\n", n + 1, output[0], output[1], output[2], output[3]);
+			printf("Sum = %lf\n", output[0] + output[1] + output[2] + output[3]);
+		}
+	}
+	output = net.Predict(input_learning_layers[1]);
+	printf("target = 3, predict = %lf, %lf, %lf, %lf\n", output[0], output[1], output[2], output[3]);
+	printf("Sum = %lf\n", output[0] + output[1] + output[2] + output[3]);
+	output = net.Predict(input_learning_layers[2]);
+	printf("target = 4, predict = %lf, %lf, %lf, %lf\n", output[0], output[1], output[2], output[3]);
+	printf("Sum = %lf\n", output[0] + output[1] + output[2] + output[3]);
+	output = net.Predict(input_learning_layers[3]);
+	printf("target = 5, predict = %lf, %lf, %lf, %lf\n", output[0], output[1], output[2], output[3]);
+	printf("Sum = %lf\n", output[0] + output[1] + output[2] + output[3]);
+	printf("\n");
 }
 
 int main()
@@ -236,4 +286,5 @@ int main()
 	QLearningTestRewardEnd();
 	printf("QLearning End\n");
 	OneHotEncodingTest();
+	CrossEntropyTest();
 }

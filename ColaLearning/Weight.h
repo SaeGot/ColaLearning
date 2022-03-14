@@ -54,6 +54,13 @@ public:
 	 */
 	double GetWeight(Tensor i, Tensor j) const;
 	/**
+	 * 다음층 j 노드와 연결된 모든 가중치 가져오기.
+	 * 
+	 * \param j : 다음층 노드 인덱스
+	 * \return 가중치
+	 */
+	map<TensorConnection, double> GetJWeightValues(Tensor j) const;
+	/**
 	 * 가중치 업데이트.
 	 *
 	 * \param i : 이전 층 노드 인덱스

@@ -88,6 +88,20 @@ double Weight::GetWeight(Tensor i, Tensor j) const
 	return weightValues.at( TensorConnection(i, j) );
 }
 
+map<TensorConnection, double> Weight::GetJWeightValues(Tensor j) const
+{
+	map<TensorConnection, double> j_weight_values;
+	for (const pair<TensorConnection, double>& weight_values : weightValues)
+	{
+		if (weight_values.first.GetNext() == j)
+		{
+			j_weight_values.emplace(weight_values.first, weight_values.second);
+		}
+	}
+
+	return j_weight_values;
+}
+
 void Weight::UpdateWeight(Tensor i, Tensor j, double value)
 {
 	weightValues[TensorConnection(i, j)] = value;

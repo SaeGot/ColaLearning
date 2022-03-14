@@ -12,7 +12,8 @@ public:
 	{
 		Linear,
 		ReLU,
-		Step
+		Step,
+		Softmax
 	};
 	enum class LayerType
 	{
@@ -118,6 +119,11 @@ public:
 	 * \return 층 타입
 	 */
 	LayerType GetLayerType() const;
+	/**
+	 * 활성함수 설정.
+	 * 
+	 */
+	void SetActivationFunction(ActivationFunction activation_Function);
 
 protected:
 	LayerType layerType;

@@ -1,5 +1,11 @@
 #include "Optimizer.h"
+#include <math.h>
 
+
+double Optimizer::Sigmoid(double value)
+{
+	return 1 / (1 + exp(-value));
+}
 
 GradientDescent::GradientDescent(double learning_Rate)
 {

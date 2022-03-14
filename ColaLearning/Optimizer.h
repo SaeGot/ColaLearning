@@ -1,4 +1,7 @@
 #pragma once
+#include <map>
+#include "Tensor.h"
+using namespace std;
 
 
 class Optimizer
@@ -14,6 +17,9 @@ public:
 	 */
 	virtual double GetUpdateValue(double weight_value, double back_NodeValue, double prev_NodeValue) = 0;
 
+protected:
+
+	double Sigmoid(double value);
 };
 
 class GradientDescent : public Optimizer

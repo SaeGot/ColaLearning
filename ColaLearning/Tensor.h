@@ -9,6 +9,7 @@ public:
 
 	bool operator<(const Tensor& rhs) const;
 	bool operator!=(const Tensor& rhs) const;
+	bool operator==(const Tensor& rhs) const;
 	bool CheckBias() const;
 	/**
 	 * 편향 텐서 가져오기.

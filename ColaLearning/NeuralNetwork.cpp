@@ -53,7 +53,7 @@ vector<double> NeuralNetwork::Predict(const Layer& input_Layer)
 	return output.GetNodeValue();
 }
 
-void NeuralNetwork::Learn(vector<Layer> input_Layers, vector<Layer> target_Layers, Optimizer* optimizer, int repeat)
+void NeuralNetwork::Learn(vector<Layer> input_Layers, vector<Layer> target_Layers, Optimizer* optimizer, ErrorType error_Type, int repeat)
 {
 	SetMinMax(input_Layers, target_Layers);
 	if (input_Layers.size() == target_Layers.size())
@@ -153,6 +153,19 @@ void NeuralNetwork::FeedForward(const Layer &input_Layer)
 			layers[n].SetNodeValue(j, value);
 		}
 	}
+	if (layers[layerCount - 1].GetActivationFunction() == Layer::ActivationFunction::Softmax)
+	{
+		double softmax_sum = 0;
+		for (Tensor j : layers[layerCount - 1].GetTensorWithoutBias())
+		{
+			softmax_sum += layers[layerCount - 1].GetNodeValue(j);
+		}
+		for (Tensor j : layers[layerCount - 1].GetTensorWithoutBias())
+		{
+			double value = layers[layerCount - 1].GetNodeValue(j) / softmax_sum;
+			layers[layerCount - 1].SetNodeValue(j, value);
+		}
+	}
 }
 
 vector<double> NeuralNetwork::FeedForward(const Layer& input_Layer, const Layer& target_Layer)
@@ -172,14 +185,36 @@ vector<double> NeuralNetwork::FeedForward(const Layer& input_Layer, const Layer&
 	// 출력 층
 	vector<double> errors;
 	int n = static_cast<int>(layerCount - 1);
-	for (int j = 0; j < layers[n].GetNodeCount(); j++)
+	if (target_Layer.GetActivationFunction() == Layer::ActivationFunction::Softmax)
 	{
-		int prev_n = n - 1;
-		double value = ForwardSum(layers[prev_n], weights[prev_n], j);
-		value = layers[n].Activate(value);
-		layers[n].SetNodeValue(j, value);
-		// 오차 계산
-		errors.push_back(layers[n].GetNodeValue(j) - target_Layer.GetNodeValue(j));
+		double softmax_sum = 0;
+		for (int j = 0; j < layers[n].GetNodeCount(); j++)
+		{
+			int prev_n = n - 1;
+			double value = ForwardSum(layers[prev_n], weights[prev_n], j);
+			value = layers[n].Activate(value);
+			layers[n].SetNodeValue(j, value);
+			softmax_sum += value;
+		}
+		for (int j = 0; j < layers[n].GetNodeCount(); j++)
+		{
+			double value = layers[n].GetNodeValue(j) / softmax_sum;
+			layers[n].SetNodeValue(j, value);
+			// 오차 계산
+			errors.push_back(target_Layer.GetNodeValue(j) - layers[n].GetNodeValue(j));
+		}
+	}
+	else
+	{
+		for (int j = 0; j < layers[n].GetNodeCount(); j++)
+		{
+			int prev_n = n - 1;
+			double value = ForwardSum(layers[prev_n], weights[prev_n], j);
+			value = layers[n].Activate(value);
+			layers[n].SetNodeValue(j, value);
+			// 오차 계산
+			errors.push_back(target_Layer.GetNodeValue(j) - layers[n].GetNodeValue(j));
+		}
 	}
 	
 	return errors;
@@ -199,16 +234,19 @@ double NeuralNetwork::BackwardSum(const Layer& next_Layer, const Weight& weight,
 void NeuralNetwork::UpdateWeight(Weight& weight, const Layer& prev_Layer, Tensor i,
 	Layer& next_Layer, Tensor j, Optimizer* optimizer)
 {
-	// backnode * x
 	double backnode_value = next_Layer.GetBackNodeValue(j);
-	double update_value = optimizer->GetUpdateValue(weight.GetWeight(i, j), backnode_value, prev_Layer.GetNodeValue(i));
+	double update_value = 0;
+	// backnode * x
+	update_value = optimizer->GetUpdateValue(weight.GetWeight(i, j), backnode_value, prev_Layer.GetNodeValue(i));	
 	weight.UpdateWeight(i, j, update_value);
 }
 
 void NeuralNetwork::UpdateBiasWeight(Weight& weight, Layer& next_Layer, Tensor j, Optimizer* optimizer)
 {
+	double update_value = 0;
 	// backnode * 1
-	double update_value = optimizer->GetUpdateValue(weight.GetWeight(Tensor::GetBias(), j), next_Layer.GetBackNodeValue(j), 1);
+	update_value = optimizer->GetUpdateValue(weight.GetWeight(Tensor::GetBias(), j), next_Layer.GetBackNodeValue(j), 1);
+	weight.UpdateWeight(Tensor::GetBias(), j, update_value);
 	weight.UpdateWeight(Tensor::GetBias(), j, update_value);
 }
 
@@ -218,7 +256,8 @@ void NeuralNetwork::BackPropagation(vector<double> errors, Optimizer* optimizer)
 	for (int j = 0; j < layers[layerCount - 1].GetNodeCount(); j++)
 	{
 		double d_activate = layers[layerCount - 1].Deactivate(layers[layerCount - 1].GetNodeValue(j));
-		layers[layerCount - 1].SetBackNodeValue(j, errors[j] * d_activate);
+		// 오차 부호 조심
+		layers[layerCount - 1].SetBackNodeValue(j, -errors[j] * d_activate);
 		for (int i = 0; i < layers[layerCount - 2].GetNodeCount(); i++)
 		{
 			UpdateWeight(weights[layerCount - 2], layers[layerCount - 2], i,

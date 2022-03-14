@@ -9,6 +9,11 @@ using namespace std;
 class NeuralNetwork
 {
 public:
+	enum class ErrorType
+	{
+		SquareError,
+		CrossEntropy
+	};
 	/**
 	 * Layer 만으로 NeuralNetwork 생성.
 	 * 
@@ -42,7 +47,7 @@ public:
 	 * \param optimizer : 최적화
 	 * \param repeat : 반복 횟수
 	 */
-	void Learn(vector<Layer> input_Layers, vector<Layer> target_Layers, Optimizer* optimizer, int repeat = 1);
+	void Learn(vector<Layer> input_Layers, vector<Layer> target_Layers, Optimizer* optimizer, ErrorType error_Type, int repeat = 1);
 
 private:
 	struct MinMax

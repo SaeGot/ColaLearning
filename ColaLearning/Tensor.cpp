@@ -29,6 +29,11 @@ bool Tensor::operator!=(const Tensor& rhs) const
 	return x != rhs.x;
 }
 
+bool Tensor::operator==(const Tensor& rhs) const
+{
+	return bias == rhs.bias && y == rhs.y && x == rhs.x;
+}
+
 bool Tensor::CheckBias() const
 {
 	return bias;
