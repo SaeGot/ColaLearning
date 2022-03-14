@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <vector>
 #include <map>
+#include "Layer.h"
 #include "Tensor.h"
 using namespace std;
 
@@ -31,6 +32,15 @@ public:
 	 * \param initial_Limit : 가중치 초기값 상하한
 	 */
 	Weight(int input_NodeCountWithBias, int output_NodeCount, InitWeight init_Weight, double initial_Limit);
+	/**
+	 * 이전 층, 다음 층으로 Weight 생성.
+	 * 
+	 * \param previous_Layer : 이전 층
+	 * \param next_Layer : 다음 층
+	 * \param init_Weight : 초기화 방법
+	 * \param initial_Limit : 가중치 초기값 상하한
+	 */
+	Weight(Layer* previous_Layer, Layer* next_Layer, InitWeight init_Weight, double initial_Limit);
 	Weight(const Weight &weight);
 	Weight();
 	~Weight();

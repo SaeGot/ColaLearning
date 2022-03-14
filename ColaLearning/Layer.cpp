@@ -1,6 +1,14 @@
 ﻿#include "Layer.h"
 
 
+Layer::Layer(map<Tensor, double> node_Values, const ActivationFunction& activation_Function, bool _bias)
+{
+	Initialize();
+	nodeValues = node_Values;
+	activationFunction = activation_Function;
+	bias = _bias;
+}
+
 Layer::Layer(vector<double> node_Values, const ActivationFunction &activation_Function, bool _bias)
 {
 	Initialize();
@@ -13,10 +21,10 @@ Layer::Layer(vector<double> node_Values, const ActivationFunction &activation_Fu
 	bias = _bias;
 }
 
-Layer::Layer(int count, const ActivationFunction &activation_Function, bool _bias)
+Layer::Layer(int node_Count, const ActivationFunction &activation_Function, bool _bias)
 {
 	Initialize();
-	for (int n = 0; n < count; n++)
+	for (int n = 0; n < node_Count; n++)
 	{
 		nodeValues.emplace(Tensor(n), 0);
 		backNodeValues.emplace(Tensor(n), 0);
@@ -96,30 +104,30 @@ bool Layer::CheckBias() const
 	return bias;
 }
 
-double Layer::Activate(double value)
+double Layer::Activate(double node_Value)
 {
 	switch (activationFunction)
 	{
 	case ActivationFunction::ReLU:
-		if (value >= 0) { return value; }
+		if (node_Value >= 0) { return node_Value; }
 		else { return 0.0; }
 
 	case ActivationFunction::Step:
-		if (value >= 0) { return 1.0; }
+		if (node_Value >= 0) { return 1.0; }
 		else { return 0.0; }
 	}
 
-	return value;
+	return node_Value;
 }
 
-double Layer::Deactivate(double value)
+double Layer::Deactivate(double node_Value)
 {
 	switch (activationFunction)
 	{
 	case ActivationFunction::Linear:
 		return 1.0;
 	case ActivationFunction::ReLU:
-		if (value >= 0) { return 1.0; }
+		if (node_Value >= 0) { return 1.0; }
 		else { return 0.0; }
 
 	case ActivationFunction::Step:
@@ -139,9 +147,14 @@ double Layer::GetBackNodeValue(Tensor n) const
 	return backNodeValues.at(Tensor(n));
 }
 
-ActivationFunction Layer::GetActivationFunction() const
+Layer::ActivationFunction Layer::GetActivationFunction() const
 {
 	return activationFunction;
+}
+
+Layer::LayerType Layer::GetLayerType() const
+{
+	return layerType;
 }
 
 void Layer::Initialize()

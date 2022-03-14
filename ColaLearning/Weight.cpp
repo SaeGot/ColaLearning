@@ -48,6 +48,18 @@ Weight::Weight(int input_NodeCountWithBias, int output_NodeCount, InitWeight ini
 	}
 }
 
+Weight::Weight(Layer* previous_Layer, Layer* next_Layer, InitWeight init_Weight, double initial_Limit)
+{
+	previousBias = previous_Layer->CheckBias();
+	switch (next_Layer->GetLayerType())
+	{
+	case Layer::LayerType::FullyConnected:
+		break;
+	case Layer::LayerType::Convolution:
+		break;
+	}
+}
+
 Weight::Weight(const Weight &weight)
 {
 	weightValues = weight.weightValues;

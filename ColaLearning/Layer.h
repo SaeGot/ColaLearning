@@ -5,16 +5,21 @@
 using namespace std;
 
 
-enum class ActivationFunction
-{
-	Linear,
-	ReLU,
-	Step
-};
-
 class Layer
 {
 public:
+	enum class ActivationFunction
+	{
+		Linear,
+		ReLU,
+		Step
+	};
+	enum class LayerType
+	{
+		FullyConnected,
+		Convolution
+	};
+	Layer(map<Tensor, double> node_Values, const ActivationFunction& activation_Function = ActivationFunction::Linear, bool _bias = true);
 	/**
 	 * 노드값으로 Layer 생성.
 	 * 
@@ -26,14 +31,14 @@ public:
 	/**
 	 * 노드 개수로 Layer 생성.
 	 * 
-	 * \param count : 노드 개수
+	 * \param node_Count : 노드 개수
 	 * \param activation_Function : 활성 함수
 	 * \param _bias : 편향
 	 */
-	Layer(int count, const ActivationFunction &activation_Function = ActivationFunction::Linear, bool _bias = true);
+	Layer(int node_Count, const ActivationFunction &activation_Function = ActivationFunction::Linear, bool _bias = true);
 	Layer(const Layer &layer);
 	Layer(const ActivationFunction& activation_Function = ActivationFunction::Linear, bool _bias = true);
-	~Layer();
+	virtual ~Layer();
 
 	/**
 	 * 노드 값 가져오기.
@@ -76,17 +81,17 @@ public:
 	/**
 	 * 활성화된 값 계산.
 	 * 
-	 * \param value : 활성화 전 값
-	 * \return 활성 값
+	 * \param node_Value : 활성 전 노드 값
+	 * \return 활성 후 노드 값
 	 */
-	double Activate(double value);
+	double Activate(double node_Value);
 	/**
 	 * 활성함수의 미분 값.
 	 * 
-	 * \param value : 활성함수 미분의 변수
-	 * \return 활성함수 미분 값
+	 * \param node_Value : 활성함수 미분 전 노드 값
+	 * \return 활성함수 미분 노드 값
 	 */
-	double Deactivate(double value);
+	double Deactivate(double node_Value);
 	/**
 	 * BackPropagation을 위한 노드 값 설정.
 	 * 
@@ -104,11 +109,18 @@ public:
 	/**
 	 * 활성 함수 가져오기.
 	 * 
-	 * \return : 활성 함수
+	 * \return 활성 함수
 	 */
 	ActivationFunction GetActivationFunction() const;
+	/**
+	 * 층 타입 가져오기.
+	 * 
+	 * \return 층 타입
+	 */
+	LayerType GetLayerType() const;
 
-private:
+protected:
+	LayerType layerType;
 	map<Tensor, double> nodeValues;
 	map<Tensor, double> backNodeValues;
 	ActivationFunction activationFunction;

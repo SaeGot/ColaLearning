@@ -54,8 +54,8 @@ void GateTest()
 		for (int index = 0; index < input_list.size(); index++)
 		{
 			// 각 층 생성
-			Layer layer_input(input_list[index], ActivationFunction::Step, true);
-			Layer layer_output(1, ActivationFunction::Step, false);
+			Layer layer_input(input_list[index], Layer::ActivationFunction::Step, true);
+			Layer layer_output(1, Layer::ActivationFunction::Step, false);
 			Layer layers[2] = { layer_input, layer_output };
 			// 가중치 생성
 			Weight weights[1] = { weight };
@@ -74,9 +74,9 @@ void GateTest()
 	{
 		vector<double> input = *iter_input;
 		// 각 층 생성
-		Layer layer_input(input, ActivationFunction::Step, true);
-		Layer layer_hidden(2, ActivationFunction::Step, true);
-		Layer layer_output(1, ActivationFunction::Step, false);
+		Layer layer_input(input, Layer::ActivationFunction::Step, true);
+		Layer layer_hidden(2, Layer::ActivationFunction::Step, true);
+		Layer layer_output(1, Layer::ActivationFunction::Step, false);
 		Layer* layers = new Layer[3]{ layer_input, layer_hidden, layer_output };
 		// 각 가중치 생성
 		vector<vector<double>> vec_weight;

@@ -10,6 +10,12 @@ public:
 	bool operator<(const Tensor& rhs) const;
 	bool operator!=(const Tensor& rhs) const;
 	bool CheckBias() const;
+	/**
+	 * ÆíÇâ ÅÙ¼­ °¡Á®¿À±â.
+	 * 
+	 * \param channel : Ã¤³Î
+	 * \return ÆíÇâ ÅÙ¼­
+	 */
 	static Tensor GetBias(int channel = 0);
 
 private:
@@ -25,7 +31,17 @@ public:
 	TensorConnection(Tensor _previous, Tensor _next) { previous = _previous; next = _next; }
 
 	bool operator<(const TensorConnection& rhs) const;
+	/**
+	 * ÀÌÀü Ãþ ÅÙ¼­ °¡Á®¿À±â.
+	 * 
+	 * \return ÀÌÀü Ãþ ÅÙ¼­
+	 */
 	Tensor GetPrevious() const;
+	/**
+	 * ´ÙÀ½ Ãþ ÅÙ¼­ °¡Á®¿À±â.
+	 * 
+	 * \return ´ÙÀ½ Ãþ ÅÙ¼­
+	 */
 	Tensor GetNext() const;
 
 private:

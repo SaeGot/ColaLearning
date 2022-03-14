@@ -96,11 +96,11 @@ void NeuralNetwork::InitWeights(double weight_InitialLimit)
 			InitWeight init_weight{};
 			switch (layer.GetActivationFunction())
 			{
-			case ActivationFunction::Linear:
-			case ActivationFunction::ReLU:
+			case Layer::ActivationFunction::Linear:
+			case Layer::ActivationFunction::ReLU:
 				init_weight = InitWeight::He;
 				break;
-			case ActivationFunction::Step:
+			case Layer::ActivationFunction::Step:
 				init_weight = InitWeight::Xavier;
 				break;
 			}
