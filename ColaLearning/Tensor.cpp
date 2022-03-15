@@ -3,7 +3,7 @@
 
 bool Tensor::operator<(const Tensor& rhs) const
 {
-	return tie(y, x, bias, channel) < tie(rhs.y, rhs.x, rhs.bias, rhs.channel);
+	return tie(y, x, channel, bias) < tie(rhs.y, rhs.x, rhs.channel, rhs.bias);
 }
 
 bool Tensor::operator!=(const Tensor& rhs) const
@@ -110,6 +110,16 @@ vector<Tensor> Tensor::GetTensors() const
 	}
 
 	return tensors;
+}
+
+bool Tensor::CheckNegative() const
+{
+	return x < 0 || y < 0 || channel < 0;
+}
+
+bool Tensor::CheckOver(Tensor compare) const
+{
+	return x < compare.x && y < compare.y;
 }
 
 bool TensorConnection::operator<(const TensorConnection& rhs) const

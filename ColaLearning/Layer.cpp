@@ -110,7 +110,7 @@ int Layer::GetNodeCount() const
 
 vector<int> Layer::GetLayerSize() const
 {
-	return layerSize.GetXYChannelSize();
+	return layerSize.GetXYChannel();
 }
 
 Tensor Layer::GetLayerSizeTensor() const

@@ -318,7 +318,7 @@ void Layer2DTest()
 void ConvTest()
 {
 	Layer layer_input(3, 3);
-	ConvolutionLayer layer_hid(1, Tensor(2, 2), Layer::ActivationFunction::ReLU, false);
+	ConvolutionLayer layer_hid(1, Tensor(2, 2), Layer::ActivationFunction::ReLU, false, Tensor(1, 1), Tensor(1, 1));
 	Layer layer_output(2, 2);
 	vector<Layer*> layers = { new Layer(layer_input), new ConvolutionLayer(layer_hid), new Layer(layer_output) };
 
@@ -352,7 +352,7 @@ void ConvTest()
 	}
 	Optimizer* optimizer = new GradientDescent(0.01);
 	map<Tensor, double> output;
-	for (int n = 0; n < 1000; n++)
+	for (int n = 0; n < 1; n++)
 	{
 		net.Learn(input_learning_layers, targe_layers, optimizer, NeuralNetwork::ErrorType::SquareError);
 		output = net.Predict(*input_learning_layers[0]);

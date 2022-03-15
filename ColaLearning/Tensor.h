@@ -25,6 +25,8 @@ public:
 	vector<int> GetXYChannel() const;
 	vector<int> GetXYChannelSize() const;
 	vector<Tensor> GetTensors() const;
+	bool CheckNegative() const;
+	bool CheckOver(Tensor compare) const;
 
 private:
 	int x;

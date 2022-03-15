@@ -166,12 +166,12 @@ void Weight::ConnectConvolutionLayer(Layer* previous_Layer, Layer* next_Layer, I
 {
 	ConvolutionLayer* next_ConvolutionLayer = (ConvolutionLayer*)next_Layer;
 	Tensor filter_size_tensor = next_ConvolutionLayer->GetFilter();
+	Tensor prev_layer_size = previous_Layer->GetLayerSizeTensor();
 	int input_node_count_with_bias = previous_Layer->GetNodeCount() + previous_Layer->CheckBias();
 	int output_node_count = next_ConvolutionLayer->GetNodeCount();
-	Tensor b = previous_Layer->GetLayerSizeTensor();;
-	bool a = Tensor(5, 5) < b;
-	int x_stride = 0;
-	int y_stride = 0;
+	vector<int> padding = next_ConvolutionLayer->GetPadding().GetXYChannel();
+	int x_stride = -padding[0];
+	int y_stride = -padding[1];
 	vector<int> stride = next_ConvolutionLayer->GetStride().GetXYChannel();
 	for (Tensor j : next_ConvolutionLayer->GetTensorWithoutBias())
 	{
@@ -179,16 +179,19 @@ void Weight::ConnectConvolutionLayer(Layer* previous_Layer, Layer* next_Layer, I
 		{
 			Tensor i = Tensor(x_stride, y_stride);
 			Tensor prev_tensor = i + f;
-			weightValues[TensorConnection(Tensor(prev_tensor), Tensor(j))]
-				= Initialize(init_Weight, input_node_count_with_bias, output_node_count, initial_Limit);
+			if (!prev_tensor.CheckNegative() && prev_tensor.CheckOver(prev_layer_size))
+			{
+				weightValues[TensorConnection(Tensor(prev_tensor), Tensor(j))]
+					= Initialize(init_Weight, input_node_count_with_bias, output_node_count, initial_Limit);
+			}
 		}
 		x_stride += stride[0];
 		if (x_stride + filter_size_tensor.GetXYChannel()[0] > next_ConvolutionLayer->GetLayerSize()[0])
 		{
-			x_stride = 0;
+			x_stride = -padding[0];
 			y_stride += stride[1];
 		}
-		else if (y_stride + filter_size_tensor.GetXYChannel()[1] > next_ConvolutionLayer->GetLayerSize()[1])
+		if (y_stride + filter_size_tensor.GetXYChannel()[1] > next_ConvolutionLayer->GetLayerSize()[1])
 		{
 			break;
 		}

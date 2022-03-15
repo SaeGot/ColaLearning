@@ -58,13 +58,18 @@ Tensor ConvolutionLayer::GetPadding()
 void ConvolutionLayer::SetNodes(Layer previous_Layer)
 {
 	vector<int> previous_layer_size = previous_Layer.GetLayerSize();
-	vector<int> padding_size = padding.GetXYChannelSize();
-	vector<int> stride_size = stride.GetXYChannelSize();
-	vector<int> filter_size = filter.GetXYChannelSize();
+	vector<int> padding_size = padding.GetXYChannel();
+	vector<int> stride_size = stride.GetXYChannel();
+	vector<int> filter_size = filter.GetXYChannel();
 	vector<int> layer_size;
+	// ToDo 제로패딩 말고도?
 	for (int n = 0; n < 2; n++)
 	{
-		layer_size.push_back(1 + (previous_layer_size[n] + (2 * padding_size[n] - filter_size[n])) / stride_size[n]);
+		layer_size.push_back(1 + (int)floor((previous_layer_size[n] + (2 * padding_size[n] - filter_size[n])) / stride_size[n]));
+		if (layer_size[n] > previous_layer_size[n] + (filter_size[n] - 1) * 2 - 1)
+		{
+			layer_size[n] = previous_layer_size[n] + (filter_size[n] - 1) * 2 - 1;
+		}
 	}
 	layerSize = Tensor(layer_size[0], layer_size[1], channel, bias);
 	vector<int> size = layerSize.GetXYChannel();
