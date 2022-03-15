@@ -142,6 +142,7 @@
     <ClCompile Include="ColaLearning.cpp" />
     <ClCompile Include="ConvolutionLayer.cpp" />
     <ClCompile Include="FileManager.cpp" />
+    <ClCompile Include="FullyConnectedLayer.cpp" />
     <ClCompile Include="NeuralNetwork.cpp" />
     <ClCompile Include="Layer.cpp" />
     <ClCompile Include="Optimizer.cpp" />
@@ -154,6 +155,7 @@
     <ClInclude Include="ColaLearning.h" />
     <ClInclude Include="ConvolutionLayer.h" />
     <ClInclude Include="FileManager.h" />
+    <ClInclude Include="FullyConnectedLayer.h" />
     <ClInclude Include="NeuralNetwork.h" />
     <ClInclude Include="Layer.h" />
     <ClInclude Include="Optimizer.h" />

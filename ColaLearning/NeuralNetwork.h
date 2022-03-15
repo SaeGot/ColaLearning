@@ -2,6 +2,7 @@
 #include <vector>
 #include "Weight.h"
 #include "Layer.h"
+#include "FullyConnectedLayer.h"
 #include "Optimizer.h"
 using namespace std;
 
@@ -47,7 +48,7 @@ public:
 	 * \param optimizer : 최적화
 	 * \param repeat : 반복 횟수
 	 */
-	void Learn(vector<Layer> input_Layers, vector<Layer> target_Layers, Optimizer* optimizer, ErrorType error_Type, int repeat = 1);
+	void Learn(vector<Layer*> input_Layers, vector<Layer*> target_Layers, Optimizer* optimizer, ErrorType error_Type, int repeat = 1);
 
 private:
 	struct MinMax
@@ -136,9 +137,9 @@ private:
 	 * \param input_Layers : 입력 층
 	 * \param target_Layers : 출력 층
 	 */
-	void SetMinMax(vector<Layer> input_Layers, vector<Layer> target_Layers);
-	Layer GetNormalized(const Layer& layer, map<Tensor, MinMax> min_Max);
-	Layer GetDenormalized(const Layer& layer, map<Tensor, MinMax> min_Max);
+	void SetMinMax(vector<Layer*> input_Layers, vector<Layer*> target_Layers);
+	Layer GetNormalized(const Layer* layer, map<Tensor, MinMax> min_Max);
+	Layer GetDenormalized(const Layer* layer, map<Tensor, MinMax> min_Max);
 };
 
 

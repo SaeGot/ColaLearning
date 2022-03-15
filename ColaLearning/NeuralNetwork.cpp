@@ -40,9 +40,9 @@ map<Tensor, double> NeuralNetwork::Predict(const Layer& input_Layer)
 	Layer output;
 	if (minMaxSet)
 	{
-		Layer normaized_input = GetNormalized(input_Layer, inputNodeMinMax);
+		Layer normaized_input = GetNormalized(&input_Layer, inputNodeMinMax);
 		FeedForward(normaized_input);
-		output = GetDenormalized(layers[layerCount - 1], outputNodeMinMax);
+		output = GetDenormalized(&layers[layerCount - 1], outputNodeMinMax);
 	}
 	else
 	{
@@ -53,7 +53,7 @@ map<Tensor, double> NeuralNetwork::Predict(const Layer& input_Layer)
 	return output.GetNodeValue();
 }
 
-void NeuralNetwork::Learn(vector<Layer> input_Layers, vector<Layer> target_Layers, Optimizer* optimizer, ErrorType error_Type, int repeat)
+void NeuralNetwork::Learn(vector<Layer*> input_Layers, vector<Layer*> target_Layers, Optimizer* optimizer, ErrorType error_Type, int repeat)
 {
 	SetMinMax(input_Layers, target_Layers);
 	if (input_Layers.size() == target_Layers.size())
@@ -295,21 +295,21 @@ void NeuralNetwork::BackPropagation(map<Tensor, double> errors, Optimizer* optim
 	}
 }
 
-void NeuralNetwork::SetMinMax(vector<Layer> input_Layers, vector<Layer> target_Layers)
+void NeuralNetwork::SetMinMax(vector<Layer*> input_Layers, vector<Layer*> target_Layers)
 {
 	if (!minMaxSet)
 	{
 		for (int n = 0; n < input_Layers.size(); n++)
 		{
-			for (Tensor index : input_Layers[n].GetTensorWithoutBias())
+			for (Tensor index : input_Layers[n]->GetTensorWithoutBias())
 			{
-				inputNodeMinMax[index].min = min(inputNodeMinMax[index].min, input_Layers[n].GetNodeValue(index));
-				inputNodeMinMax[index].max = max(inputNodeMinMax[index].max, input_Layers[n].GetNodeValue(index));
+				inputNodeMinMax[index].min = min(inputNodeMinMax[index].min, input_Layers[n]->GetNodeValue(index));
+				inputNodeMinMax[index].max = max(inputNodeMinMax[index].max, input_Layers[n]->GetNodeValue(index));
 			}
-			for (Tensor index : target_Layers[n].GetTensorWithoutBias())
+			for (Tensor index : target_Layers[n]->GetTensorWithoutBias())
 			{
-				outputNodeMinMax[index].min = min(outputNodeMinMax[index].min, target_Layers[n].GetNodeValue(index));
-				outputNodeMinMax[index].max = max(outputNodeMinMax[index].max, target_Layers[n].GetNodeValue(index));
+				outputNodeMinMax[index].min = min(outputNodeMinMax[index].min, target_Layers[n]->GetNodeValue(index));
+				outputNodeMinMax[index].max = max(outputNodeMinMax[index].max, target_Layers[n]->GetNodeValue(index));
 			}
 		}
 		// 정규화 기준을 첫 학습에만 설정
@@ -317,9 +317,9 @@ void NeuralNetwork::SetMinMax(vector<Layer> input_Layers, vector<Layer> target_L
 	}
 }
 
-Layer NeuralNetwork::GetNormalized(const Layer& layer, map<Tensor, MinMax> min_Max)
+Layer NeuralNetwork::GetNormalized(const Layer* layer, map<Tensor, MinMax> min_Max)
 {
-	Layer normalized_layer = layer;
+	Layer normalized_layer = *layer;
 	for (Tensor n : normalized_layer.GetTensorWithoutBias())
 	{
 		double normalized_value = 0;
@@ -329,7 +329,7 @@ Layer NeuralNetwork::GetNormalized(const Layer& layer, map<Tensor, MinMax> min_M
 		}
 		else
 		{
-			normalized_value = (layer.GetNodeValue(n) - min_Max[n].min) / (min_Max[n].max - min_Max[n].min);
+			normalized_value = (layer->GetNodeValue(n) - min_Max[n].min) / (min_Max[n].max - min_Max[n].min);
 		}		
 		normalized_layer.SetNodeValue(n, normalized_value);
 	}
@@ -337,12 +337,12 @@ Layer NeuralNetwork::GetNormalized(const Layer& layer, map<Tensor, MinMax> min_M
 	return normalized_layer;
 }
 
-Layer NeuralNetwork::GetDenormalized(const Layer& layer, map<Tensor, MinMax> min_Max)
+Layer NeuralNetwork::GetDenormalized(const Layer* layer, map<Tensor, MinMax> min_Max)
 {
-	Layer denormalized_layer = layer;
+	Layer denormalized_layer = *layer;
 	for (Tensor n : denormalized_layer.GetTensorWithoutBias())
 	{
-		double denormalized_value = layer.GetNodeValue(n) * (min_Max[n].max - min_Max[n].min) + min_Max[n].min;
+		double denormalized_value = layer->GetNodeValue(n) * (min_Max[n].max - min_Max[n].min) + min_Max[n].min;
 		denormalized_layer.SetNodeValue(n, denormalized_value);
 	}
 

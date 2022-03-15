@@ -108,8 +108,8 @@ void LearnTest()
 	double output = net.Predict(layer_inputdata)[0];
 	printf("%lf\n", output);
 
-	vector<Layer> input_learning_layers;
-	vector<Layer> targe_layers;
+	vector<Layer*> input_learning_layers;
+	vector<Layer*> targe_layers;
 	int row_count = file.GetRowCount();
 	for (int n = 0; n < row_count; n++)
 	{
@@ -117,8 +117,8 @@ void LearnTest()
 		Layer input_learning_layer(input_value);
 		vector<double> output_value = { file.GetData(n, 1) };
 		Layer targe_layer(output_value);
-		input_learning_layers.push_back(input_learning_layer);
-		targe_layers.push_back(targe_layer);
+		input_learning_layers.push_back(new Layer(input_learning_layer));
+		targe_layers.push_back(new Layer(targe_layer));
 	}
 	Optimizer* optimizer = new GradientDescent(0.005);
 	for (int n = 0; n < 1000; n++)
@@ -130,11 +130,11 @@ void LearnTest()
 			printf("learn %d, target = 7, predict = %lf\n", n + 1, output);
 		}
 	}
-	output = net.Predict(input_learning_layers[1])[0];
+	output = net.Predict(*input_learning_layers[1])[0];
 	printf("target = 10, predict = %lf\n", output);
-	output = net.Predict(input_learning_layers[2])[0];
+	output = net.Predict(*input_learning_layers[2])[0];
 	printf("target = 31, predict =%lf\n", output);
-	output = net.Predict(input_learning_layers[3])[0];
+	output = net.Predict(*input_learning_layers[3])[0];
 	printf("target = 61, predict =%lf\n", output);
 }
 
@@ -194,8 +194,8 @@ void OneHotEncodingTest()
 	double output = net.Predict(layer_inputdata)[0];
 	printf("%lf\n", output);
 
-	vector<Layer> input_learning_layers;
-	vector<Layer> targe_layers;
+	vector<Layer*> input_learning_layers;
+	vector<Layer*> targe_layers;
 	int row_count = file.GetRowCount();
 	for (int n = 0; n < row_count; n++)
 	{
@@ -203,8 +203,8 @@ void OneHotEncodingTest()
 		Layer input_learning_layer(input_value);
 		vector<double> output_value = { file.GetData(n, 2) };
 		Layer targe_layer(output_value);
-		input_learning_layers.push_back(input_learning_layer);
-		targe_layers.push_back(targe_layer);
+		input_learning_layers.push_back(new Layer(input_learning_layer));
+		targe_layers.push_back(new Layer(targe_layer));
 	}
 	Optimizer* optimizer = new GradientDescent(0.005);
 	for (int n = 0; n < 1000; n++)
@@ -216,11 +216,11 @@ void OneHotEncodingTest()
 			printf("learn %d, target = 2, predict = %lf\n", n+1, output);
 		}
 	}
-	output = net.Predict(input_learning_layers[1])[0];
+	output = net.Predict(*input_learning_layers[1])[0];
 	printf("target = 3, predict = %lf\n", output);
-	output = net.Predict(input_learning_layers[2])[0];
+	output = net.Predict(*input_learning_layers[2])[0];
 	printf("target = 4, predict =%lf\n", output);
-	output = net.Predict(input_learning_layers[3])[0];
+	output = net.Predict(*input_learning_layers[3])[0];
 	printf("target = 5, predict =%lf\n", output);
 	printf("\n");
 }
@@ -240,8 +240,8 @@ void CrossEntropyTest()
 	vector<double> data = file.GetEncodingData(0, { 0, 1 });
 	Layer layer_inputdata(data);
 
-	vector<Layer> input_learning_layers;
-	vector<Layer> targe_layers;
+	vector<Layer*> input_learning_layers;
+	vector<Layer*> targe_layers;
 	int row_count = file.GetRowCount();
 	for (int n = 0; n < row_count; n++)
 	{
@@ -249,8 +249,8 @@ void CrossEntropyTest()
 		Layer input_learning_layer(input_value);
 		vector<double> output_value = { file.GetEncodingData(n, 2) };
 		Layer targe_layer(output_value, Layer::LayerType::FullyConnected, Layer::ActivationFunction::Softmax);
-		input_learning_layers.push_back(input_learning_layer);
-		targe_layers.push_back(targe_layer);
+		input_learning_layers.push_back(new Layer(input_learning_layer));
+		targe_layers.push_back(new Layer(targe_layer));
 	}
 	Optimizer* optimizer = new GradientDescent(0.01);
 	map<Tensor, double> output;
@@ -264,13 +264,13 @@ void CrossEntropyTest()
 			printf("Sum = %lf\n", output[0] + output[1] + output[2] + output[3]);
 		}
 	}
-	output = net.Predict(input_learning_layers[1]);
+	output = net.Predict(*input_learning_layers[1]);
 	printf("target = 3, predict = %lf, %lf, %lf, %lf\n", output[0], output[1], output[2], output[3]);
 	printf("Sum = %lf\n", output[0] + output[1] + output[2] + output[3]);
-	output = net.Predict(input_learning_layers[2]);
+	output = net.Predict(*input_learning_layers[2]);
 	printf("target = 4, predict = %lf, %lf, %lf, %lf\n", output[0], output[1], output[2], output[3]);
 	printf("Sum = %lf\n", output[0] + output[1] + output[2] + output[3]);
-	output = net.Predict(input_learning_layers[3]);
+	output = net.Predict(*input_learning_layers[3]);
 	printf("target = 5, predict = %lf, %lf, %lf, %lf\n", output[0], output[1], output[2], output[3]);
 	printf("Sum = %lf\n", output[0] + output[1] + output[2] + output[3]);
 	printf("\n");
@@ -283,8 +283,8 @@ void Layer2DTest()
 	Layer layers[2] = { layer_input, layer_output };
 	int layer_count = sizeof(layers) / sizeof(Layer);
 	NeuralNetwork net(layers, layer_count);
-	vector<Layer> input_learning_layers;
-	vector<Layer> targe_layers;
+	vector<Layer*> input_learning_layers;
+	vector<Layer*> targe_layers;
 	for (int n = 0; n < 5; n++)
 	{
 		map<Tensor, double> input_data;
@@ -298,21 +298,21 @@ void Layer2DTest()
 				output_data.emplace(tensor, 10 * x + y + (n * 1000));
 			}
 		}
-		Layer input_learning_layer(input_data);
-		Layer targe_layer(output_data);
-		input_learning_layers.push_back(input_learning_layer);
-		targe_layers.push_back(targe_layer);
+		FullyConnectedLayer input_learning_layer(input_data);
+		FullyConnectedLayer targe_layer(output_data);
+		input_learning_layers.push_back(new Layer(input_learning_layer));
+		targe_layers.push_back(new Layer(targe_layer));
 	}
 	Optimizer* optimizer = new GradientDescent(0.01);
 	map<Tensor, double> output;
 	for (int n = 0; n < 1000; n++)
 	{
 		net.Learn(input_learning_layers, targe_layers, optimizer, NeuralNetwork::ErrorType::CrossEntropy);
-		output = net.Predict(input_learning_layers[0]);
+		output = net.Predict(*input_learning_layers[0]);
 	}
-	output = net.Predict(input_learning_layers[0]);
-	output = net.Predict(input_learning_layers[1]);
-	output = net.Predict(input_learning_layers[2]);
+	output = net.Predict(*input_learning_layers[0]);
+	output = net.Predict(*input_learning_layers[1]);
+	output = net.Predict(*input_learning_layers[2]);
 }
 
 int main()
