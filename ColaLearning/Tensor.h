@@ -1,11 +1,13 @@
 #pragma once
+#include <vector>
+using namespace std;
 
 
 class Tensor
 {
 public:
-	Tensor() { x = 0; y = 0; bias = false; }
-	Tensor(int _x, int _y = 0, bool _bias = false) { x = _x; y = _y; bias = _bias; }
+	Tensor() { x = 0; y = 0; channel = 0; bias = false; }
+	Tensor(int _x, int _y = 0, int _channel = 0, bool _bias = false) { x = _x; y = _y; channel = _channel; bias = _bias; }
 
 	bool operator<(const Tensor& rhs) const;
 	bool operator!=(const Tensor& rhs) const;
@@ -17,12 +19,14 @@ public:
 	 * \param channel : 채널
 	 * \return 편향 텐서
 	 */
-	static Tensor GetBias(int channel = 0);
+	static Tensor GetBias();
+	vector<int> GetXYChannel();
 
 private:
-	// 편향 존재 시 x = 최대값 +1, y = 0 이 편향 역할
 	int x;
 	int y;
+	int channel;
+	// 편향은 가중치용으로 사용
 	bool bias;
 };
 

@@ -54,6 +54,27 @@ Weight::Weight(Layer* previous_Layer, Layer* next_Layer, InitWeight init_Weight,
 	switch (next_Layer->GetLayerType())
 	{
 	case Layer::LayerType::FullyConnected:
+		for (Tensor i : previous_Layer->GetTensorWithoutBias())
+		{
+			for (Tensor j : next_Layer->GetTensorWithoutBias())
+			{
+				int input_node_count_with_bias = previous_Layer->GetNodeCount() + previous_Layer->CheckBias();
+				int output_node_count = next_Layer->GetNodeCount();
+				weightValues[TensorConnection(Tensor(i), Tensor(j))]
+					= Initialize(init_Weight, input_node_count_with_bias, output_node_count, initial_Limit);
+			}
+		}
+		// 편향
+		if (previous_Layer->CheckBias())
+		{
+			for (Tensor j : next_Layer->GetTensorWithoutBias())
+			{
+				int input_node_count_with_bias = previous_Layer->GetNodeCount() + previous_Layer->CheckBias();
+				int output_node_count = next_Layer->GetNodeCount();
+				weightValues[TensorConnection(Tensor::GetBias(), Tensor(j))]
+					= Initialize(init_Weight, input_node_count_with_bias, output_node_count, initial_Limit);
+			}
+		}
 		break;
 	case Layer::LayerType::Convolution:
 		break;

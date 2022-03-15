@@ -38,7 +38,7 @@ public:
 	 * \param input_Layer : 입력층
 	 * \return 예측 값
 	 */
-	vector<double> Predict(const Layer& input_Layer);
+	map<Tensor, double> Predict(const Layer& input_Layer);
 	/**
 	 * 학습.
 	 * 
@@ -58,8 +58,8 @@ private:
 	Layer* layers;
 	Weight* weights;
 	int layerCount;
-	vector<MinMax> inputNodeMinMax;
-	vector<MinMax> outputNodeMinMax;
+	map<Tensor, MinMax> inputNodeMinMax;
+	map<Tensor, MinMax> outputNodeMinMax;
 	// 정규화 위한 최소 최대 설정 완료 여부
 	bool minMaxSet;
 
@@ -91,7 +91,7 @@ private:
 	 * \param target_Layer : 목표층
 	 * \return 오차 (예측값 - 목표값)
 	 */
-	vector<double> FeedForward(const Layer& input_Layer, const Layer& target_Layer);
+	map<Tensor, double> FeedForward(const Layer& input_Layer, const Layer& target_Layer);
 	/**
 	 * 백노드 합.
 	 * 
@@ -100,7 +100,7 @@ private:
 	 * \param i : 합산 대상 노드 인덱스
 	 * \return 
 	 */
-	double BackwardSum(const Layer& next_Layer, const Weight& weight, int i);
+	double BackwardSum(const Layer& next_Layer, const Weight& weight, Tensor i);
 	/**
 	 * 가중치 업데이트.
 	 * 
@@ -129,7 +129,7 @@ private:
 	 * \param errors : 오차
 	 * \param optimizer : 최적화 기법
 	 */
-	void BackPropagation(vector<double> errors, Optimizer* optimizer);
+	void BackPropagation(map<Tensor, double> errors, Optimizer* optimizer);
 	/**
 	 * Normalize 위한 최소 최대 설정.
 	 * 
@@ -137,8 +137,8 @@ private:
 	 * \param target_Layers : 출력 층
 	 */
 	void SetMinMax(vector<Layer> input_Layers, vector<Layer> target_Layers);
-	Layer GetNormalized(const Layer& layer, vector<MinMax> min_Max);
-	Layer GetDenormalized(const Layer& layer, vector<MinMax> min_Max);
+	Layer GetNormalized(const Layer& layer, map<Tensor, MinMax> min_Max);
+	Layer GetDenormalized(const Layer& layer, map<Tensor, MinMax> min_Max);
 };
 
 

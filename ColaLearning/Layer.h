@@ -20,25 +20,50 @@ public:
 		FullyConnected,
 		Convolution
 	};
-	Layer(map<Tensor, double> node_Values, const ActivationFunction& activation_Function = ActivationFunction::Linear, bool _bias = true);
 	/**
 	 * 노드값으로 Layer 생성.
 	 * 
 	 * \param node_Values : 노드값
+	 * \param layer_Type : 층 타입
 	 * \param activation_Function : 활성 함수
 	 * \param _bias : 편향
 	 */
-	Layer(vector<double> node_Values, const ActivationFunction &activation_Function = ActivationFunction::Linear, bool _bias = true);
+	Layer(map<Tensor, double> node_Values, LayerType layer_Type = LayerType::FullyConnected,
+		const ActivationFunction& activation_Function = ActivationFunction::Linear, bool _bias = true);
+	/**
+	 * 노드값으로 Layer 생성. (1d 전용)
+	 * 
+	 * \param node_Values : 노드값
+	 * \param layer_Type : 층 타입
+	 * \param activation_Function : 활성 함수
+	 * \param _bias : 편향
+	 */
+	Layer(vector<double> node_Values, LayerType layer_Type = LayerType::FullyConnected,
+		const ActivationFunction &activation_Function = ActivationFunction::Linear, bool _bias = true);
+	/**
+	 * 노드 개수로 Layer 생성. (1d 전용)
+	 * 
+	 * \param node_Count : 노드 개수
+	 * \param layer_Type : 층 타입
+	 * \param activation_Function : 활성 함수
+	 * \param _bias : 편향
+	 */
+	Layer(int node_Count, LayerType layer_Type = LayerType::FullyConnected,
+		const ActivationFunction &activation_Function = ActivationFunction::Linear, bool _bias = true);
 	/**
 	 * 노드 개수로 Layer 생성.
 	 * 
-	 * \param node_Count : 노드 개수
+	 * \param x : x축 노드 개수
+	 * \param y : x축 노드 개수
+	 * \param channel : channel축 노드 개수
+	 * \param layer_Type : 층 타입
 	 * \param activation_Function : 활성 함수
 	 * \param _bias : 편향
 	 */
-	Layer(int node_Count, const ActivationFunction &activation_Function = ActivationFunction::Linear, bool _bias = true);
+	Layer(int x, int y, int channel =  1, LayerType layer_Type = LayerType::FullyConnected,
+		const ActivationFunction& activation_Function = ActivationFunction::Linear, bool _bias = true);
 	Layer(const Layer &layer);
-	Layer(const ActivationFunction& activation_Function = ActivationFunction::Linear, bool _bias = true);
+	Layer(LayerType layer_Type = LayerType::FullyConnected, const ActivationFunction& activation_Function = ActivationFunction::Linear, bool _bias = true);
 	virtual ~Layer();
 
 	/**
@@ -50,10 +75,10 @@ public:
 	double GetNodeValue(Tensor n) const;
 	/**
 	 * 모든 노드 값 가져오기.
-	 * 
+	 *
 	 * \return 모든 노드 값
 	 */
-	vector<double> GetNodeValue() const;
+	map<Tensor, double> GetNodeValue();
 	/**
 	 * 노드 값 설정.
 	 * 

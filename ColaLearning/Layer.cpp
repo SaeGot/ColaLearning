@@ -1,48 +1,72 @@
 ﻿#include "Layer.h"
 
 
-Layer::Layer(map<Tensor, double> node_Values, const ActivationFunction& activation_Function, bool _bias)
+Layer::Layer(map<Tensor, double> node_Values, LayerType layer_Type, const ActivationFunction& activation_Function, bool _bias)
 {
 	Initialize();
+	layerType = layer_Type;
 	nodeValues = node_Values;
 	activationFunction = activation_Function;
 	bias = _bias;
 }
 
-Layer::Layer(vector<double> node_Values, const ActivationFunction &activation_Function, bool _bias)
+Layer::Layer(vector<double> node_Values, LayerType layer_Type, const ActivationFunction &activation_Function, bool _bias)
 {
 	Initialize();
+	layerType = layer_Type;
+	activationFunction = activation_Function;
+	bias = _bias;
 	for (int n = 0; n < node_Values.size(); n++)
 	{
 		nodeValues.emplace(Tensor(n), node_Values[n]);
 		backNodeValues.emplace(Tensor(n), 0);
 	}
-	activationFunction = activation_Function;
-	bias = _bias;
 }
 
-Layer::Layer(int node_Count, const ActivationFunction &activation_Function, bool _bias)
+Layer::Layer(int node_Count, LayerType layer_Type, const ActivationFunction &activation_Function, bool _bias)
 {
 	Initialize();
+	layerType = layer_Type;
+	activationFunction = activation_Function;
+	bias = _bias;
 	for (int n = 0; n < node_Count; n++)
 	{
 		nodeValues.emplace(Tensor(n), 0);
 		backNodeValues.emplace(Tensor(n), 0);
 	}
+}
+
+Layer::Layer(int x, int y, int channel, LayerType layer_Type, const ActivationFunction& activation_Function , bool _bias)
+{
+	Initialize();
+	layerType = layer_Type;
 	activationFunction = activation_Function;
 	bias = _bias;
+	for (int i = 0; i < x; i++)
+	{
+		for (int j = 0; j < y; j++)
+		{
+			for (int k = 0; k < channel; k++)
+			{
+				nodeValues.emplace(Tensor(i, j, k), 0);
+				backNodeValues.emplace(Tensor(i, j, k), 0);
+			}
+		}
+	}
 }
 
 Layer::Layer(const Layer& layer)
 {
+	layerType = layer.layerType;
 	nodeValues = layer.nodeValues;
 	backNodeValues = layer.backNodeValues;
 	activationFunction = layer.activationFunction;
 	bias = layer.bias;
 }
 
-Layer::Layer(const ActivationFunction& activation_Function, bool _bias)
+Layer::Layer(LayerType layer_Type, const ActivationFunction& activation_Function, bool _bias)
 {
+	layerType = layer_Type;
 	activationFunction = activation_Function;
 	bias = _bias;
 }
@@ -64,15 +88,9 @@ double Layer::GetNodeValue(Tensor n) const
 	return nodeValues.at(Tensor(n));
 }
 
-vector<double> Layer::GetNodeValue() const
+map<Tensor, double> Layer::GetNodeValue()
 {
-	vector<double> values;
-	for (int n = 0; n < nodeValues.size(); n++)
-	{
-		values.push_back( nodeValues.at(Tensor(n)) );
-	}
-
-	return values;
+	return nodeValues;
 }
 
 void Layer::SetNodeValue(Tensor n, double value)

@@ -54,8 +54,8 @@ void GateTest()
 		for (int index = 0; index < input_list.size(); index++)
 		{
 			// 각 층 생성
-			Layer layer_input(input_list[index], Layer::ActivationFunction::Step, true);
-			Layer layer_output(1, Layer::ActivationFunction::Step, false);
+			Layer layer_input(input_list[index], Layer::LayerType::FullyConnected, Layer::ActivationFunction::Step, true);
+			Layer layer_output(1, Layer::LayerType::FullyConnected, Layer::ActivationFunction::Step, false);
 			Layer layers[2] = { layer_input, layer_output };
 			// 가중치 생성
 			Weight weights[1] = { weight };
@@ -74,9 +74,9 @@ void GateTest()
 	{
 		vector<double> input = *iter_input;
 		// 각 층 생성
-		Layer layer_input(input, Layer::ActivationFunction::Step, true);
-		Layer layer_hidden(2, Layer::ActivationFunction::Step, true);
-		Layer layer_output(1, Layer::ActivationFunction::Step, false);
+		Layer layer_input(input, Layer::LayerType::FullyConnected, Layer::ActivationFunction::Step, true);
+		Layer layer_hidden(2, Layer::LayerType::FullyConnected, Layer::ActivationFunction::Step, true);
+		Layer layer_output(1, Layer::LayerType::FullyConnected, Layer::ActivationFunction::Step, false);
 		Layer* layers = new Layer[3]{ layer_input, layer_hidden, layer_output };
 		// 각 가중치 생성
 		vector<vector<double>> vec_weight;
@@ -233,7 +233,7 @@ void CrossEntropyTest()
 	vector<double> input_2_encoding = file.GetEncodingData(0, 1);
 	vector<double> output_encoding = file.GetEncodingData(0, 2);
 	Layer layer_input(input_1_encoding.size() + input_2_encoding.size());
-	Layer layer_output(output_encoding.size(), Layer::ActivationFunction::Softmax);
+	Layer layer_output(output_encoding.size(), Layer::LayerType::FullyConnected, Layer::ActivationFunction::Softmax);
 	Layer layers[2] = { layer_input, layer_output };
 	int layer_count = sizeof(layers) / sizeof(Layer);
 	NeuralNetwork net(layers, layer_count);
@@ -248,12 +248,12 @@ void CrossEntropyTest()
 		vector<double> input_value = file.GetEncodingData(n, { 0, 1 });
 		Layer input_learning_layer(input_value);
 		vector<double> output_value = { file.GetEncodingData(n, 2) };
-		Layer targe_layer(output_value, Layer::ActivationFunction::Softmax);
+		Layer targe_layer(output_value, Layer::LayerType::FullyConnected, Layer::ActivationFunction::Softmax);
 		input_learning_layers.push_back(input_learning_layer);
 		targe_layers.push_back(targe_layer);
 	}
-	Optimizer* optimizer = new GradientDescent(0.05);
-	vector<double> output;
+	Optimizer* optimizer = new GradientDescent(0.01);
+	map<Tensor, double> output;
 	for (int n = 0; n < 1000; n++)
 	{
 		net.Learn(input_learning_layers, targe_layers, optimizer, NeuralNetwork::ErrorType::CrossEntropy);
@@ -276,6 +276,45 @@ void CrossEntropyTest()
 	printf("\n");
 }
 
+void Layer2DTest()
+{
+	Layer layer_input(3, 3);
+	Layer layer_output(3, 3);
+	Layer layers[2] = { layer_input, layer_output };
+	int layer_count = sizeof(layers) / sizeof(Layer);
+	NeuralNetwork net(layers, layer_count);
+	vector<Layer> input_learning_layers;
+	vector<Layer> targe_layers;
+	for (int n = 0; n < 5; n++)
+	{
+		map<Tensor, double> input_data;
+		map<Tensor, double> output_data;
+		for (int x = 0; x < 3; x++)
+		{
+			for (int y = 0; y < 3; y++)
+			{
+				Tensor tensor = Tensor(x, y);
+				input_data.emplace(tensor, 10 * x + y + (n * 100));
+				output_data.emplace(tensor, 10 * x + y + (n * 1000));
+			}
+		}
+		Layer input_learning_layer(input_data);
+		Layer targe_layer(output_data);
+		input_learning_layers.push_back(input_learning_layer);
+		targe_layers.push_back(targe_layer);
+	}
+	Optimizer* optimizer = new GradientDescent(0.01);
+	map<Tensor, double> output;
+	for (int n = 0; n < 1000; n++)
+	{
+		net.Learn(input_learning_layers, targe_layers, optimizer, NeuralNetwork::ErrorType::CrossEntropy);
+		output = net.Predict(input_learning_layers[0]);
+	}
+	output = net.Predict(input_learning_layers[0]);
+	output = net.Predict(input_learning_layers[1]);
+	output = net.Predict(input_learning_layers[2]);
+}
+
 int main()
 {
 	GateTest();
@@ -287,4 +326,5 @@ int main()
 	printf("QLearning End\n");
 	OneHotEncodingTest();
 	CrossEntropyTest();
+	Layer2DTest();
 }
