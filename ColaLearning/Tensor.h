@@ -12,6 +12,8 @@ public:
 	bool operator<(const Tensor& rhs) const;
 	bool operator!=(const Tensor& rhs) const;
 	bool operator==(const Tensor& rhs) const;
+	Tensor operator+(const Tensor& rhs) const;
+	void operator+=(const Tensor& rhs);
 	bool CheckBias() const;
 	/**
 	 * 편향 텐서 가져오기.
@@ -20,7 +22,9 @@ public:
 	 * \return 편향 텐서
 	 */
 	static Tensor GetBias();
-	vector<int> GetXYChannel();
+	vector<int> GetXYChannel() const;
+	vector<int> GetXYChannelSize() const;
+	vector<Tensor> GetTensors() const;
 
 private:
 	int x;

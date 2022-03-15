@@ -93,6 +93,18 @@ public:
 	 */
 	int GetNodeCount() const;
 	/**
+	 * 층 사이즈 가져오기.
+	 * 
+	 * \return 층 사이즈 (x, y, channel 순).
+	 */
+	vector<int> GetLayerSize() const;
+	/**
+	 * 층 사이즈 가져오기.
+	 * 
+	 * \return 층 사이즈 (Tensor)
+	 */
+	Tensor GetLayerSizeTensor() const;
+	/**
 	 * 모든 텐서 가져오기.
 	 *
 	 * \return 텐서
@@ -149,9 +161,11 @@ public:
 	 * 
 	 */
 	void SetActivationFunction(ActivationFunction activation_Function);
+	virtual void SetNodes(Layer previous_Layer) {};
 
 protected:
 	LayerType layerType;
+	Tensor layerSize;
 	map<Tensor, double> nodeValues;
 	map<Tensor, double> backNodeValues;
 	ActivationFunction activationFunction;
@@ -162,4 +176,5 @@ protected:
 	 *
 	 */
 	void Initialize();
+	void SetLayerSize(map<Tensor, double> node_Values);
 };

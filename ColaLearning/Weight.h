@@ -2,6 +2,7 @@
 #include <vector>
 #include <map>
 #include "Layer.h"
+#include "ConvolutionLayer.h"
 #include "Tensor.h"
 using namespace std;
 
@@ -59,7 +60,7 @@ public:
 	 * \param j : 다음층 노드 인덱스
 	 * \return 가중치
 	 */
-	map<TensorConnection, double> GetJWeightValues(Tensor j) const;
+	vector<Tensor> GetJWeightTensorWithoutBias(Tensor j) const;
 	/**
 	 * 가중치 업데이트.
 	 *
@@ -88,5 +89,7 @@ private:
 	 * 
 	 */
 	void Initialize();
+	void ConnectFullyConnectedLayer(Layer* previous_Layer, Layer* next_Layer, InitWeight init_Weight, double initial_Limit);
+	void ConnectConvolutionLayer(Layer* previous_Layer, Layer* next_Layer, InitWeight init_Weight, double initial_Limit);
 };
 

@@ -8,6 +8,7 @@ Layer::Layer(map<Tensor, double> node_Values, LayerType layer_Type, const Activa
 	nodeValues = node_Values;
 	activationFunction = activation_Function;
 	bias = _bias;
+	SetLayerSize(nodeValues);
 }
 
 Layer::Layer(vector<double> node_Values, LayerType layer_Type, const ActivationFunction &activation_Function, bool _bias)
@@ -21,6 +22,7 @@ Layer::Layer(vector<double> node_Values, LayerType layer_Type, const ActivationF
 		nodeValues.emplace(Tensor(n), node_Values[n]);
 		backNodeValues.emplace(Tensor(n), 0);
 	}
+	SetLayerSize(nodeValues);
 }
 
 Layer::Layer(int node_Count, LayerType layer_Type, const ActivationFunction &activation_Function, bool _bias)
@@ -34,6 +36,7 @@ Layer::Layer(int node_Count, LayerType layer_Type, const ActivationFunction &act
 		nodeValues.emplace(Tensor(n), 0);
 		backNodeValues.emplace(Tensor(n), 0);
 	}
+	SetLayerSize(nodeValues);
 }
 
 Layer::Layer(int x, int y, int channel, LayerType layer_Type, const ActivationFunction& activation_Function , bool _bias)
@@ -53,11 +56,13 @@ Layer::Layer(int x, int y, int channel, LayerType layer_Type, const ActivationFu
 			}
 		}
 	}
+	SetLayerSize(nodeValues);
 }
 
 Layer::Layer(const Layer& layer)
 {
 	layerType = layer.layerType;
+	layerSize = layer.layerSize;
 	nodeValues = layer.nodeValues;
 	backNodeValues = layer.backNodeValues;
 	activationFunction = layer.activationFunction;
@@ -101,6 +106,16 @@ void Layer::SetNodeValue(Tensor n, double value)
 int Layer::GetNodeCount() const
 {
 	return static_cast<int>(nodeValues.size());
+}
+
+vector<int> Layer::GetLayerSize() const
+{
+	return layerSize.GetXYChannelSize();
+}
+
+Tensor Layer::GetLayerSizeTensor() const
+{
+	return layerSize;
 }
 
 vector<Tensor> Layer::GetTensorWithoutBias() const
@@ -187,4 +202,28 @@ void Layer::Initialize()
 {
 	nodeValues.clear();
 	backNodeValues.clear();
+}
+
+void Layer::SetLayerSize(map<Tensor, double> node_Values)
+{
+	int x_size = 0;
+	int y_size = 0;
+	int channel_size = 0;
+	for (const pair<Tensor, double>& node_values : node_Values)
+	{
+		vector<int> x_y_channel = node_values.first.GetXYChannelSize();
+		if (x_y_channel[0] > x_size)
+		{
+			x_size = x_y_channel[0];
+		}
+		else if (x_y_channel[1] > y_size)
+		{
+			y_size = x_y_channel[1];
+		}
+		else if (x_y_channel[2] > channel_size)
+		{
+			channel_size = x_y_channel[2];
+		}
+	}
+	layerSize = Tensor(x_size, y_size, channel_size);
 }

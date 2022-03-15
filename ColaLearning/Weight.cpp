@@ -54,29 +54,10 @@ Weight::Weight(Layer* previous_Layer, Layer* next_Layer, InitWeight init_Weight,
 	switch (next_Layer->GetLayerType())
 	{
 	case Layer::LayerType::FullyConnected:
-		for (Tensor i : previous_Layer->GetTensorWithoutBias())
-		{
-			for (Tensor j : next_Layer->GetTensorWithoutBias())
-			{
-				int input_node_count_with_bias = previous_Layer->GetNodeCount() + previous_Layer->CheckBias();
-				int output_node_count = next_Layer->GetNodeCount();
-				weightValues[TensorConnection(Tensor(i), Tensor(j))]
-					= Initialize(init_Weight, input_node_count_with_bias, output_node_count, initial_Limit);
-			}
-		}
-		// 편향
-		if (previous_Layer->CheckBias())
-		{
-			for (Tensor j : next_Layer->GetTensorWithoutBias())
-			{
-				int input_node_count_with_bias = previous_Layer->GetNodeCount() + previous_Layer->CheckBias();
-				int output_node_count = next_Layer->GetNodeCount();
-				weightValues[TensorConnection(Tensor::GetBias(), Tensor(j))]
-					= Initialize(init_Weight, input_node_count_with_bias, output_node_count, initial_Limit);
-			}
-		}
+		ConnectFullyConnectedLayer(previous_Layer, next_Layer, init_Weight, initial_Limit);
 		break;
 	case Layer::LayerType::Convolution:
+		ConnectConvolutionLayer(previous_Layer, next_Layer, init_Weight, initial_Limit);
 		break;
 	}
 }
@@ -109,18 +90,21 @@ double Weight::GetWeight(Tensor i, Tensor j) const
 	return weightValues.at( TensorConnection(i, j) );
 }
 
-map<TensorConnection, double> Weight::GetJWeightValues(Tensor j) const
+vector<Tensor> Weight::GetJWeightTensorWithoutBias(Tensor j) const
 {
-	map<TensorConnection, double> j_weight_values;
+	vector<Tensor> j_weight_tensor;
 	for (const pair<TensorConnection, double>& weight_values : weightValues)
 	{
 		if (weight_values.first.GetNext() == j)
 		{
-			j_weight_values.emplace(weight_values.first, weight_values.second);
+			if (weight_values.first.GetPrevious() != Tensor::GetBias())
+			{
+				j_weight_tensor.push_back(weight_values.first.GetPrevious());
+			}
 		}
 	}
 
-	return j_weight_values;
+	return j_weight_tensor;
 }
 
 void Weight::UpdateWeight(Tensor i, Tensor j, double value)
@@ -151,4 +135,71 @@ void Weight::Initialize()
 {
 	weightValues.clear();
 	previousBias = false;
+}
+
+void Weight::ConnectFullyConnectedLayer(Layer* previous_Layer, Layer* next_Layer, InitWeight init_Weight, double initial_Limit)
+{
+	for (Tensor i : previous_Layer->GetTensorWithoutBias())
+	{
+		for (Tensor j : next_Layer->GetTensorWithoutBias())
+		{
+			int input_node_count_with_bias = previous_Layer->GetNodeCount() + previous_Layer->CheckBias();
+			int output_node_count = next_Layer->GetNodeCount();
+			weightValues[TensorConnection(Tensor(i), Tensor(j))]
+				= Initialize(init_Weight, input_node_count_with_bias, output_node_count, initial_Limit);
+		}
+	}
+	// 편향
+	if (previous_Layer->CheckBias())
+	{
+		for (Tensor j : next_Layer->GetTensorWithoutBias())
+		{
+			int input_node_count_with_bias = previous_Layer->GetNodeCount() + previous_Layer->CheckBias();
+			int output_node_count = next_Layer->GetNodeCount();
+			weightValues[TensorConnection(Tensor::GetBias(), Tensor(j))]
+				= Initialize(init_Weight, input_node_count_with_bias, output_node_count, initial_Limit);
+		}
+	}
+}
+
+void Weight::ConnectConvolutionLayer(Layer* previous_Layer, Layer* next_Layer, InitWeight init_Weight, double initial_Limit)
+{
+	ConvolutionLayer* next_ConvolutionLayer = (ConvolutionLayer*)next_Layer;
+	Tensor filter_size_tensor = next_ConvolutionLayer->GetFilter();
+	int input_node_count_with_bias = previous_Layer->GetNodeCount() + previous_Layer->CheckBias();
+	int output_node_count = next_ConvolutionLayer->GetNodeCount();
+	Tensor b = previous_Layer->GetLayerSizeTensor();;
+	bool a = Tensor(5, 5) < b;
+	int x_stride = 0;
+	int y_stride = 0;
+	vector<int> stride = next_ConvolutionLayer->GetStride().GetXYChannel();
+	for (Tensor j : next_ConvolutionLayer->GetTensorWithoutBias())
+	{
+		for (Tensor f : filter_size_tensor.GetTensors())
+		{
+			Tensor i = Tensor(x_stride, y_stride);
+			Tensor prev_tensor = i + f;
+			weightValues[TensorConnection(Tensor(prev_tensor), Tensor(j))]
+				= Initialize(init_Weight, input_node_count_with_bias, output_node_count, initial_Limit);
+		}
+		x_stride += stride[0];
+		if (x_stride + filter_size_tensor.GetXYChannel()[0] > next_ConvolutionLayer->GetLayerSize()[0])
+		{
+			x_stride = 0;
+			y_stride += stride[1];
+		}
+		else if (y_stride + filter_size_tensor.GetXYChannel()[1] > next_ConvolutionLayer->GetLayerSize()[1])
+		{
+			break;
+		}
+	}
+	// 편향
+	if (previous_Layer->CheckBias())
+	{
+		for (Tensor j : next_ConvolutionLayer->GetTensorWithoutBias())
+		{
+			weightValues[TensorConnection(Tensor::GetBias(), Tensor(j))]
+				= Initialize(init_Weight, input_node_count_with_bias, output_node_count, initial_Limit);
+		}
+	}
 }

@@ -56,7 +56,7 @@ void GateTest()
 			// 각 층 생성
 			Layer layer_input(input_list[index], Layer::LayerType::FullyConnected, Layer::ActivationFunction::Step, true);
 			Layer layer_output(1, Layer::LayerType::FullyConnected, Layer::ActivationFunction::Step, false);
-			Layer layers[2] = { layer_input, layer_output };
+			vector<Layer*> layers = { new Layer(layer_input), new Layer(layer_output) };
 			// 가중치 생성
 			Weight weights[1] = { weight };
 			// 신경망 생성
@@ -77,7 +77,7 @@ void GateTest()
 		Layer layer_input(input, Layer::LayerType::FullyConnected, Layer::ActivationFunction::Step, true);
 		Layer layer_hidden(2, Layer::LayerType::FullyConnected, Layer::ActivationFunction::Step, true);
 		Layer layer_output(1, Layer::LayerType::FullyConnected, Layer::ActivationFunction::Step, false);
-		Layer* layers = new Layer[3]{ layer_input, layer_hidden, layer_output };
+		vector<Layer*> layers = { new Layer(layer_input), new Layer(layer_hidden), new Layer(layer_output) };
 		// 각 가중치 생성
 		vector<vector<double>> vec_weight;
 		for (int i = 0; i < 3; i++)
@@ -98,9 +98,9 @@ void LearnTest()
 	Layer layer_input(1);
 	Layer layer_hidden(3);
 	Layer layer_output(1);
-	Layer layers[3] = { layer_input, layer_hidden, layer_output };
-	int layer_count = sizeof(layers) / sizeof(Layer);
-	NeuralNetwork net(layers, layer_count);
+	vector<Layer*> layers = { new Layer(layer_input), new Layer(layer_hidden), new Layer(layer_output) };
+	//int layer_count = sizeof(layers) / sizeof(Layer);
+	NeuralNetwork net(layers, layers.size());
 	double input = file.GetData(0, 0);
 
 	vector<double> data = {input};
@@ -185,9 +185,9 @@ void OneHotEncodingTest()
 
 	Layer layer_input(input_1_encoding.size() + input_2_encoding.size());
 	Layer layer_output(1);
-	Layer layers[2] = { layer_input, layer_output };
-	int layer_count = sizeof(layers) / sizeof(Layer);
-	NeuralNetwork net(layers, layer_count);
+	vector<Layer*> layers = { new Layer(layer_input), new Layer(layer_output) };
+	//int layer_count = sizeof(layers) / sizeof(Layer);
+	NeuralNetwork net(layers, layers.size());
 
 	vector<double> data = file.GetEncodingData(0, {0, 1});
 	Layer layer_inputdata(data);
@@ -234,9 +234,9 @@ void CrossEntropyTest()
 	vector<double> output_encoding = file.GetEncodingData(0, 2);
 	Layer layer_input(input_1_encoding.size() + input_2_encoding.size());
 	Layer layer_output(output_encoding.size(), Layer::LayerType::FullyConnected, Layer::ActivationFunction::Softmax);
-	Layer layers[2] = { layer_input, layer_output };
-	int layer_count = sizeof(layers) / sizeof(Layer);
-	NeuralNetwork net(layers, layer_count);
+	vector<Layer*> layers = { new Layer(layer_input), new Layer(layer_output) };
+	//int layer_count = sizeof(layers) / sizeof(Layer);
+	NeuralNetwork net(layers, layers.size());
 	vector<double> data = file.GetEncodingData(0, { 0, 1 });
 	Layer layer_inputdata(data);
 
@@ -280,9 +280,9 @@ void Layer2DTest()
 {
 	Layer layer_input(3, 3);
 	Layer layer_output(3, 3);
-	Layer layers[2] = { layer_input, layer_output };
-	int layer_count = sizeof(layers) / sizeof(Layer);
-	NeuralNetwork net(layers, layer_count);
+	vector<Layer*> layers = { new Layer(layer_input), new Layer(layer_output) };
+	//int layer_count = sizeof(layers) / sizeof(Layer);
+	NeuralNetwork net(layers, layers.size());
 	vector<Layer*> input_learning_layers;
 	vector<Layer*> targe_layers;
 	for (int n = 0; n < 5; n++)
@@ -315,8 +315,54 @@ void Layer2DTest()
 	output = net.Predict(*input_learning_layers[2]);
 }
 
+void ConvTest()
+{
+	Layer layer_input(3, 3);
+	ConvolutionLayer layer_hid(1, Tensor(2, 2), Layer::ActivationFunction::ReLU, false);
+	Layer layer_output(2, 2);
+	vector<Layer*> layers = { new Layer(layer_input), new ConvolutionLayer(layer_hid), new Layer(layer_output) };
+
+	NeuralNetwork net(layers, layers.size());
+	vector<Layer*> input_learning_layers;
+	vector<Layer*> targe_layers;
+	for (int n = 0; n < 5; n++)
+	{
+		map<Tensor, double> input_data;
+		map<Tensor, double> output_data;
+		for (int x = 0; x < 3; x++)
+		{
+			for (int y = 0; y < 3; y++)
+			{
+				Tensor tensor = Tensor(x, y);
+				input_data.emplace(tensor, 10 * x + y + (n * 100));
+			}
+		}
+		for (int x = 0; x < 2; x++)
+		{
+			for (int y = 0; y < 2; y++)
+			{
+				Tensor tensor = Tensor(x, y);
+				output_data.emplace(tensor, 10 * x + y);
+			}
+		}
+		FullyConnectedLayer input_learning_layer(input_data);
+		FullyConnectedLayer targe_layer(output_data);
+		input_learning_layers.push_back(new Layer(input_learning_layer));
+		targe_layers.push_back(new Layer(targe_layer));
+	}
+	Optimizer* optimizer = new GradientDescent(0.01);
+	map<Tensor, double> output;
+	for (int n = 0; n < 1000; n++)
+	{
+		net.Learn(input_learning_layers, targe_layers, optimizer, NeuralNetwork::ErrorType::SquareError);
+		output = net.Predict(*input_learning_layers[0]);
+	}
+	output = net.Predict(*input_learning_layers[0]);
+}
+
 int main()
 {
+	/*
 	GateTest();
 	LearnTest();
 	printf("State End\n");
@@ -327,4 +373,6 @@ int main()
 	OneHotEncodingTest();
 	CrossEntropyTest();
 	Layer2DTest();
+	*/
+	ConvTest();
 }

@@ -22,7 +22,7 @@ public:
 	 * \param layer_Count : 층 개수
 	 * \param weight_InitialLimit : 가중치 초기값 상하한
 	 */
-	NeuralNetwork(const Layer* _layers, int layer_Count, double weight_InitialLimit = 1.0);
+	NeuralNetwork(vector<Layer*> _layers, int layer_Count, double weight_InitialLimit = 1.0);
 	/**
 	 * Layer와 Weight로 NeuralNetwork 생성.
 	 * 
@@ -30,7 +30,7 @@ public:
 	 * \param layer_Count : 층 개수
 	 * \param _weights : 모든 가중치
 	 */
-	NeuralNetwork(const Layer* _layers, int layer_Count, const Weight* _weights);
+	NeuralNetwork(vector<Layer*> _layers, int layer_Count, const Weight* _weights);
 	~NeuralNetwork();
 
 	/**
@@ -56,8 +56,8 @@ private:
 		double min = 0;
 		double max = 0;
 	};
-	Layer* layers;
-	Weight* weights;
+	vector<Layer*> layers;
+	vector<Weight> weights;
 	int layerCount;
 	map<Tensor, MinMax> inputNodeMinMax;
 	map<Tensor, MinMax> outputNodeMinMax;
@@ -84,7 +84,7 @@ private:
 	 * 
 	 * \param input_Layer : 입력층
 	 */
-	void FeedForward(const Layer &input_Layer);
+	void FeedForward(const Layer& input_Layer);
 	/**
 	 * Feed Forward 진행 (학습용).
 	 * 
@@ -141,7 +141,3 @@ private:
 	Layer GetNormalized(const Layer* layer, map<Tensor, MinMax> min_Max);
 	Layer GetDenormalized(const Layer* layer, map<Tensor, MinMax> min_Max);
 };
-
-
-
-
