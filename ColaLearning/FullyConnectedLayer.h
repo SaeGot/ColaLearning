@@ -48,4 +48,6 @@ public:
 	FullyConnectedLayer(const ActivationFunction& activation_Function = ActivationFunction::Linear, bool _bias = true)
 		: Layer(LayerType::FullyConnected, activation_Function, _bias) {}
 	virtual ~FullyConnectedLayer();
+
+	//virtual double ForwardSum(const Weight& weight, Tensor j);
 };

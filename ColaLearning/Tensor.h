@@ -21,12 +21,14 @@ public:
 	 * \param channel : 채널
 	 * \return 편향 텐서
 	 */
-	static Tensor GetBias();
+	static Tensor Bias();
 	vector<int> GetXYChannel() const;
 	vector<int> GetXYChannelSize() const;
+	int GetBias() const;
 	vector<Tensor> GetTensors() const;
 	bool CheckNegative() const;
 	bool CheckOver(Tensor compare) const;
+	Tensor GetInvertTensor(int x_size, int y_size) const;
 
 private:
 	int x;
@@ -34,6 +36,8 @@ private:
 	int channel;
 	// 편향은 가중치용으로 사용
 	bool bias;
+
+	int GetInvert(int origin, int max) const;
 };
 
 class TensorConnection

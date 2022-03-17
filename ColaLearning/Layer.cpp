@@ -123,7 +123,7 @@ vector<Tensor> Layer::GetTensorWithoutBias() const
 	vector<Tensor> tensors;
 	for (const pair<Tensor, double>& node_value : nodeValues)
 	{
-		if (node_value.first != Tensor::GetBias())
+		if (node_value.first != Tensor::Bias())
 		{
 			tensors.push_back(node_value.first);
 		}
@@ -147,6 +147,8 @@ double Layer::Activate(double node_Value)
 	case ActivationFunction::Step:
 		if (node_Value >= 0) { return 1.0; }
 		else { return 0.0; }
+	case ActivationFunction::Tanh:
+		return (1 - exp(-node_Value)) / (1 + exp(-node_Value));
 	case ActivationFunction::Softmax:
 		return exp(node_Value);
 	}
@@ -165,6 +167,8 @@ double Layer::Deactivate(double node_Value)
 		else { return 0.0; }
 	case ActivationFunction::Step:
 		return 0.0;
+	case ActivationFunction::Tanh:
+		return 1 - pow((exp(node_Value) - exp(-node_Value)) / (exp(node_Value) + exp(-node_Value)), 2);
 		// ToDo Softmax는 output에서만
 	case ActivationFunction::Softmax:
 		return 1.0;

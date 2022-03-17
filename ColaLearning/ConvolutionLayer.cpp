@@ -85,3 +85,19 @@ void ConvolutionLayer::SetNodes(Layer previous_Layer)
 		}
 	}
 }
+
+void ConvolutionLayer::AddWeightConnection(Tensor next_Tensors, vector<Tensor> prev_Tensors, vector<Tensor> filter_Tensors)
+{
+	weightConnectionWithoutBias.emplace(Tensor(next_Tensors), prev_Tensors);
+	filterConnectionWithoutBias.emplace(Tensor(next_Tensors), filter_Tensors);
+}
+
+vector<Tensor> ConvolutionLayer::GetPreviousConnectionWithoutBias(Tensor next_Tensor) const
+{
+	return weightConnectionWithoutBias.at(next_Tensor);
+}
+
+vector<Tensor> ConvolutionLayer::GetFilterConnectionWithoutBias(Tensor next_Tensor) const
+{
+	return filterConnectionWithoutBias.at(next_Tensor);
+}

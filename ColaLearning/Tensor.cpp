@@ -76,7 +76,12 @@ bool Tensor::CheckBias() const
 	return bias;
 }
 
-Tensor Tensor::GetBias()
+Tensor Tensor::GetInvertTensor(int x_size, int y_size) const
+{
+	return Tensor(GetInvert(x, x_size - 1), GetInvert(y, y_size - 1), channel, bias);
+}
+
+Tensor Tensor::Bias()
 {
 	return Tensor(0, 0, 0, true);
 }
@@ -89,6 +94,11 @@ vector<int> Tensor::GetXYChannel() const
 vector<int> Tensor::GetXYChannelSize() const
 {
 	return { x + 1, y + 1, channel + 1 };
+}
+
+int Tensor::GetBias() const
+{
+	return bias;
 }
 
 vector<Tensor> Tensor::GetTensors() const
@@ -120,6 +130,21 @@ bool Tensor::CheckNegative() const
 bool Tensor::CheckOver(Tensor compare) const
 {
 	return x < compare.x && y < compare.y;
+}
+
+int Tensor::GetInvert(int origin, int max) const
+{
+	float origin_f = float(origin);
+	float max_f = float(max);
+
+	if (origin_f - max_f / 2 < 0)
+	{
+		return int( origin_f + 2 * (max_f / 2 - origin_f) );
+	}
+	else
+	{
+		return int( origin_f - 2 * (origin_f - max_f / 2) );
+	}
 }
 
 bool TensorConnection::operator<(const TensorConnection& rhs) const

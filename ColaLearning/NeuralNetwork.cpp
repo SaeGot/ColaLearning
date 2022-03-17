@@ -115,6 +115,7 @@ void NeuralNetwork::InitWeights(double weight_InitialLimit)
 				init_weight = InitWeight::He;
 				break;
 			case Layer::ActivationFunction::Step:
+			case Layer::ActivationFunction::Tanh:
 				init_weight = InitWeight::Xavier;
 				break;
 			}
@@ -136,12 +137,24 @@ void NeuralNetwork::InitWeights(double weight_InitialLimit)
 	}
 }
 
-double NeuralNetwork::ForwardSum(const Layer& layer, const Weight& weight, Tensor j)
+double NeuralNetwork::ForwardSum(const Layer& prev_Layer, const Layer& next_Layer, const Weight& weight, Tensor j)
+{
+	if (next_Layer.GetLayerType() == Layer::LayerType::FullyConnected)
+	{
+		return FullyConnectedForwardSum(prev_Layer, weight, j);
+	}
+	else if (next_Layer.GetLayerType() == Layer::LayerType::Convolution)
+	{
+		return ConvolutionForwardSum(prev_Layer, next_Layer, weight, j);
+	}
+}
+
+double NeuralNetwork::FullyConnectedForwardSum(const Layer& prev_Layer, const Weight& weight, Tensor j)
 {
 	double output_sum = 0.0;
-	for (const Tensor& tensor : weight.GetJWeightTensorWithoutBias(j))
+	for (const Tensor& tensor : weight.GetJConnectedWeightTensorWithoutBias(j))
 	{
-		output_sum += layer.GetNodeValue(tensor) * weight.GetWeight(tensor, j);
+		output_sum += prev_Layer.GetNodeValue(tensor) * weight.GetWeight(tensor, j);
 	}
 	/*
 	for (int i = 0; i < layer.GetNodeCount(); i++)
@@ -149,11 +162,69 @@ double NeuralNetwork::ForwardSum(const Layer& layer, const Weight& weight, Tenso
 		output_sum += layer.GetNodeValue(i) * weight.GetWeight(i, j);
 	}
 	*/
-	if (layer.CheckBias())
+	if (prev_Layer.CheckBias())
 	{
-		output_sum += weight.GetWeight(Tensor::GetBias(), j);
+		output_sum += weight.GetWeight(Tensor::Bias(), j);
 	}
 
+	return output_sum;
+}
+
+double NeuralNetwork::ConvolutionForwardSum(const Layer& prev_Layer, const Layer& next_Layer, const Weight& weight, Tensor j)
+{
+	double output_sum = 0.0;
+
+	ConvolutionLayer* next_ConvolutionLayer = (ConvolutionLayer*)&next_Layer;
+	vector<Tensor> prev_tensor_list = next_ConvolutionLayer->GetPreviousConnectionWithoutBias(j);
+	vector<Tensor> filter_tensor_list = next_ConvolutionLayer->GetFilterConnectionWithoutBias(j);
+	for (int i = 0; i < prev_tensor_list.size(); i++)
+	{
+		Tensor prev_tensor = prev_tensor_list[i];
+		Tensor filter_tensor = filter_tensor_list[i];
+		int prev_channel = prev_tensor_list[i].GetXYChannel()[2];
+		output_sum += prev_Layer.GetNodeValue(prev_tensor) * weight.GetWeight(Tensor(0, 0, prev_channel), filter_tensor);
+	}
+	if (prev_Layer.CheckBias())
+	{
+		int prev_channel_size = prev_Layer.GetLayerSize()[2];
+		int next_channel = j.GetXYChannel()[2];
+		for (int prev_channel = 0; prev_channel < prev_channel_size; prev_channel++)
+		{
+			output_sum += weight.GetWeight(Tensor(0, 0, prev_channel), Tensor(0, 0, next_channel, true));
+		}
+	}
+
+	/*
+	vector<int> padding = next_ConvolutionLayer->GetPadding().GetXYChannel();
+	vector<int> stride = next_ConvolutionLayer->GetStride().GetXYChannel();
+	int prev_channel_size = prev_Layer.GetLayerSizeTensor().GetXYChannel()[2];
+	int next_channel_size = next_ConvolutionLayer->GetLayerSizeTensor().GetXYChannel()[2];
+	Tensor filter_size_tensor = next_ConvolutionLayer->GetFilter();
+
+	Tensor prev_layer_size = prev_Layer.GetLayerSizeTensor();
+	int x_stride = -padding[0];
+	int y_stride = -padding[1];
+
+	for (int prev_channel = 0; prev_channel < prev_channel_size; prev_channel++)
+	{
+		for (int next_channel = 0; next_channel < next_channel_size; next_channel++)
+		{
+			for (Tensor f : filter_size_tensor.GetTensors())
+			{
+				Tensor i = Tensor(x_stride, y_stride, prev_channel);
+				Tensor prev_tensor = i + f;
+				if (!prev_tensor.CheckNegative() && prev_tensor.CheckOver(prev_layer_size))
+				{
+					output_sum += prev_Layer.GetNodeValue(prev_tensor) * weight.GetWeight(prev_tensor, f);
+				}
+			}
+			if (prev_Layer.CheckBias())
+			{
+				output_sum += weight.GetWeight(Tensor(0, 0, prev_channel, true), Tensor(0, 0, next_channel));
+			}
+		}
+	}
+	*/
 	return output_sum;
 }
 
@@ -165,23 +236,37 @@ void NeuralNetwork::FeedForward(const Layer& input_Layer)
 		for (Tensor j : layers[n]->GetTensorWithoutBias())
 		{
 			int prev_n = n - 1;
-			double value = ForwardSum(*layers[prev_n], weights[prev_n], j);
+			double value = ForwardSum(*layers[prev_n], *layers[n], weights[prev_n], j);
 			value = layers[n]->Activate(value);
 			layers[n]->SetNodeValue(j, value);
 		}
 	}
-	int final_index = layerCount - 1;
-	if (layers[final_index]->GetActivationFunction() == Layer::ActivationFunction::Softmax)
+	int n = layerCount - 1;
+	if (layers[n]->GetActivationFunction() == Layer::ActivationFunction::Softmax)
 	{
 		double softmax_sum = 0;
-		for (Tensor j : layers[final_index]->GetTensorWithoutBias())
+		for (Tensor j : layers[n]->GetTensorWithoutBias())
 		{
-			softmax_sum += layers[final_index]->GetNodeValue(j);
+			int prev_n = n - 1;
+			double value = ForwardSum(*layers[prev_n], *layers[n], weights[prev_n], j);
+			value = layers[n]->Activate(value);
+			layers[n]->SetNodeValue(j, value);
+			softmax_sum += value;
 		}
-		for (Tensor j : layers[final_index]->GetTensorWithoutBias())
+		for (Tensor j : layers[n]->GetTensorWithoutBias())
 		{
-			double value = layers[final_index]->GetNodeValue(j) / softmax_sum;
-			layers[final_index]->SetNodeValue(j, value);
+			double value = layers[n]->GetNodeValue(j) / softmax_sum;
+			layers[n]->SetNodeValue(j, value);
+		}
+	}
+	else
+	{
+		for (Tensor j : layers[n]->GetTensorWithoutBias())
+		{
+			int prev_n = n - 1;
+			double value = ForwardSum(*layers[prev_n], *layers[n], weights[prev_n], j);
+			value = layers[n]->Activate(value);
+			layers[n]->SetNodeValue(j, value);
 		}
 	}
 }
@@ -195,7 +280,7 @@ map<Tensor, double> NeuralNetwork::FeedForward(const Layer& input_Layer, const L
 		for (Tensor j : layers[n]->GetTensorWithoutBias())
 		{
 			int prev_n = n - 1;
-			double value = ForwardSum(*layers[prev_n], weights[prev_n], j);
+			double value = ForwardSum(*layers[prev_n], *layers[n], weights[prev_n], j);
 			value = layers[n]->Activate(value);
 			layers[n]->SetNodeValue(j, value);
 		}
@@ -209,7 +294,7 @@ map<Tensor, double> NeuralNetwork::FeedForward(const Layer& input_Layer, const L
 		for (Tensor j : layers[n]->GetTensorWithoutBias())
 		{
 			int prev_n = n - 1;
-			double value = ForwardSum(*layers[prev_n], weights[prev_n], j);
+			double value = ForwardSum(*layers[prev_n], *layers[n], weights[prev_n], j);
 			value = layers[n]->Activate(value);
 			layers[n]->SetNodeValue(j, value);
 			softmax_sum += value;
@@ -227,7 +312,7 @@ map<Tensor, double> NeuralNetwork::FeedForward(const Layer& input_Layer, const L
 		for (Tensor j : layers[n]->GetTensorWithoutBias())
 		{
 			int prev_n = n - 1;
-			double value = ForwardSum(*layers[prev_n], weights[prev_n], j);
+			double value = ForwardSum(*layers[prev_n], *layers[n], weights[prev_n], j);
 			value = layers[n]->Activate(value);
 			layers[n]->SetNodeValue(j, value);
 			// 오차 계산
@@ -238,12 +323,57 @@ map<Tensor, double> NeuralNetwork::FeedForward(const Layer& input_Layer, const L
 	return errors;
 }
 
-double NeuralNetwork::BackwardSum(const Layer& next_Layer, const Weight& weight, Tensor i)
+double NeuralNetwork::BackwardSum(const Layer& prev_Layer, const Layer& next_Layer, const Weight& weight, Tensor i)
+{
+	if (next_Layer.GetLayerType() == Layer::LayerType::FullyConnected)
+	{
+		return FullyConnectedBackwardSum(next_Layer, weight, i);
+	}
+	else if (next_Layer.GetLayerType() == Layer::LayerType::Convolution)
+	{
+		return ConvolutionBackwardSum(prev_Layer, next_Layer, weight);
+	}
+}
+
+double NeuralNetwork::FullyConnectedBackwardSum(const Layer& next_Layer, const Weight& weight, Tensor i)
 {
 	double output_sum = 0.0;
-	for (Tensor j : next_Layer.GetTensorWithoutBias())
+	for (const Tensor& j : weight.GetIConnectedWeightTensorWithoutBias(i))
 	{
 		output_sum += next_Layer.GetBackNodeValue(j) * weight.GetWeight(i, j);
+	}
+
+	return output_sum;
+}
+
+double NeuralNetwork::ConvolutionBackwardSum(const Layer& prev_Layer, const Layer& next_Layer, const Weight& weight)
+{
+	double output_sum = 0.0;
+
+	ConvolutionLayer* next_ConvolutionLayer = (ConvolutionLayer*)&next_Layer;
+	vector<int> padding = next_ConvolutionLayer->GetPadding().GetXYChannel();
+	vector<int> stride = next_ConvolutionLayer->GetStride().GetXYChannel();
+	int prev_channel_size = prev_Layer.GetLayerSizeTensor().GetXYChannel()[2];
+	int next_channel_size = next_ConvolutionLayer->GetLayerSizeTensor().GetXYChannel()[2];
+	Tensor filter_size_tensor = next_ConvolutionLayer->GetFilter();
+	vector<int> filter_size = filter_size_tensor.GetXYChannel();
+
+	Tensor prev_layer_size = prev_Layer.GetLayerSizeTensor();
+	int x_stride = -padding[0];
+	int y_stride = -padding[1];
+
+	for (int prev_channel = 0; prev_channel < prev_channel_size; prev_channel++)
+	{
+		for (int next_channel = 0; next_channel < next_channel_size; next_channel++)
+		{
+			for (Tensor f : filter_size_tensor.GetTensors())
+			{
+				Tensor i = Tensor(x_stride, y_stride, prev_channel);
+				Tensor prev_tensor = i + f;
+				Tensor invert_f = f.GetInvertTensor(filter_size[0], filter_size[1]);
+				output_sum += next_Layer.GetBackNodeValue(invert_f) * weight.GetWeight(Tensor(0,0,prev_channel), f);
+			}
+		}
 	}
 
 	return output_sum;
@@ -259,18 +389,45 @@ void NeuralNetwork::UpdateWeight(Weight& weight, const Layer& prev_Layer, Tensor
 	weight.UpdateWeight(i, j, update_value);
 }
 
+void NeuralNetwork::UpdateConvolutionWeight(Weight& weight, const Layer& prev_Layer, const ConvolutionLayer& next_Layer, Tensor f, Optimizer* optimizer)
+{
+	double update_value = 0;
+	int count = 0;
+	for (int prev_channel = 0; prev_channel < prev_Layer.GetLayerSize()[2]; prev_channel++)
+	{
+		for (Tensor j : next_Layer.GetTensorWithoutBias())
+		{
+			vector<Tensor> prev_tensor_list = next_Layer.GetPreviousConnectionWithoutBias(j);
+			vector<Tensor> filter_tensor_list = next_Layer.GetFilterConnectionWithoutBias(j);
+			for (int n = 0; n < filter_tensor_list.size(); n++)
+			{
+				Tensor filter_tensor = filter_tensor_list[n];
+				if (filter_tensor == f)
+				{
+					int prev_channel = prev_tensor_list[n].GetXYChannel()[2];
+					Tensor prev_tensor = prev_tensor_list[n];
+					double backnode_value = next_Layer.GetBackNodeValue(j);
+					update_value += optimizer->GetUpdateValue(weight.GetWeight(Tensor(0, 0, prev_channel), filter_tensor), backnode_value, prev_Layer.GetNodeValue(prev_tensor));
+					count++;
+				}
+			}
+		}
+		weight.UpdateWeight(Tensor(0, 0, prev_channel), f, update_value / count);
+	}
+}
+
 void NeuralNetwork::UpdateBiasWeight(Weight& weight, Layer& next_Layer, Tensor j, Optimizer* optimizer)
 {
 	double update_value = 0;
 	// backnode * 1
-	update_value = optimizer->GetUpdateValue(weight.GetWeight(Tensor::GetBias(), j), next_Layer.GetBackNodeValue(j), 1);
-	weight.UpdateWeight(Tensor::GetBias(), j, update_value);
-	weight.UpdateWeight(Tensor::GetBias(), j, update_value);
+	update_value = optimizer->GetUpdateValue(weight.GetWeight(Tensor::Bias(), j), next_Layer.GetBackNodeValue(j), 1);
+	weight.UpdateWeight(Tensor::Bias(), j, update_value);
+	weight.UpdateWeight(Tensor::Bias(), j, update_value);
 }
 
 void NeuralNetwork::BackPropagation(map<Tensor, double> errors, Optimizer* optimizer)
 {
-	// 출력층과 출력 이전 층 사이의 가중치 업데이트
+	// 출력층과 출력 이전 층 사이의 가중치 업데이트 (출력층은 Convolution이 될 수 없도록)
 	int final_index = layerCount - 1;
 	int final_prev = layerCount - 2;
 	for (Tensor j : layers[final_index]->GetTensorWithoutBias())
@@ -278,10 +435,9 @@ void NeuralNetwork::BackPropagation(map<Tensor, double> errors, Optimizer* optim
 		double d_activate = layers[final_index]->Deactivate(layers[final_index]->GetNodeValue(j));
 		// 오차 부호 조심
 		layers[final_index]->SetBackNodeValue(j, -errors[j] * d_activate);
-		for (Tensor i : weights[final_prev].GetJWeightTensorWithoutBias(j))
+		for (Tensor i : weights[final_prev].GetJConnectedWeightTensorWithoutBias(j))
 		{
-			UpdateWeight(weights[final_prev], *layers[final_prev], i,
-				*layers[final_index], j, optimizer);
+			UpdateWeight(weights[final_prev], *layers[final_prev], i, *layers[final_index], j, optimizer);
 		}
 		if (layers[final_prev]->CheckBias())
 		{
@@ -293,20 +449,36 @@ void NeuralNetwork::BackPropagation(map<Tensor, double> errors, Optimizer* optim
 	{
 		int next_n = n + 1;
 		int prev_n = n - 1;
-		for (Tensor j : layers[n]->GetTensorWithoutBias())
-		{			
-			double sum = BackwardSum(*layers[next_n], weights[n], j);
-			double d_activate = layers[n]->Deactivate(layers[n]->GetNodeValue(j));
-			layers[n]->SetBackNodeValue(j, sum * d_activate);
-			
-			for (Tensor i : weights[prev_n].GetJWeightTensorWithoutBias(j))
+		if (layers[n]->GetLayerType() == Layer::LayerType::FullyConnected)
+		{
+			for (Tensor j : layers[n]->GetTensorWithoutBias())
 			{
-				UpdateWeight(weights[prev_n], *layers[prev_n], i,
-					*layers[n], j, optimizer);
+				double sum = BackwardSum(*layers[n], *layers[next_n], weights[n], j);
+				double d_activate = layers[n]->Deactivate(layers[n]->GetNodeValue(j));
+				layers[n]->SetBackNodeValue(j, sum * d_activate);
+
+				for (Tensor i : weights[prev_n].GetJConnectedWeightTensorWithoutBias(j))
+				{
+					UpdateWeight(weights[prev_n], *layers[prev_n], i, *layers[n], j, optimizer);
+				}
+				if (layers[n]->CheckBias())
+				{
+					UpdateBiasWeight(weights[prev_n], *layers[n], j, optimizer);
+				}
 			}
-			if (layers[n]->CheckBias())
+		}
+		else if (layers[n]->GetLayerType() == Layer::LayerType::Convolution)
+		{
+			ConvolutionLayer* next_ConvolutionLayer = (ConvolutionLayer*)layers[n];
+			for (Tensor j : layers[n]->GetTensorWithoutBias())
 			{
-				UpdateBiasWeight(weights[prev_n], *layers[n], j, optimizer);
+				double sum = BackwardSum(*layers[n], *layers[next_n], weights[n], j);
+				double d_activate = layers[n]->Deactivate(layers[n]->GetNodeValue(j));
+				layers[n]->SetBackNodeValue(j, sum * d_activate);
+			}
+			for (Tensor f : next_ConvolutionLayer->GetFilter().GetTensors())
+			{
+				UpdateConvolutionWeight(weights[prev_n], *layers[prev_n], *next_ConvolutionLayer, f, optimizer);
 			}
 		}
 	}

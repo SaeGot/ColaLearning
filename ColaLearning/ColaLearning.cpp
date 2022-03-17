@@ -1,5 +1,8 @@
 ﻿#include "ColaLearning.h"
 #include <map>
+#include <filesystem>
+#include <opencv2/opencv.hpp>
+using namespace cv;
 
 
 // 게이트 종류
@@ -116,9 +119,9 @@ void LearnTest()
 		vector<double> input_value = { file.GetData(n, 0) };
 		Layer input_learning_layer(input_value);
 		vector<double> output_value = { file.GetData(n, 1) };
-		Layer targe_layer(output_value);
+		Layer target_layer(output_value);
 		input_learning_layers.push_back(new Layer(input_learning_layer));
-		targe_layers.push_back(new Layer(targe_layer));
+		targe_layers.push_back(new Layer(target_layer));
 	}
 	Optimizer* optimizer = new GradientDescent(0.005);
 	for (int n = 0; n < 1000; n++)
@@ -202,9 +205,9 @@ void OneHotEncodingTest()
 		vector<double> input_value = file.GetEncodingData(n, {0, 1});
 		Layer input_learning_layer(input_value);
 		vector<double> output_value = { file.GetData(n, 2) };
-		Layer targe_layer(output_value);
+		Layer target_layer(output_value);
 		input_learning_layers.push_back(new Layer(input_learning_layer));
-		targe_layers.push_back(new Layer(targe_layer));
+		targe_layers.push_back(new Layer(target_layer));
 	}
 	Optimizer* optimizer = new GradientDescent(0.005);
 	for (int n = 0; n < 1000; n++)
@@ -248,9 +251,9 @@ void CrossEntropyTest()
 		vector<double> input_value = file.GetEncodingData(n, { 0, 1 });
 		Layer input_learning_layer(input_value);
 		vector<double> output_value = { file.GetEncodingData(n, 2) };
-		Layer targe_layer(output_value, Layer::LayerType::FullyConnected, Layer::ActivationFunction::Softmax);
+		Layer target_layer(output_value, Layer::LayerType::FullyConnected, Layer::ActivationFunction::Softmax);
 		input_learning_layers.push_back(new Layer(input_learning_layer));
-		targe_layers.push_back(new Layer(targe_layer));
+		targe_layers.push_back(new Layer(target_layer));
 	}
 	Optimizer* optimizer = new GradientDescent(0.01);
 	map<Tensor, double> output;
@@ -299,9 +302,9 @@ void Layer2DTest()
 			}
 		}
 		FullyConnectedLayer input_learning_layer(input_data);
-		FullyConnectedLayer targe_layer(output_data);
+		FullyConnectedLayer target_layer(output_data);
 		input_learning_layers.push_back(new Layer(input_learning_layer));
-		targe_layers.push_back(new Layer(targe_layer));
+		targe_layers.push_back(new Layer(target_layer));
 	}
 	Optimizer* optimizer = new GradientDescent(0.01);
 	map<Tensor, double> output;
@@ -318,9 +321,9 @@ void Layer2DTest()
 void ConvTest()
 {
 	Layer layer_input(3, 3);
-	ConvolutionLayer layer_hid(1, Tensor(2, 2), Layer::ActivationFunction::ReLU, false, Tensor(1, 1), Tensor(1, 1));
-	Layer layer_output(2, 2);
-	vector<Layer*> layers = { new Layer(layer_input), new ConvolutionLayer(layer_hid), new Layer(layer_output) };
+	ConvolutionLayer layer_hid(2, Tensor(3, 3), Layer::ActivationFunction::ReLU, false, Tensor(1, 1), Tensor(1, 1));
+	Layer layer_output(1);
+	vector<Layer*> layers = { new Layer(layer_input), new ConvolutionLayer(layer_hid), new ConvolutionLayer(layer_hid), new Layer(layer_output) };
 
 	NeuralNetwork net(layers, layers.size());
 	vector<Layer*> input_learning_layers;
@@ -337,27 +340,360 @@ void ConvTest()
 				input_data.emplace(tensor, 10 * x + y + (n * 100));
 			}
 		}
-		for (int x = 0; x < 2; x++)
-		{
-			for (int y = 0; y < 2; y++)
-			{
-				Tensor tensor = Tensor(x, y);
-				output_data.emplace(tensor, 10 * x + y);
-			}
-		}
 		FullyConnectedLayer input_learning_layer(input_data);
-		FullyConnectedLayer targe_layer(output_data);
+		vector<double> target_data = { (double)n };
+		FullyConnectedLayer target_layer(target_data);
 		input_learning_layers.push_back(new Layer(input_learning_layer));
-		targe_layers.push_back(new Layer(targe_layer));
+		targe_layers.push_back(new Layer(target_layer));
 	}
 	Optimizer* optimizer = new GradientDescent(0.01);
 	map<Tensor, double> output;
-	for (int n = 0; n < 1; n++)
+	output = net.Predict(*input_learning_layers[0]);
+	for (int n = 0; n < 1000; n++)
 	{
 		net.Learn(input_learning_layers, targe_layers, optimizer, NeuralNetwork::ErrorType::SquareError);
-		output = net.Predict(*input_learning_layers[0]);
+		output = net.Predict(*input_learning_layers[1]);
 	}
 	output = net.Predict(*input_learning_layers[0]);
+	output = net.Predict(*input_learning_layers[1]);
+	output = net.Predict(*input_learning_layers[2]);
+}
+
+void MnistTest()
+{
+	//namedWindow("image");
+	int test_numbers = 3;
+	vector<Layer*> input_learning_layers;
+	vector<Layer*> target_learning_layers;
+	string training_path = "mnist_png/training/";
+	int interval = 0;
+	for (const filesystem::directory_entry folder : filesystem::directory_iterator(training_path))
+	{
+		string folder_str = folder.path().string();
+		char* folder_char = new char[folder_str.size() + 1];
+		strcpy_s(folder_char, folder_str.size() + 1, folder_str.c_str());
+		char* dummy = NULL;
+		char* number_char = strtok_s(folder_char, training_path.c_str(), &dummy);
+		string number_str(number_char);
+		int number_int = stoi(number_str);
+		if (number_int < test_numbers)
+		{
+			for (const filesystem::directory_entry file : filesystem::directory_iterator(folder))
+			{
+				if (interval % 2000 == 0)
+				{
+					string file_str = file.path().string();
+					//string file_name = file.path().relative_path().string();
+					Mat image = imread(file_str, IMREAD_GRAYSCALE);
+					Tensor xy = Tensor(image.rows, image.cols, 1);
+					map<Tensor, double> data;
+					for (Tensor tensor : xy.GetTensors())
+					{
+						vector<int> xychannel = tensor.GetXYChannel();
+						data.emplace(tensor, image.at<uchar>(xychannel[0], xychannel[1]));
+					}
+					FullyConnectedLayer input_layer(data);
+					input_learning_layers.push_back(new Layer(input_layer));
+					vector<double> target_data;
+					for (int n = 0; n < test_numbers; n++)
+					{
+						if (number_int == n)
+						{
+							target_data.push_back(1);
+						}
+						else
+						{
+							target_data.push_back(0);
+						}
+					}
+					FullyConnectedLayer target_layers(target_data);
+					target_learning_layers.push_back(new Layer(target_layers));
+				}
+				interval++;
+			}
+		}		
+	}
+	
+	vector<Layer*> input_test_layers;
+	vector<Layer*> target_test_layers;
+	string testing_path = "mnist_png/testing/";
+	for (const filesystem::directory_entry folder : filesystem::directory_iterator(testing_path))
+	{
+		string folder_str = folder.path().string();
+		char* folder_char = new char[folder_str.size() + 1];
+		strcpy_s(folder_char, folder_str.size() + 1, folder_str.c_str());
+		char* dummy = NULL;
+		char* number_char = strtok_s(folder_char, testing_path.c_str(), &dummy);
+		string number(number_char);
+		string number_str(number_char);
+		int number_int = stoi(number_str);
+		if (number_int < test_numbers)
+		{
+			for (const filesystem::directory_entry file : filesystem::directory_iterator(folder))
+			{
+				if (interval % 1000 == 0)
+				{
+					string file_str = file.path().string();
+					//string file_name = file.path().relative_path().string();
+					Mat image = imread(file_str);
+					Tensor xy = Tensor(image.rows, image.cols, 1);
+					map<Tensor, double> data;
+					for (Tensor tensor : xy.GetTensors())
+					{
+						vector<int> xychannel = tensor.GetXYChannel();
+						data.emplace(tensor, image.at<uchar>(xychannel[0], xychannel[1]));
+					}
+					FullyConnectedLayer input_layer(data);
+					input_test_layers.push_back(new Layer(input_layer));
+					vector<double> target_data;
+					for (int n = 0; n < test_numbers; n++)
+					{
+						if (number_int == n)
+						{
+							target_data.push_back(1);
+						}
+						else
+						{
+							target_data.push_back(0);
+						}
+					}
+					FullyConnectedLayer target_layers(target_data);
+					target_test_layers.push_back(new Layer(target_layers));
+				}
+				interval++;
+			}
+		}
+		
+	}
+
+
+	Layer layer_input(28, 28);
+	ConvolutionLayer layer_hid1(5, Tensor(5, 5), Layer::ActivationFunction::Tanh, true, Tensor(2, 2));
+	ConvolutionLayer layer_hid2(2, Tensor(5, 5), Layer::ActivationFunction::Tanh, true);
+	FullyConnectedLayer layer_hid3(32, Layer::ActivationFunction::ReLU, true);
+	Layer layer_output(test_numbers, Layer::LayerType::FullyConnected, Layer::ActivationFunction::Softmax);
+	vector<Layer*> layers = { new Layer(layer_input), new ConvolutionLayer(layer_hid1), new FullyConnectedLayer(layer_hid3),new Layer(layer_output) };
+
+	NeuralNetwork net(layers, layers.size());
+
+	Optimizer* optimizer = new GradientDescent(0.005);
+	map<Tensor, double> output;
+	for (int epoch = 0; epoch < 1000; epoch++)
+	{
+		net.Learn(input_learning_layers, target_learning_layers, optimizer, NeuralNetwork::ErrorType::CrossEntropy);
+
+		for (int n = 0; n < input_test_layers.size(); n++)
+		{
+			output = net.Predict(*input_test_layers[n]);
+			double target_value = 0;
+			double predict = 0;
+			double max_percentage = 0;
+			vector<double> output_percent;
+			for (const pair<Tensor, double>& tensor : output)
+			{
+				double current_value = target_test_layers[n]->GetNodeValue(tensor.first);
+				if (current_value == 1)
+				{
+					target_value = tensor.first.GetXYChannel()[0];
+				}
+				double percent = tensor.second;
+				if (tensor.second > max_percentage)
+				{
+					predict = tensor.first.GetXYChannel()[0];
+					max_percentage = tensor.second;
+				}
+				output_percent.push_back(tensor.second);
+			}
+			printf("step = %d : ", epoch);
+			printf("target = %lf, predict = %lf, %lf, %lf\n", target_value, output_percent[0], output_percent[1], output_percent[2]);
+		}
+	}
+	for (int n = 0; n < input_test_layers.size(); n++)
+	{
+		output = net.Predict(*input_test_layers[n]);
+		double target_value = 0;
+		double predict = 0;
+		double max_percentage = 0;
+		for (const pair<Tensor, double>& tensor : output)
+		{
+			double current_value = target_test_layers[n]->GetNodeValue(tensor.first);
+			if (current_value == 1)
+			{
+				target_value = tensor.first.GetXYChannel()[0];
+			}
+			double percent = tensor.second;
+			if (tensor.second > max_percentage)
+			{
+				predict = tensor.first.GetXYChannel()[0];
+				max_percentage = tensor.second;
+			}
+		}
+		printf("target = %lf, predict = %lf \n", target_value, predict);
+	}
+	//double data = img.at<uchar>();
+	//imshow("image", img);
+
+	//waitKey();
+}
+
+void CrossTest()
+{
+	//namedWindow("image");
+	int test_numbers = 2;
+	vector<Layer*> input_learning_layers;
+	vector<Layer*> target_learning_layers;
+	string training_path = "cross/training/";
+	int interval = 0;
+	for (const filesystem::directory_entry folder : filesystem::directory_iterator(training_path))
+	{
+		string folder_str = folder.path().string();
+		char* folder_char = new char[folder_str.size() + 1];
+		strcpy_s(folder_char, folder_str.size() + 1, folder_str.c_str());
+		char* dummy = NULL;
+		char* number_char = strtok_s(folder_char, training_path.c_str(), &dummy);
+		string number_str(number_char);
+		int number_int = stoi(number_str);
+		if (number_int < test_numbers)
+		{
+			for (const filesystem::directory_entry file : filesystem::directory_iterator(folder))
+			{
+				if (interval % 1 == 0)
+				{
+					string file_str = file.path().string();
+					//string file_name = file.path().relative_path().string();
+					Mat image = imread(file_str, IMREAD_GRAYSCALE);
+					Tensor xy = Tensor(image.rows, image.cols, 1);
+					double aa = image.at<uchar>(14, 14);
+
+					map<Tensor, double> data;
+					for (Tensor tensor : xy.GetTensors())
+					{
+						vector<int> xychannel = tensor.GetXYChannel();
+						data.emplace(tensor, image.at<uchar>(xychannel[0], xychannel[1]));
+					}
+					FullyConnectedLayer input_layer(data);
+					input_learning_layers.push_back(new Layer(input_layer));
+					vector<double> target_data;
+					for (int n = 0; n < test_numbers; n++)
+					{
+						if (number_int == n)
+						{
+							target_data.push_back(1);
+						}
+						else
+						{
+							target_data.push_back(0);
+						}
+					}
+					FullyConnectedLayer target_layers(target_data);
+					target_learning_layers.push_back(new Layer(target_layers));
+				}
+				interval++;
+			}
+		}
+	}
+	/*
+	vector<Layer*> input_test_layers;
+	vector<Layer*> target_test_layers;
+	string testing_path = "cross/testing/";
+	for (const filesystem::directory_entry folder : filesystem::directory_iterator(testing_path))
+	{
+		string folder_str = folder.path().string();
+		char* folder_char = new char[folder_str.size() + 1];
+		strcpy_s(folder_char, folder_str.size() + 1, folder_str.c_str());
+		char* dummy = NULL;
+		char* number_char = strtok_s(folder_char, testing_path.c_str(), &dummy);
+		string number(number_char);
+		string number_str(number_char);
+		int number_int = stoi(number_str);
+		if (number_int < test_numbers)
+		{
+			for (const filesystem::directory_entry file : filesystem::directory_iterator(folder))
+			{
+				if (interval % 1 == 0)
+				{
+					string file_str = file.path().string();
+					//string file_name = file.path().relative_path().string();
+					Mat image = imread(file_str);
+					Tensor xy = Tensor(image.rows, image.cols, 1);
+					map<Tensor, double> data;
+					for (Tensor tensor : xy.GetTensors())
+					{
+						vector<int> xychannel = tensor.GetXYChannel();
+						data.emplace(tensor, image.at<uchar>(xychannel[0], xychannel[1]));
+					}
+					FullyConnectedLayer input_layer(data);
+					input_test_layers.push_back(new Layer(input_layer));
+					vector<double> target_data;
+					for (int n = 0; n < test_numbers; n++)
+					{
+						if (number_int == n)
+						{
+							target_data.push_back(1);
+						}
+						else
+						{
+							target_data.push_back(0);
+						}
+					}
+					FullyConnectedLayer target_layers(target_data);
+					target_test_layers.push_back(new Layer(target_layers));
+				}
+				interval++;
+			}
+		}
+
+	}
+
+	*/
+	Layer layer_input(28, 28);
+	ConvolutionLayer layer_hid1(5, Tensor(5, 5), Layer::ActivationFunction::Tanh, true, Tensor(2, 2));
+	ConvolutionLayer layer_hid2(2, Tensor(5, 5), Layer::ActivationFunction::Tanh, true);
+	FullyConnectedLayer layer_hid3(32, Layer::ActivationFunction::ReLU, true);
+	Layer layer_output(test_numbers, Layer::LayerType::FullyConnected, Layer::ActivationFunction::Softmax);
+	vector<Layer*> layers = { new Layer(layer_input), new ConvolutionLayer(layer_hid1), new Layer(layer_output) };
+
+	NeuralNetwork net(layers, layers.size());
+
+	Optimizer* optimizer = new GradientDescent(0.005);
+	map<Tensor, double> output;
+	output = net.Predict(*input_learning_layers[0]);
+	printf("0predict = %lf", output[Tensor(0)]);
+	output = net.Predict(*input_learning_layers[1]);
+	printf("1predict = %lf\n", output[Tensor(0)]);
+	for (int n = 0; n < 1000; n++)
+	{
+		net.Learn(input_learning_layers, target_learning_layers, optimizer, NeuralNetwork::ErrorType::CrossEntropy);
+		output = net.Predict(*input_learning_layers[0]);
+		printf("0predict = %lf, %lf", output[Tensor(0)], output[Tensor(1)]);
+		output = net.Predict(*input_learning_layers[1]);
+		printf("1predict = %lf, %lf\n", output[Tensor(0)], output[Tensor(1)]);
+	}
+	for (int n = 0; n < input_learning_layers.size(); n++)
+	{
+		output = net.Predict(*input_learning_layers[n]);
+		double target_value = 0;
+		double predict = 0;
+		double max_percentage = 0;
+		vector<double> predict_percent;
+		for (const pair<Tensor, double>& tensor : output)
+		{
+			double current_value = target_learning_layers[n]->GetNodeValue(tensor.first);
+			if (current_value == 1)
+			{
+				target_value = tensor.first.GetXYChannel()[0];
+			}
+			double percent = tensor.second;
+			if (tensor.second > max_percentage)
+			{
+				predict = tensor.first.GetXYChannel()[0];
+				max_percentage = tensor.second;
+			}
+
+			predict_percent.push_back(tensor.second);
+		}
+		printf("target = %lf, predict = %lf, %lf \n", target_value, predict_percent[0], predict_percent[1]);
+	}
 }
 
 int main()
@@ -374,5 +710,7 @@ int main()
 	CrossEntropyTest();
 	Layer2DTest();
 	*/
-	ConvTest();
+	//ConvTest();
+	//CrossTest();
+	MnistTest();
 }

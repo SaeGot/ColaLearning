@@ -13,6 +13,7 @@ public:
 		Linear,
 		ReLU,
 		Step,
+		Tanh,
 		Softmax
 	};
 	enum class LayerType
@@ -162,6 +163,7 @@ public:
 	 */
 	void SetActivationFunction(ActivationFunction activation_Function);
 	virtual void SetNodes(Layer previous_Layer) {};
+	//virtual double ForwardSum(const Weight& weight, Tensor j) {};
 
 protected:
 	LayerType layerType;
@@ -170,6 +172,7 @@ protected:
 	map<Tensor, double> backNodeValues;
 	ActivationFunction activationFunction;
 	bool bias;
+	int channel;
 
 	/**
 	 * 초기화.

@@ -73,12 +73,32 @@ private:
 	/**
 	 * 활성화 이전의 노드 값 계산.
 	 * 
-	 * \param layer : 이전 Layer
+	 * \param prev_Layer : 이전 Layer
+	 * \param next_Layer : 다음 Layer
 	 * \param weight : 이전 Layer와 다음 Layer 사이의 가중치
 	 * \Tensor j : 다음 Layer의 노드 인덱스
 	 * \return 다음 노드 j 번째 값
 	 */
-	double ForwardSum(const Layer &layer, const Weight &weight, Tensor j);
+	double ForwardSum(const Layer& prev_Layer, const Layer& next_Layer, const Weight &weight, Tensor j);
+	/**
+	 * 활성화 이전의 노드 값 계산.
+	 *
+	 * \param prev_Layer : 이전 Layer
+	 * \param weight : 이전 Layer와 다음 Layer 사이의 가중치
+	 * \Tensor j : 다음 Layer의 노드 인덱스
+	 * \return 다음 노드 j 번째 값
+	 */
+	double FullyConnectedForwardSum(const Layer& prev_Layer, const Weight& weight, Tensor j);
+	/**
+	 * 활성화 이전의 노드 값 계산.
+	 *
+	 * \param prev_Layer : 이전 Layer
+	 * \param next_Layer : 다음 Layer
+	 * \param weight : 이전 Layer와 다음 Layer 사이의 가중치
+	 * \Tensor j : 다음 Layer의 노드 인덱스
+	 * \return 다음 노드 j 번째 값
+	 */
+	double ConvolutionForwardSum(const Layer& prev_Layer, const Layer& next_Layer, const Weight& weight, Tensor j);
 	/**
 	 * Feed Forward 진행 (예측용).
 	 * 
@@ -96,12 +116,31 @@ private:
 	/**
 	 * 백노드 합.
 	 * 
+	 * \param prev_Layer : 이전 층
 	 * \param next_Layer : 다음 층
 	 * \param weight : 다음 층과 이전 층 사이의 가중치
 	 * \param i : 합산 대상 노드 인덱스
 	 * \return 
 	 */
-	double BackwardSum(const Layer& next_Layer, const Weight& weight, Tensor i);
+	double BackwardSum(const Layer& prev_Layer, const Layer& next_Layer, const Weight& weight, Tensor i);
+	/**
+	 * 백노드 합.
+	 *
+	 * \param next_Layer : 다음 층
+	 * \param weight : 다음 층과 이전 층 사이의 가중치
+	 * \param i : 합산 대상 노드 인덱스
+	 * \return
+	 */
+	double FullyConnectedBackwardSum(const Layer& next_Layer, const Weight& weight, Tensor i);
+	/**
+	 * 백노드 합.
+	 *
+	 * \param prev_Layer : 이전 층
+	 * \param next_Layer : 다음 층
+	 * \param weight : 다음 층과 이전 층 사이의 가중치
+	 * \return
+	 */
+	double ConvolutionBackwardSum(const Layer& prev_Layer, const Layer& next_Layer, const Weight& weight);
 	/**
 	 * 가중치 업데이트.
 	 * 
@@ -112,8 +151,7 @@ private:
 	 * \param j : 다음 층 노드 인덱스
 	 * \param optimizer : 최적화 기법
 	 */
-	void UpdateWeight(Weight& weight, const Layer& prev_Layer, Tensor i,
-		Layer& next_Layer, Tensor j, Optimizer* optimizer);
+	void UpdateWeight(Weight& weight, const Layer& prev_Layer, Tensor i, Layer& next_Layer, Tensor j, Optimizer* optimizer);
 	/**
 	 * 편향 가중치 업데이트.
 	 * 
@@ -124,6 +162,16 @@ private:
 	 * \param optimizer : 최적화 기법
 	 */
 	void UpdateBiasWeight(Weight& weight, Layer& next_Layer, Tensor j, Optimizer* optimizer);
+	/**
+	 * 가중치 업데이트.
+	 *
+	 * \param weight : 업데이트 대상 가중치
+	 * \param prev_Layer : 이전 층
+	 * \param next_Layer : 다음 층
+	 * \param f : 필터 인덱스
+	 * \param optimizer : 최적화 기법
+	 */
+	void UpdateConvolutionWeight(Weight& weight, const Layer& prev_Layer, const ConvolutionLayer& next_Layer, Tensor j, Optimizer* optimizer);
 	/**
 	 * 역전파.
 	 * 

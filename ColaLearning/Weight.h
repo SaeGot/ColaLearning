@@ -55,12 +55,19 @@ public:
 	 */
 	double GetWeight(Tensor i, Tensor j) const;
 	/**
+	 * 이전층 i 노드와 연결된 모든 가중치 가져오기.
+	 *
+	 * \param i : 이전층 노드 인덱스
+	 * \return 가중치
+	 */
+	vector<Tensor> GetIConnectedWeightTensorWithoutBias(Tensor i) const;
+	/**
 	 * 다음층 j 노드와 연결된 모든 가중치 가져오기.
 	 * 
 	 * \param j : 다음층 노드 인덱스
 	 * \return 가중치
 	 */
-	vector<Tensor> GetJWeightTensorWithoutBias(Tensor j) const;
+	vector<Tensor> GetJConnectedWeightTensorWithoutBias(Tensor j) const;
 	/**
 	 * 가중치 업데이트.
 	 *
