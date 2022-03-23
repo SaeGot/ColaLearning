@@ -322,8 +322,9 @@ void ConvTest()
 {
 	Layer layer_input(3, 3);
 	ConvolutionLayer layer_hid(2, Tensor(3, 3), Layer::ActivationFunction::ReLU, false, Tensor(1, 1), Tensor(1, 1));
+	PoolingLayer layer_pool(Tensor(2, 2), Tensor(2, 2));
 	Layer layer_output(1);
-	vector<Layer*> layers = { new Layer(layer_input), new ConvolutionLayer(layer_hid), new ConvolutionLayer(layer_hid), new Layer(layer_output) };
+	vector<Layer*> layers = { new Layer(layer_input), new ConvolutionLayer(layer_hid), new PoolingLayer(layer_pool), new Layer(layer_output) };
 
 	NeuralNetwork net(layers, layers.size());
 	vector<Layer*> input_learning_layers;
@@ -648,10 +649,11 @@ void CrossTest()
 	*/
 	Layer layer_input(28, 28);
 	ConvolutionLayer layer_hid1(5, Tensor(5, 5), Layer::ActivationFunction::Tanh, true, Tensor(2, 2));
+	PoolingLayer layer_pooling1(Tensor(2, 2), Tensor(1, 1));
 	ConvolutionLayer layer_hid2(2, Tensor(5, 5), Layer::ActivationFunction::Tanh, true);
 	FullyConnectedLayer layer_hid3(32, Layer::ActivationFunction::ReLU, true);
 	Layer layer_output(test_numbers, Layer::LayerType::FullyConnected, Layer::ActivationFunction::Softmax);
-	vector<Layer*> layers = { new Layer(layer_input), new ConvolutionLayer(layer_hid1), new Layer(layer_output) };
+	vector<Layer*> layers = { new Layer(layer_input), new ConvolutionLayer(layer_hid1), new PoolingLayer(layer_pooling1), new Layer(layer_output) };
 
 	NeuralNetwork net(layers, layers.size());
 
@@ -710,7 +712,7 @@ int main()
 	CrossEntropyTest();
 	Layer2DTest();
 	*/
-	//ConvTest();
+	ConvTest();
 	//CrossTest();
-	MnistTest();
+	//MnistTest();
 }

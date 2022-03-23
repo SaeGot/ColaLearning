@@ -59,6 +59,9 @@ Weight::Weight(Layer* previous_Layer, Layer* next_Layer, InitWeight init_Weight,
 	case Layer::LayerType::Convolution:
 		ConnectConvolutionLayer(previous_Layer, next_Layer, init_Weight, initial_Limit);
 		break;
+	case Layer::LayerType::Pooling:
+		ConnectPoolingLayer(previous_Layer, next_Layer, init_Weight, initial_Limit);
+		break;
 	}
 }
 
@@ -192,14 +195,14 @@ void Weight::ConnectConvolutionLayer(Layer* previous_Layer, Layer* next_Layer, I
 			for (Tensor j : next_ConvolutionLayer->GetFilter().GetTensors())
 			{
 				Tensor next_tensor = j + Tensor(0, 0, next_channel);
-				weightValues[TensorConnection(prev_tensor, next_tensor)]
-					= Initialize(init_Weight, input_node_count_with_bias, output_node_count, initial_Limit);
+				weightValues.emplace(TensorConnection(prev_tensor, next_tensor),
+					Initialize(init_Weight, input_node_count_with_bias, output_node_count, initial_Limit));
 			}
 			// 편향
 			if (previous_Layer->CheckBias())
 			{
-				weightValues[TensorConnection(prev_tensor, Tensor(0, 0, next_channel, true))]
-					= Initialize(init_Weight, input_node_count_with_bias, output_node_count, initial_Limit);
+				weightValues.emplace(TensorConnection(prev_tensor, Tensor(0, 0, next_channel, true)),
+					Initialize(init_Weight, input_node_count_with_bias, output_node_count, initial_Limit));
 			}
 		}
 	}
@@ -242,6 +245,47 @@ void Weight::ConnectConvolutionLayer(Layer* previous_Layer, Layer* next_Layer, I
 				x_stride = -padding[0];
 				y_stride += stride[1];
 			}
+		}
+	}
+}
+
+void Weight::ConnectPoolingLayer(Layer* previous_Layer, Layer* next_Layer, InitWeight init_Weight, double initial_Limit)
+{
+	PoolingLayer* next_ConvolutionLayer = (PoolingLayer*)next_Layer;
+	int prev_node_count_x = previous_Layer->GetLayerSize()[0];
+	int prev_node_count_y = previous_Layer->GetLayerSize()[1];
+	Tensor stride = next_ConvolutionLayer->GetStride();
+	int stride_x = stride.GetXYChannel()[0];
+	int stride_y = stride.GetXYChannel()[1];
+	Tensor pool = next_ConvolutionLayer->GetPoolSize();
+	int pool_x = pool.GetXYChannel()[0];
+	int pool_y = pool.GetXYChannel()[1];
+	int next_i = 0;
+	int next_j = 0;
+	for (int j = 0; j < prev_node_count_y - stride_y; j++)
+	{
+		if (j % stride_y == 0)
+		{
+			for (int i = 0; i < prev_node_count_x - stride_x; i++)
+			{
+				if (i % stride_x == 0)
+				{
+					for (int x = 0; x < pool_x; x++)
+					{
+						for (int y = 0; y < pool_y; y++)
+						{
+							Tensor prev_tensor = Tensor(i + x, j + y);
+							Tensor next_tensor = Tensor(next_i, next_j);
+							weightValues.emplace(TensorConnection(prev_tensor, next_tensor), 0);
+						}
+					}
+
+					next_i++;
+				}
+			}
+
+			next_i = 0;
+			next_j++;
 		}
 	}
 }

@@ -3,6 +3,7 @@
 #include <map>
 #include "Layer.h"
 #include "ConvolutionLayer.h"
+#include "PoolingLayer.h"
 #include "Tensor.h"
 using namespace std;
 
@@ -98,5 +99,6 @@ private:
 	void Initialize();
 	void ConnectFullyConnectedLayer(Layer* previous_Layer, Layer* next_Layer, InitWeight init_Weight, double initial_Limit);
 	void ConnectConvolutionLayer(Layer* previous_Layer, Layer* next_Layer, InitWeight init_Weight, double initial_Limit);
+	void ConnectPoolingLayer(Layer* previous_Layer, Layer* next_Layer, InitWeight init_Weight, double initial_Limit);
 };
 

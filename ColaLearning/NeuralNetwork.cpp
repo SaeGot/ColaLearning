@@ -7,7 +7,7 @@ NeuralNetwork::NeuralNetwork(vector<Layer*> _layers, int layer_Count, double wei
 	layers = vector<Layer*>(layerCount);
 	for (int n = 0; n < layerCount; n++)
 	{
-		if (_layers[n]->GetLayerType() == Layer::LayerType::Convolution)
+		if (_layers[n]->GetLayerType() == Layer::LayerType::Convolution || _layers[n]->GetLayerType() == Layer::LayerType::Pooling)
 		{
 			int prev_n = n - 1;
 			_layers[n]->SetNodes(*_layers[prev_n]);
@@ -147,6 +147,10 @@ double NeuralNetwork::ForwardSum(const Layer& prev_Layer, const Layer& next_Laye
 	{
 		return ConvolutionForwardSum(prev_Layer, next_Layer, weight, j);
 	}
+	else if (next_Layer.GetLayerType() == Layer::LayerType::Pooling)
+	{
+		return PoolingForwardSum(prev_Layer, next_Layer, weight, j);
+	}
 }
 
 double NeuralNetwork::FullyConnectedForwardSum(const Layer& prev_Layer, const Weight& weight, Tensor j)
@@ -194,6 +198,8 @@ double NeuralNetwork::ConvolutionForwardSum(const Layer& prev_Layer, const Layer
 		}
 	}
 
+
+
 	/*
 	vector<int> padding = next_ConvolutionLayer->GetPadding().GetXYChannel();
 	vector<int> stride = next_ConvolutionLayer->GetStride().GetXYChannel();
@@ -226,6 +232,11 @@ double NeuralNetwork::ConvolutionForwardSum(const Layer& prev_Layer, const Layer
 	}
 	*/
 	return output_sum;
+}
+
+double NeuralNetwork::PoolingForwardSum(const Layer& prev_Layer, const Layer& next_Layer, const Weight& weight, Tensor j)
+{
+	return 0;
 }
 
 void NeuralNetwork::FeedForward(const Layer& input_Layer)

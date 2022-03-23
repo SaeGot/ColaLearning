@@ -19,7 +19,8 @@ public:
 	enum class LayerType
 	{
 		FullyConnected,
-		Convolution
+		Convolution,
+		Pooling
 	};
 	/**
 	 * 노드값으로 Layer 생성.
@@ -172,7 +173,6 @@ protected:
 	map<Tensor, double> backNodeValues;
 	ActivationFunction activationFunction;
 	bool bias;
-	int channel;
 
 	/**
 	 * 초기화.
