@@ -79,7 +79,7 @@ private:
 	 * \Tensor j : 다음 Layer의 노드 인덱스
 	 * \return 다음 노드 j 번째 값
 	 */
-	double ForwardSum(const Layer& prev_Layer, const Layer& next_Layer, const Weight &weight, Tensor j);
+	double ForwardSum(const Layer& prev_Layer, const Layer& next_Layer, Weight* weight, Tensor j);
 	/**
 	 * 활성화 이전의 노드 값 계산.
 	 *
@@ -107,7 +107,7 @@ private:
 	 * \Tensor j : 다음 Layer의 노드 인덱스
 	 * \return 다음 노드 j 번째 값
 	 */
-	double PoolingForwardSum(const Layer& prev_Layer, const Layer& next_Layer, const Weight& weight, Tensor j);
+	double PoolingForwardSum(const Layer& prev_Layer, const Layer& next_Layer, Weight* weight, Tensor j);
 	/**
 	 * Feed Forward 진행 (예측용).
 	 * 
@@ -147,9 +147,11 @@ private:
 	 * \param prev_Layer : 이전 층
 	 * \param next_Layer : 다음 층
 	 * \param weight : 다음 층과 이전 층 사이의 가중치
+	 * \param i : 합산 대상 노드 인덱스
 	 * \return 이전 백노드 i 번째 값
 	 */
-	double ConvolutionBackwardSum(const Layer& prev_Layer, const Layer& next_Layer, const Weight& weight);
+	double ConvolutionBackwardSum(const Layer& prev_Layer, const Layer& next_Layer, const Weight& weight, Tensor i);
+	double PoolingBackwardSum(const Layer& prev_Layer, const Layer& next_Layer, const Weight& weight, Tensor i);
 	/**
 	 * 가중치 업데이트.
 	 * 
@@ -181,6 +183,7 @@ private:
 	 * \param optimizer : 최적화 기법
 	 */
 	void UpdateConvolutionWeight(Weight& weight, const Layer& prev_Layer, const ConvolutionLayer& next_Layer, Tensor j, Optimizer* optimizer);
+	void UpdateConvolutionBiasWeight(Weight& weight, const Layer& prev_Layer, const ConvolutionLayer& next_Layer, Optimizer* optimizer);
 	/**
 	 * 역전파.
 	 * 

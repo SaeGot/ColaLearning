@@ -99,6 +99,14 @@ private:
 	void Initialize();
 	void ConnectFullyConnectedLayer(Layer* previous_Layer, Layer* next_Layer, InitWeight init_Weight, double initial_Limit);
 	void ConnectConvolutionLayer(Layer* previous_Layer, Layer* next_Layer, InitWeight init_Weight, double initial_Limit);
+	/**
+	 * (채널 제외).
+	 * 
+	 * \param previous_Layer
+	 * \param next_Layer
+	 * \param init_Weight
+	 * \param initial_Limit
+	 */
 	void ConnectPoolingLayer(Layer* previous_Layer, Layer* next_Layer, InitWeight init_Weight, double initial_Limit);
 };
 

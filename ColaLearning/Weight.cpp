@@ -254,38 +254,44 @@ void Weight::ConnectPoolingLayer(Layer* previous_Layer, Layer* next_Layer, InitW
 	PoolingLayer* next_ConvolutionLayer = (PoolingLayer*)next_Layer;
 	int prev_node_count_x = previous_Layer->GetLayerSize()[0];
 	int prev_node_count_y = previous_Layer->GetLayerSize()[1];
+	int prev_channel = previous_Layer->GetLayerSize()[2];
 	Tensor stride = next_ConvolutionLayer->GetStride();
 	int stride_x = stride.GetXYChannel()[0];
 	int stride_y = stride.GetXYChannel()[1];
 	Tensor pool = next_ConvolutionLayer->GetPoolSize();
-	int pool_x = pool.GetXYChannel()[0];
-	int pool_y = pool.GetXYChannel()[1];
-	int next_i = 0;
-	int next_j = 0;
-	for (int j = 0; j < prev_node_count_y - stride_y; j++)
+	int pool_x_size = pool.GetXYChannel()[0];
+	int pool_y_size = pool.GetXYChannel()[1];
+	int next_x = 0;
+	int next_y = 0;
+	for (int y = 0; y < prev_node_count_y; y++)
 	{
-		if (j % stride_y == 0)
+		if (y % stride_y == 0)
 		{
-			for (int i = 0; i < prev_node_count_x - stride_x; i++)
+			for (int x = 0; x < prev_node_count_x; x++)
 			{
-				if (i % stride_x == 0)
+				if (x % stride_x == 0)
 				{
-					for (int x = 0; x < pool_x; x++)
+					Tensor next_tensor = Tensor(next_x, next_y);
+					vector<Tensor> all_prev_tensor;
+					for (int pool_x = 0; pool_x < pool_x_size; pool_x++)
 					{
-						for (int y = 0; y < pool_y; y++)
+						for (int pool_y = 0; pool_y < pool_y_size; pool_y++)
 						{
-							Tensor prev_tensor = Tensor(i + x, j + y);
-							Tensor next_tensor = Tensor(next_i, next_j);
-							weightValues.emplace(TensorConnection(prev_tensor, next_tensor), 0);
+							for (int channel = 0; channel < prev_channel; channel++)
+							{
+								Tensor prev_tensor = Tensor(x + pool_x, y + pool_y, channel);
+								weightValues.emplace(TensorConnection(prev_tensor, next_tensor), 0);
+								all_prev_tensor.push_back(prev_tensor);
+							}
 						}
 					}
-
-					next_i++;
+					next_ConvolutionLayer->AddWeightConnection(next_tensor, all_prev_tensor);
+					next_x++;
 				}
 			}
 
-			next_i = 0;
-			next_j++;
+			next_x = 0;
+			next_y++;
 		}
 	}
 }
