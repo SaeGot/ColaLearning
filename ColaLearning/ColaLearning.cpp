@@ -756,7 +756,7 @@ void MiniCrossTest()
 
 
 	Layer layer_input(2, 2);
-	ConvolutionLayer layer_hid1(1, Tensor(2, 2), Layer::ActivationFunction::Tanh, true, Tensor(1, 1));
+	ConvolutionLayer layer_hid1(5, Tensor(2, 2), Layer::ActivationFunction::Tanh, true, Tensor(1, 1));
 	PoolingLayer layer_pooling1(Tensor(2, 2), Tensor(2, 2));
 	ConvolutionLayer layer_hid2(2, Tensor(5, 5), Layer::ActivationFunction::Tanh, true);
 	FullyConnectedLayer layer_hid3(32, Layer::ActivationFunction::ReLU, true);
@@ -765,13 +765,13 @@ void MiniCrossTest()
 
 	NeuralNetwork net(layers, layers.size());
 
-	Optimizer* optimizer = new GradientDescent(0.001);
+	Optimizer* optimizer = new GradientDescent(0.01);
 	map<Tensor, double> output;
 	output = net.Predict(*input_learning_layers[0]);
 	printf("0predict = %lf", output[Tensor(0)]);
 	output = net.Predict(*input_learning_layers[1]);
 	printf("1predict = %lf\n", output[Tensor(0)]);
-	for (int n = 0; n < 1000; n++)
+	for (int n = 0; n < 10000; n++)
 	{
 		net.Learn(input_learning_layers, target_learning_layers, optimizer, NeuralNetwork::ErrorType::CrossEntropy);
 		output = net.Predict(*input_learning_layers[0]);
@@ -822,7 +822,7 @@ int main()
 	Layer2DTest();
 	*/
 	//ConvTest();
-	//CrossTest();
-	MiniCrossTest();
+	CrossTest();
+	//MiniCrossTest();
 	//MnistTest();
 }
