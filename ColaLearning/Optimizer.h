@@ -22,13 +22,15 @@ protected:
 	double Sigmoid(double value);
 };
 
-class GradientDescent : public Optimizer
+class SGD : public Optimizer
 {
 public:
-	GradientDescent(double learning_Rate);
+	SGD(double learning_Rate, double _momentum = 0.9);
 
 	double GetUpdateValue(double weight_value, double back_NodeValue, double prev_NodeValue);
 
 protected:
 	double learningRate;
+	double momentum;
+	double velocity;
 };

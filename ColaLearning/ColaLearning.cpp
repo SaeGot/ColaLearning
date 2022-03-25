@@ -123,7 +123,7 @@ void LearnTest()
 		input_learning_layers.push_back(new Layer(input_learning_layer));
 		targe_layers.push_back(new Layer(target_layer));
 	}
-	Optimizer* optimizer = new GradientDescent(0.005);
+	Optimizer* optimizer = new SGD(0.005);
 	for (int n = 0; n < 1000; n++)
 	{
 		net.Learn(input_learning_layers, targe_layers, optimizer, NeuralNetwork::ErrorType::SquareError);
@@ -209,7 +209,7 @@ void OneHotEncodingTest()
 		input_learning_layers.push_back(new Layer(input_learning_layer));
 		targe_layers.push_back(new Layer(target_layer));
 	}
-	Optimizer* optimizer = new GradientDescent(0.005);
+	Optimizer* optimizer = new SGD(0.005);
 	for (int n = 0; n < 1000; n++)
 	{
 		net.Learn(input_learning_layers, targe_layers, optimizer, NeuralNetwork::ErrorType::SquareError);
@@ -255,7 +255,7 @@ void CrossEntropyTest()
 		input_learning_layers.push_back(new Layer(input_learning_layer));
 		targe_layers.push_back(new Layer(target_layer));
 	}
-	Optimizer* optimizer = new GradientDescent(0.01);
+	Optimizer* optimizer = new SGD(0.01);
 	map<Tensor, double> output;
 	for (int n = 0; n < 1000; n++)
 	{
@@ -306,7 +306,7 @@ void Layer2DTest()
 		input_learning_layers.push_back(new Layer(input_learning_layer));
 		targe_layers.push_back(new Layer(target_layer));
 	}
-	Optimizer* optimizer = new GradientDescent(0.01);
+	Optimizer* optimizer = new SGD(0.01);
 	map<Tensor, double> output;
 	for (int n = 0; n < 1000; n++)
 	{
@@ -347,7 +347,7 @@ void ConvTest()
 		input_learning_layers.push_back(new Layer(input_learning_layer));
 		targe_layers.push_back(new Layer(target_layer));
 	}
-	Optimizer* optimizer = new GradientDescent(0.01);
+	Optimizer* optimizer = new SGD(0.01);
 	map<Tensor, double> output;
 	output = net.Predict(*input_learning_layers[0]);
 	for (int n = 0; n < 1000; n++)
@@ -469,17 +469,18 @@ void MnistTest()
 
 
 	Layer layer_input(28, 28);
-	ConvolutionLayer layer_hid1(5, Tensor(5, 5), Layer::ActivationFunction::Tanh, true, Tensor(2, 2));
-	ConvolutionLayer layer_hid2(2, Tensor(5, 5), Layer::ActivationFunction::Tanh, true);
-	FullyConnectedLayer layer_hid3(32, Layer::ActivationFunction::ReLU, true);
+	ConvolutionLayer layer_hid1(2, Tensor(5, 5), Layer::ActivationFunction::Tanh, true, Tensor(2, 2));
+	PoolingLayer layer_pooling1(Tensor(2, 2), Tensor(2, 2));
+	ConvolutionLayer layer_hid2(5, Tensor(2, 2), Layer::ActivationFunction::Tanh, true);
+	FullyConnectedLayer layer_hid3(18, Layer::ActivationFunction::ReLU, true);
 	Layer layer_output(test_numbers, Layer::LayerType::FullyConnected, Layer::ActivationFunction::Softmax);
-	vector<Layer*> layers = { new Layer(layer_input), new ConvolutionLayer(layer_hid1), new FullyConnectedLayer(layer_hid3),new Layer(layer_output) };
+	vector<Layer*> layers = { new Layer(layer_input), new ConvolutionLayer(layer_hid1), new PoolingLayer(layer_pooling1), new FullyConnectedLayer(layer_hid3), new Layer(layer_output) };
 
 	NeuralNetwork net(layers, layers.size());
 
-	Optimizer* optimizer = new GradientDescent(0.005);
+	Optimizer* optimizer = new SGD(0.001);
 	map<Tensor, double> output;
-	for (int epoch = 0; epoch < 1000; epoch++)
+	for (int epoch = 0; epoch < 10000; epoch++)
 	{
 		net.Learn(input_learning_layers, target_learning_layers, optimizer, NeuralNetwork::ErrorType::CrossEntropy);
 
@@ -648,26 +649,26 @@ void CrossTest()
 
 	*/
 	Layer layer_input(28, 28);
-	ConvolutionLayer layer_hid1(1, Tensor(5, 5), Layer::ActivationFunction::Tanh, true, Tensor(2, 2));
+	ConvolutionLayer layer_hid1(5, Tensor(5, 5), Layer::ActivationFunction::Tanh, true, Tensor(2, 2));
 	PoolingLayer layer_pooling1(Tensor(2, 2), Tensor(2, 2));
 	ConvolutionLayer layer_hid2(2, Tensor(5, 5), Layer::ActivationFunction::Tanh, true);
-	FullyConnectedLayer layer_hid3(32, Layer::ActivationFunction::ReLU, true);
+	FullyConnectedLayer layer_hid3(18, Layer::ActivationFunction::ReLU, true);
 	Layer layer_output(test_numbers, Layer::LayerType::FullyConnected, Layer::ActivationFunction::Softmax);
-	vector<Layer*> layers = { new Layer(layer_input), new ConvolutionLayer(layer_hid1), new PoolingLayer(layer_pooling1), new Layer(layer_output) };
+	vector<Layer*> layers = { new Layer(layer_input), new ConvolutionLayer(layer_hid1), new PoolingLayer(layer_pooling1), new FullyConnectedLayer(layer_hid3), new Layer(layer_output) };
 
 	NeuralNetwork net(layers, layers.size());
 
-	Optimizer* optimizer = new GradientDescent(0.01);
+	Optimizer* optimizer = new SGD(0.01);
 	map<Tensor, double> output;
 	output = net.Predict(*input_learning_layers[0]);
 	printf("0predict = %lf", output[Tensor(0)]);
 	output = net.Predict(*input_learning_layers[1]);
 	printf("1predict = %lf\n", output[Tensor(0)]);
-	for (int n = 0; n < 1000; n++)
+	for (int n = 0; n < 10000; n++)
 	{
 		net.Learn(input_learning_layers, target_learning_layers, optimizer, NeuralNetwork::ErrorType::CrossEntropy);
 		output = net.Predict(*input_learning_layers[0]);
-		printf("0predict = %lf, %lf", output[Tensor(0)], output[Tensor(1)]);
+		printf("n=%d, 0predict = %lf, %lf", n, output[Tensor(0)], output[Tensor(1)]);
 		output = net.Predict(*input_learning_layers[1]);
 		printf("1predict = %lf, %lf\n", output[Tensor(0)], output[Tensor(1)]);
 	}
@@ -756,7 +757,7 @@ void MiniCrossTest()
 
 
 	Layer layer_input(2, 2);
-	ConvolutionLayer layer_hid1(5, Tensor(2, 2), Layer::ActivationFunction::Tanh, true, Tensor(1, 1));
+	ConvolutionLayer layer_hid1(2, Tensor(2, 2), Layer::ActivationFunction::Tanh, true, Tensor(1, 1));
 	PoolingLayer layer_pooling1(Tensor(2, 2), Tensor(2, 2));
 	ConvolutionLayer layer_hid2(2, Tensor(5, 5), Layer::ActivationFunction::Tanh, true);
 	FullyConnectedLayer layer_hid3(32, Layer::ActivationFunction::ReLU, true);
@@ -765,7 +766,7 @@ void MiniCrossTest()
 
 	NeuralNetwork net(layers, layers.size());
 
-	Optimizer* optimizer = new GradientDescent(0.01);
+	Optimizer* optimizer = new SGD(0.005);
 	map<Tensor, double> output;
 	output = net.Predict(*input_learning_layers[0]);
 	printf("0predict = %lf", output[Tensor(0)]);
@@ -775,7 +776,7 @@ void MiniCrossTest()
 	{
 		net.Learn(input_learning_layers, target_learning_layers, optimizer, NeuralNetwork::ErrorType::CrossEntropy);
 		output = net.Predict(*input_learning_layers[0]);
-		printf("0predict = %lf, %lf", output[Tensor(0)], output[Tensor(1)]);
+		printf("n=%d, 0predict = %lf, %lf", n, output[Tensor(0)], output[Tensor(1)]);
 		output = net.Predict(*input_learning_layers[1]);
 		printf("1predict = %lf, %lf\n", output[Tensor(0)], output[Tensor(1)]);
 	}
@@ -819,10 +820,10 @@ int main()
 	printf("QLearning End\n");
 	OneHotEncodingTest();
 	CrossEntropyTest();
-	Layer2DTest();
 	*/
+	//Layer2DTest();
 	//ConvTest();
-	CrossTest();
+	//CrossTest();
 	//MiniCrossTest();
-	//MnistTest();
+	MnistTest();
 }

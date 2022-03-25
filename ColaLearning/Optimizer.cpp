@@ -7,12 +7,15 @@ double Optimizer::Sigmoid(double value)
 	return 1 / (1 + exp(-value));
 }
 
-GradientDescent::GradientDescent(double learning_Rate)
+SGD::SGD(double learning_Rate, double _momentum)
 {
 	learningRate = learning_Rate;
+	momentum = _momentum;
+	velocity = 0;
 }
 
-double GradientDescent::GetUpdateValue(double weight_value, double back_NodeValue, double prev_NodeValue)
+double SGD::GetUpdateValue(double weight_value, double back_NodeValue, double prev_NodeValue)
 {
-	return weight_value - learningRate * (back_NodeValue * prev_NodeValue);
+	velocity = momentum * velocity - learningRate * (back_NodeValue * prev_NodeValue);
+	return weight_value + velocity;
 }
