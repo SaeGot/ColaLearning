@@ -810,20 +810,18 @@ void MiniCrossTest()
 
 int main()
 {
-	/*
-	GateTest();
-	LearnTest();
-	printf("State End\n");
-	QLearningTestStateEnd();
-	printf("Reward End\n");
+	//GateTest();
+	//LearnTest();
+	//printf("State End\n");
+	//QLearningTestStateEnd();
+	//printf("Reward End\n");
 	QLearningTestRewardEnd();
 	printf("QLearning End\n");
-	OneHotEncodingTest();
-	CrossEntropyTest();
-	*/
+	//OneHotEncodingTest();
+	//CrossEntropyTest();
 	//Layer2DTest();
 	//ConvTest();
 	//CrossTest();
 	//MiniCrossTest();
-	MnistTest();
+	//MnistTest();
 }

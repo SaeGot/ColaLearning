@@ -19,6 +19,13 @@ public:
 		// 감가율
 		float gamma;
 	};
+	/**
+	 * epsilon greedy 감소.
+	 * 
+	 * \param decay : 감소 비율
+	 */
+	void DecayEpsilonGreedy(double decay);
+	double GetEpsilonGreedy() { return epsilonGreeedy; }
 
 protected:
 	struct SARS
@@ -35,4 +42,6 @@ protected:
 	double cumulativeReward;
 	// i : 에피소드, j : 상태
 	vector<vector<SARS>> sarsList;
+	// 0 ~ 1값, 1 = 완전 래덤, 0 = 탐욕
+	double epsilonGreeedy;
 };

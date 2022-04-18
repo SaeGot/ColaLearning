@@ -3,7 +3,7 @@
 #include <random>
 
 
-QLearning::QLearning(string state_EndCondition, string next_StateTable, string reward_Table)
+QLearning::QLearning(string state_EndCondition, string next_StateTable, string reward_Table, double epsilon_Greeedy)
 {
 	episodeEndCondition = EpisodeEndCondition::State;
 	stateEndCondition = state_EndCondition;
@@ -14,10 +14,10 @@ QLearning::QLearning(string state_EndCondition, string next_StateTable, string r
 	vector<vector<string>> reward_table = file.GetTable(reward_Table);
 	SetRewardTable(reward_table);
 
-	Initialize();
+	Initialize(epsilon_Greeedy);
 }
 
-QLearning::QLearning(double min_RewardEndCondition, double max_RewardEndCondition, string next_StateTable, string reward_Table)
+QLearning::QLearning(double min_RewardEndCondition, double max_RewardEndCondition, string next_StateTable, string reward_Table, double epsilon_Greeedy)
 {
 	// ToDo 예외 처리
 	episodeEndCondition = EpisodeEndCondition::Reward;
@@ -30,7 +30,7 @@ QLearning::QLearning(double min_RewardEndCondition, double max_RewardEndConditio
 	vector<vector<string>> reward_table = file.GetTable(reward_Table);
 	SetRewardTable(reward_table);
 
-	Initialize();
+	Initialize(epsilon_Greeedy);
 }
 
 void QLearning::Learn(string starting_State, double discount_Factor, EpsilonGreedy& epsilon_Greedy)
@@ -47,8 +47,13 @@ void QLearning::Learn(string starting_State, double discount_Factor, EpsilonGree
 
 	currentState = starting_State;
 	cumulativeReward = 0;
-	vector<SARS> sars;
-	sarsList.push_back(sars);
+
+	if (sarsList.back().size() > 0)
+	{
+		vector<SARS> sars;
+		sarsList.push_back(sars);
+	}
+
 	if (episodeEndCondition == EpisodeEndCondition::State)
 	{
 		while (currentState != stateEndCondition)
@@ -77,19 +82,22 @@ void QLearning::Learn(string starting_State, double discount_Factor, EpsilonGree
 	}
 }
 
-void QLearning::Initialize()
+void QLearning::Initialize(double epsilon_Greeedy)
 {
+	epsilonGreeedy = epsilon_Greeedy;
 	currentState = "";
 	for (vector<SARS>& sars : sarsList)
 	{
 		sars.clear();
 	}
 	sarsList.clear();
+	vector<SARS> sars;
+	sarsList.push_back(sars);
 	
-	QTable.clear();
+	qTable.clear();
 	for (const pair<StateAction, double>& reward : rewardTable)
 	{
-		QTable.insert({ reward.first, 0.0 });
+		qTable.insert({ reward.first, 0.0 });
 	}
 }
 
@@ -140,15 +148,15 @@ vector<string> QLearning::GetBest(string starting_State)
 				if (first_action)
 				{
 					next_state = nextStateTable[state_action];
-					max_q = QTable[state_action];
+					max_q = qTable[state_action];
 					first_action = false;
 				}
 				else
 				{
-					if (QTable[state_action] > max_q)
+					if (qTable[state_action] > max_q)
 					{
 						next_state = nextStateTable[state_action];
-						max_q = QTable[state_action];
+						max_q = qTable[state_action];
 					}
 				}
 			}
@@ -170,16 +178,16 @@ vector<string> QLearning::GetBest(string starting_State)
 				if (first_action)
 				{
 					next_state = nextStateTable[state_action];
-					max_q = QTable[state_action];
+					max_q = qTable[state_action];
 					reward = rewardTable[state_action];
 					first_action = false;
 				}
 				else
 				{
-					if (QTable[state_action] > max_q)
+					if (qTable[state_action] > max_q)
 					{
 						next_state = nextStateTable[state_action];
-						max_q = QTable[state_action];
+						max_q = qTable[state_action];
 						reward = rewardTable[state_action];
 					}
 				}
@@ -191,6 +199,104 @@ vector<string> QLearning::GetBest(string starting_State)
 	}
 
 	return best_way;
+}
+
+string QLearning::GetBestAction(string state)
+{
+	// 첫번째
+	bool only_one_best_action = true;
+	vector<string> best_actions;
+	string action = enableAction[state][0];
+	best_actions.push_back(action);
+	string best_action = action;
+	StateAction state_action = { state, best_action };
+	double best_q = qTable[state_action];
+	// 두번째 부터
+	for (int n = 1; n < enableAction[state].size(); n++)
+	{
+		action = enableAction[state][n];
+		state_action = { state, action };
+		if (qTable[state_action] > best_q)
+		{
+			best_action = action;
+			best_q = qTable[state_action];
+			best_actions.clear();
+			best_actions.push_back(best_action);
+			only_one_best_action = true;
+		}
+		else if (qTable[state_action] == best_q)
+		{
+			best_actions.push_back(action);
+			only_one_best_action = false;
+		}
+	}
+
+	// 최고 Q값 행동 가져오기
+	random_device rd;
+	mt19937_64 gen(rd());
+	uniform_int_distribution<int> random_value(0, best_actions.size() - 1);
+	int random_num = random_value(gen);
+	best_action = best_actions[random_num];
+
+	return best_action;
+}
+
+string QLearning::GetAction(string state, bool random)
+{
+	string action;
+
+	double epsilon_Greedy;
+
+	if (random)
+	{
+		epsilon_Greedy = 1;
+	}
+	else
+	{
+		epsilon_Greedy = epsilonGreeedy;
+	}
+
+	random_device rd;
+	mt19937_64 gen(rd());
+	uniform_real_distribution<double> random_value(0, 1);
+	double random_num = random_value(gen);
+	// 탐욕
+	if (random_num >= epsilon_Greedy)
+	{
+		action = GetBestAction(state);
+	}
+	// 랜덤
+	else
+	{
+		uniform_int_distribution<int> random_index(0, enableAction[state].size() - 1);
+		int index = random_index(gen);
+		action = enableAction[state][index];
+	}
+
+	return action;
+}
+
+void QLearning::SetCurrentState(string state)
+{
+	currentState = state;
+}
+
+string QLearning::GetCurrentState()
+{
+	return currentState;
+}
+
+void QLearning::LoadQTable(string file_Path)
+{
+	FileManager file;
+	vector<vector<string>> reward_table = file.GetTable(file_Path);
+	qTable.clear();
+	SetQTable(reward_table);
+}
+
+void QLearning::RemoveLastSART()
+{
+	sarsList.back().erase(sarsList.back().end() - 1);
 }
 
 bool QLearning::StateAction::operator<(const StateAction& rhs) const
@@ -257,6 +363,34 @@ void QLearning::SetRewardTable(const vector<vector<string>>& table)
 	}
 }
 
+void QLearning::SetQTable(const vector<vector<string>>& table)
+{
+	vector<string> first_row;
+	first_row.push_back("");
+	for (int j = 1; j < table[0].size(); j++)
+	{
+		first_row.push_back(table[0][j]);
+	}
+	// i : row, j : col
+	for (int i = 1; i < table.size(); i++)
+	{
+		const vector<string>& row = table[i];
+		vector<string> action;
+		for (int j = 1; j < row.size(); j++)
+		{
+			StateAction state_action = { row[0], first_row[j] };
+			if (row[j] != "")
+			{
+				qTable.insert({ state_action, stod(row[j]) });
+			}
+			else
+			{
+				qTable.insert({ state_action, 0.0 });
+			}
+		}
+	}
+}
+
 void QLearning::UpdateQTable(double discount_Factor)
 {
 	SARS sars = sarsList.back().back();
@@ -270,36 +404,15 @@ void QLearning::UpdateQTable(double discount_Factor)
 		next_state_action = { sars.nextState, next_next_action };
 		if (first_action)
 		{
-			max_q = QTable[next_state_action];
+			max_q = qTable[next_state_action];
 			first_action = false;
 		}
 		else
 		{
-			max_q = max(max_q, QTable[next_state_action]);
+			max_q = max(max_q, qTable[next_state_action]);
 		}
 	}
-	QTable[state_action] = reward + (discount_Factor * max_q);
-}
-
-string QLearning::GetBestAction(string state)
-{
-	// 첫번째
-	string action = enableAction[state][0];
-	string best_action = action;
-	StateAction state_action = { state, best_action };
-	double best_q = QTable[state_action];
-	// 두번째 부터
-	for (int n = 1; n < enableAction[state].size(); n++)
-	{
-		action = enableAction[state][n];
-		state_action = { state, action };
-		if (QTable[state_action] > best_q)
-		{
-			best_action = action;
-		}
-	}
-
-	return best_action;
+	qTable[state_action] = reward + (discount_Factor * max_q);
 }
 
 bool QLearning::GetRandomPolicy(EpsilonGreedy& epsilon_Greedy, size_t step)
