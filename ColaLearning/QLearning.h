@@ -39,9 +39,9 @@ public:
 	 * 
 	 * \param starting_State : 시작 상태
 	 * \param discount_Factor : 감가율
-	 * \param epsilon_Greedy
+	 * \param epsilon_Greedy : epsilon greedy
 	 */
-	void Learn(string starting_State, double discount_Factor, EpsilonGreedy& epsilon_Greedy);
+	void Learn(string starting_State, double discount_Factor, double epsilon_Greedy);
 	/**
 	 * 행동 진행하여 다음 상태로 전이.
 	 * 
@@ -87,6 +87,12 @@ public:
 	 * \param file_Path : 파일경로
 	 */
 	void LoadQTable(string file_Path);
+	/**
+	 * Epsilon Greedy 감쇠.
+	 * 
+	 * \param decay_Rate : 감쇠율
+	 */
+	void DecayEpsilonGreedy(double decay_Rate);
 	void RemoveLastSART();
 
 protected:
@@ -130,14 +136,6 @@ protected:
 	 * \param discount_Factor : 감가율
 	 */
 	virtual void UpdateQTable(double discount_Factor);
-	/**
-	 * 랜덤선택 여부 가져오기.
-	 * 
-	 * \param epsilon_Greedy : Epsilon Greedy
-	 * \param step : 스탭
-	 * \return 랜덤선택 여부
-	 */
-	bool GetRandomPolicy(EpsilonGreedy& epsilon_Greedy, size_t step);
 	/**
 	 * 보상 종료 조건 여부 가져오기.
 	 * 

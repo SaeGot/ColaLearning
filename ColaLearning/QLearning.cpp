@@ -33,16 +33,16 @@ QLearning::QLearning(double min_RewardEndCondition, double max_RewardEndConditio
 	Initialize(epsilon_Greeedy);
 }
 
-void QLearning::Learn(string starting_State, double discount_Factor, EpsilonGreedy& epsilon_Greedy)
+void QLearning::Learn(string starting_State, double discount_Factor, double epsilon_Greedy)
 {
-	// ToDo 抗寇 贸府
-	if (epsilon_Greedy.interval <= 0)
+	// 抗寇 贸府
+	if (epsilon_Greedy <= 0)
 	{
-		epsilon_Greedy.interval = 1;
+		epsilon_Greedy = 0;
 	}
-	if (epsilon_Greedy.gamma < 0 || epsilon_Greedy.gamma > 1)
+	else if (epsilon_Greedy > 1)
 	{
-		epsilon_Greedy.gamma = 1;
+		epsilon_Greedy = 1;
 	}
 
 	currentState = starting_State;
@@ -59,10 +59,7 @@ void QLearning::Learn(string starting_State, double discount_Factor, EpsilonGree
 		while (currentState != stateEndCondition)
 		{
 			string action = "";
-			if (!GetRandomPolicy(epsilon_Greedy, sarsList.back().size() + 1))
-			{
-				action = GetBestAction(currentState);
-			}
+			action = GetAction(currentState, false);
 			Action(action);
 			UpdateQTable(discount_Factor);
 		}
@@ -72,10 +69,7 @@ void QLearning::Learn(string starting_State, double discount_Factor, EpsilonGree
 		while (CheckRewardEndCondition(cumulativeReward))
 		{
 			string action = "";
-			if (!GetRandomPolicy(epsilon_Greedy, sarsList.back().size() + 1))
-			{
-				action = GetBestAction(currentState);
-			}
+			action = GetAction(currentState, false);
 			Action(action);
 			UpdateQTable(discount_Factor);
 		}
@@ -294,6 +288,20 @@ void QLearning::LoadQTable(string file_Path)
 	SetQTable(reward_table);
 }
 
+void QLearning::DecayEpsilonGreedy(double decay_Rate)
+{
+	// 抗寇 贸府
+	if (decay_Rate <= 0)
+	{
+		decay_Rate = 0;
+	}
+	else if (decay_Rate > 1)
+	{
+		decay_Rate = 1;
+	}
+	epsilonGreeedy *= decay_Rate;
+}
+
 void QLearning::RemoveLastSART()
 {
 	sarsList.back().erase(sarsList.back().end() - 1);
@@ -413,28 +421,6 @@ void QLearning::UpdateQTable(double discount_Factor)
 		}
 	}
 	qTable[state_action] = reward + (discount_Factor * max_q);
-}
-
-bool QLearning::GetRandomPolicy(EpsilonGreedy& epsilon_Greedy, size_t step)
-{
-	random_device rd;
-	mt19937_64 gen(rd());
-	uniform_real_distribution<double> random_value(0, 1);
-
-	if (step % epsilon_Greedy.interval == 0)
-	{
-		epsilon_Greedy.beginningValue *= epsilon_Greedy.gamma;
-	}
-
-	if (epsilon_Greedy.beginningValue <= 0)
-	{
-		return false;
-	}
-	else if (epsilon_Greedy.beginningValue >= random_value(gen))
-	{
-		return true;
-	}
-	return false;
 }
 
 bool QLearning::CheckRewardEndCondition(double cumulative_Reward)

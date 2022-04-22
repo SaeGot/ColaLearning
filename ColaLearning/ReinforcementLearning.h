@@ -1,6 +1,7 @@
 #pragma once
-#include "NeuralNetwork.h"
 #include <string>
+#include <vector>
+using namespace std;
 
 
 class ReinforcementLearning
@@ -10,14 +11,6 @@ public:
 	{
 		State,
 		Reward
-	};
-	struct EpsilonGreedy
-	{
-		float beginningValue;
-		// 몇 스텝 마다 감가율 적용하는지 결정. 0 이하는 1로 적용
-		int interval;
-		// 감가율
-		float gamma;
 	};
 	/**
 	 * epsilon greedy 감소.
