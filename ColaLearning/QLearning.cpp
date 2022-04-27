@@ -59,7 +59,7 @@ void QLearning::Learn(string starting_State, double discount_Factor, double epsi
 		while (currentState != stateEndCondition)
 		{
 			string action = "";
-			action = GetAction(currentState, false);
+			action = GetAction(currentState, enableAction[currentState], false);
 			Action(action);
 			UpdateQTable(discount_Factor);
 		}
@@ -69,7 +69,7 @@ void QLearning::Learn(string starting_State, double discount_Factor, double epsi
 		while (CheckRewardEndCondition(cumulativeReward))
 		{
 			string action = "";
-			action = GetAction(currentState, false);
+			action = GetAction(currentState, enableAction[currentState], false);
 			Action(action);
 			UpdateQTable(discount_Factor);
 		}
@@ -195,20 +195,20 @@ vector<string> QLearning::GetBest(string starting_State)
 	return best_way;
 }
 
-string QLearning::GetBestAction(string state)
+string QLearning::GetBestAction(string state, vector<string> enable_Action)
 {
 	// Ã¹¹øÂ°
 	bool only_one_best_action = true;
 	vector<string> best_actions;
-	string action = enableAction[state][0];
+	string action = enable_Action[0];
 	best_actions.push_back(action);
 	string best_action = action;
 	StateAction state_action = { state, best_action };
 	double best_q = qTable[state_action];
 	// µÎ¹øÂ° ºÎÅÍ
-	for (int n = 1; n < enableAction[state].size(); n++)
+	for (int n = 1; n < enable_Action.size(); n++)
 	{
-		action = enableAction[state][n];
+		action = enable_Action[n];
 		state_action = { state, action };
 		if (qTable[state_action] > best_q)
 		{
@@ -235,7 +235,7 @@ string QLearning::GetBestAction(string state)
 	return best_action;
 }
 
-string QLearning::GetAction(string state, bool random)
+string QLearning::GetAction(string state, vector<string> enable_Action, bool random)
 {
 	string action;
 
@@ -257,14 +257,14 @@ string QLearning::GetAction(string state, bool random)
 	// Å½¿å
 	if (random_num >= epsilon_Greedy)
 	{
-		action = GetBestAction(state);
+		action = GetBestAction(state, enable_Action);
 	}
 	// ·£´ý
 	else
 	{
-		uniform_int_distribution<int> random_index(0, enableAction[state].size() - 1);
+		uniform_int_distribution<int> random_index(0, enable_Action.size() - 1);
 		int index = random_index(gen);
-		action = enableAction[state][index];
+		action = enable_Action[index];
 	}
 
 	return action;

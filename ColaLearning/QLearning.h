@@ -61,7 +61,7 @@ public:
 	 * \param state : 현재 상태
 	 * \return 최적 행동
 	 */
-	string GetBestAction(string state);
+	string GetBestAction(string state, vector<string> enable_Action);
 	/**
 	 * 현재 상태에서 행동 가져오기.
 	 * 
@@ -69,7 +69,7 @@ public:
 	 * \param random : 랜덤 여부
 	 * \return 행동
 	 */
-	string GetAction(string state, bool random);
+	string GetAction(string state, vector<string> enable_Action, bool random);
 	/**
 	 * 현재 상태 설정.
 	 * 
